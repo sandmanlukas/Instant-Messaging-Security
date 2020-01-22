@@ -1,1 +1,1 @@
-# Bachelor-Thesis---Instant-Messaging-Security
+# Bachelor-Thesis Instant-Messaging-Security
