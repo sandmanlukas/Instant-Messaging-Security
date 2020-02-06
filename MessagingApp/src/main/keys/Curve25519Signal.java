@@ -27,10 +27,10 @@ public class Curve25519Signal {
 
         System.out.println("PrivateKey: " + Arrays.toString(privateKey));
         System.out.println("PublicKey: " + Arrays.toString(publicKey));
-        System.out.println("Shared Secret: " + sharedSecret);
-        System.out.println("Signature: " + signature);
+        System.out.println("Shared Secret: " + Arrays.toString(sharedSecret));
+        System.out.println("Signature: " + Arrays.toString(signature));
         System.out.println("Valid Signature: " + validSignature);
         System.out.println("Invalid Signature: " + invalidSignature);
-
+        System.out.println("test");
     }
 }
