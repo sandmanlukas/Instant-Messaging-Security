@@ -1,12 +1,14 @@
+import java.util.ArrayList;
+
 public class preKeyBundlePublic {
 	
 	private final byte[] publicIdentityKey;
 	private final byte[] publicPreKey;
 	private final byte[] signedPublicPreKey;
-	private final byte[][] publicOneTimePreKeys;
+	private final ArrayList<byte[]> publicOneTimePreKeys;
 
 	
-	public preKeyBundlePublic(byte[] publicIdentityKey, byte[] publicPreKey, byte[] signedPublicPreKey, byte[][] publicOneTimePreKeys) {
+	public preKeyBundlePublic(byte[] publicIdentityKey, byte[] publicPreKey, byte[] signedPublicPreKey, ArrayList<byte[]> publicOneTimePreKeys) {
 		this.publicIdentityKey = publicIdentityKey;
 		this.publicPreKey = publicPreKey;
 		this.signedPublicPreKey = signedPublicPreKey;
@@ -25,12 +27,16 @@ public class preKeyBundlePublic {
 		return signedPublicPreKey;
 	}
 	
-	public byte[][] getPublicOneTimePreKeys() {
+	public ArrayList<byte[]> getPublicOneTimePreKeys() {
 		return publicOneTimePreKeys;
 	}
 	
 	public byte[] getPublicOneTimePreKey(int index) {
-		return publicOneTimePreKeys[index];
+		return publicOneTimePreKeys.remove(index);
+	}
+	
+	public void removePublicOneTimePreKey(int index) {
+		publicOneTimePreKeys.remove(index);
 	}
  	
 }

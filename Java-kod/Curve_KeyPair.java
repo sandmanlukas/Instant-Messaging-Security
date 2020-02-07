@@ -22,5 +22,4 @@ public class Curve_KeyPair {
 	public byte[] getPrivateKey() {
 		return privateKey;
 	}
-
 }

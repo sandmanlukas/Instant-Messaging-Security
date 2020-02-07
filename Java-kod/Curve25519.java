@@ -1,4 +1,5 @@
 import java.security.SecureRandom;
+import java.util.ArrayList;
 
 public class Curve25519 {
 	
@@ -79,11 +80,11 @@ public class Curve25519 {
 		byte[] signedPublicPreKey = new byte[64];
 		curve_sigs.curve25519_sign(sha512provider, signedPublicPreKey, identityKey.getPublicKey(), preKey.getPublicKey(), preKey.getPublicKey().length, getRandom(32));
 		
-		byte[][] privatePreKeys = new byte[NUMBER_OF_EPHEMERAL_KEYS][KEY_LENGTH];
-		byte[][] publicPreKeys = new byte[NUMBER_OF_EPHEMERAL_KEYS][KEY_LENGTH];
+		ArrayList<byte[]> privatePreKeys = new ArrayList<byte[]>();
+		ArrayList<byte[]> publicPreKeys = new ArrayList<byte[]>();
 		for(int i = 0; i < NUMBER_OF_EPHEMERAL_KEYS; i++) {
-			privatePreKeys[i] = preKeys[i].getPrivateKey();
-			publicPreKeys[i] = preKeys[i].getPublicKey();
+			privatePreKeys.add(preKeys[i].getPrivateKey());
+			publicPreKeys.add(preKeys[i].getPublicKey());
 		}
 		
 		preKeyBundlePrivate privateKeys = new preKeyBundlePrivate(identityKey.getPrivateKey(), preKey.getPrivateKey(), privatePreKeys);
@@ -101,6 +102,12 @@ public class Curve25519 {
 	    scalarmult.crypto_scalarmult(agreement, ourPrivate, theirPublic);
 
 	    return agreement;
-	 }
+	}
+	
 
+	public void init(preKeyBundlePrivate ours, preKeyBundlePublic theirs) {
+			byte[] p1 = calculateAgreement(ours.getPrivateIdentityKey(), theirs.getPublicPreKey());
+			byte[] p2 = calculateAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicIdentityKey());
+			byte[] p3 = calcualteAgreement(ours.getPrivateOneTimePreKey(0), theirs)
+	}
 }

@@ -1,10 +1,12 @@
+import java.util.ArrayList;
+
 public class preKeyBundlePrivate {
 	
 	private final byte[] privateIdentityKey;
 	private final byte[] privatePreKey;
-	private final byte[][] privateOneTimePreKeys;
+	private ArrayList<byte[]> privateOneTimePreKeys;
 	
-	public preKeyBundlePrivate(byte[] privateIdentityKey, byte[] privatePreKey, byte[][] privateOneTimePreKeys) {
+	public preKeyBundlePrivate(byte[] privateIdentityKey, byte[] privatePreKey, ArrayList<byte[]> privateOneTimePreKeys) {
 		this.privateIdentityKey = privateIdentityKey;
 		this.privatePreKey = privatePreKey;
 		this.privateOneTimePreKeys = privateOneTimePreKeys;
@@ -18,12 +20,16 @@ public class preKeyBundlePrivate {
 		return privatePreKey;
 	}
 	
-	public byte[][] getPrivateOneTimePreKeys() {
+	public ArrayList<byte[]> getPrivateOneTimePreKeys() {
 		return privateOneTimePreKeys;
 	}
 	
 	public byte[] getPrivateOneTimePreKey(int index) {
-		return privateOneTimePreKeys[index];
+		return privateOneTimePreKeys.get(index);
+	}
+	
+	public void removePrivateOneTimePreKey(int index) {
+		privateOneTimePreKeys.remove(index);
 	}
  	
 }
