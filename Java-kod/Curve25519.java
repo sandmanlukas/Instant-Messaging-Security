@@ -1,5 +1,6 @@
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Curve25519 {
 
@@ -110,13 +111,29 @@ public class Curve25519 {
 		for(int j = 0; j < array2.length; j++) {
 			result[j + array1.length] = array2[j];
 		}
+		return result;
 	}
 
 	public void init(preKeyBundlePrivate ours, preKeyBundlePublic theirs) {
 			byte[] p1 = calculateAgreement(ours.getPrivateIdentityKey(), theirs.getPublicPreKey());
 			byte[] p2 = calculateAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicIdentityKey());
-			byte[] p3 = calcualteAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicPreKey());
-			byte[] p4 = calcualteAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicOneTimePreKey(0));
+			byte[] p3 = calculateAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicPreKey());
+			byte[] p4 = calculateAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicOneTimePreKey(0));
 			appendArray(p1, appendArray(p2, appendArray(p3, p4)));
+	}
+
+	public static void main(String[] args) {
+		Curve25519 curve = new Curve25519();
+		byte [] randomPrivate = curve.getRandom(KEY_LENGTH);
+		byte [] randomPublic = curve.getRandom(KEY_LENGTH);
+		byte [] privateKey = curve.generatePrivateKey(randomPrivate);
+		byte [] publicKey = curve.generatePublicKey(privateKey);
+
+		Curve_KeyPair keyPair = new Curve_KeyPair(privateKey, publicKey);
+
+		//preKeyBundle preKeys = new preKeyBundle(); TODO: fix this
+		System.out.println("PrivateKey: " +  Arrays.toString(privateKey));
+
+
 	}
 }
