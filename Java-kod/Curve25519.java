@@ -117,6 +117,6 @@ public class Curve25519 {
 			byte[] p2 = calculateAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicIdentityKey());
 			byte[] p3 = calcualteAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicPreKey());
 			byte[] p4 = calcualteAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicOneTimePreKey(0));
-			appendArray(p1, appendArray(p2, appendArray(p3, p4)));
+			byte[] result = appendArray(p1, appendArray(p2, appendArray(p3, p4)));
 	}
 }
