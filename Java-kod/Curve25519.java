@@ -97,6 +97,12 @@ public class Curve25519 {
 	 * @return a shared agreement
 	 */
 	public byte[] calculateAgreement(byte[] ourPrivate, byte[] theirPublic) {
+		if (ourPrivate == null || theirPublic == null) {
+			throw new IllegalArgumentException("Keys cannot be null!");
+		}
+		if (ourPrivate.length != 32 || theirPublic.length != 32 ){
+			throw  new IllegalArgumentException("Keys must be 32 bytes long");
+		}
 	    byte[] agreement = new byte[32];
 	    scalarmult.crypto_scalarmult(agreement, ourPrivate, theirPublic);
 
@@ -117,21 +123,30 @@ public class Curve25519 {
 	public void init(preKeyBundlePrivate ours, preKeyBundlePublic theirs) {
 			byte[] p1 = calculateAgreement(ours.getPrivateIdentityKey(), theirs.getPublicPreKey());
 			byte[] p2 = calculateAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicIdentityKey());
-			byte[] p3 = calcualteAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicPreKey());
-			byte[] p4 = calcualteAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicOneTimePreKey(0));
+			byte[] p3 = calculateAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicPreKey());
+			byte[] p4 = calculateAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicOneTimePreKey(0));
 			byte[] result = appendArray(p1, appendArray(p2, appendArray(p3, p4)));
 	}
 
 	public static void main(String[] args) {
 		Curve25519 curve = new Curve25519();
 		byte [] randomPrivate = curve.getRandom(KEY_LENGTH);
-		byte [] randomPublic = curve.getRandom(KEY_LENGTH);
 		byte [] privateKey = curve.generatePrivateKey(randomPrivate);
 		byte [] publicKey = curve.generatePublicKey(privateKey);
 
-		Curve_KeyPair keyPair = new Curve_KeyPair(privateKey, publicKey);
+		byte [] sharedSecret = curve.calculateAgreement(privateKey,publicKey);
 
-		//preKeyBundle preKeys = new preKeyBundle(); TODO: fix this
+
+
+		Curve_KeyPair keyPair = new Curve_KeyPair(privateKey, publicKey);
+		//preKeyBundlePublic publicPreKeyBundle = new preKeyBundlePublic(); TODO: fix this
+
+
+		//preKeyBundle preKeys = new preKeyBundle();
+		//preKeyBundle preKeys = generatePreKeyBundle();
+
+
+
 		System.out.println("PrivateKey: " +  Arrays.toString(privateKey));
 
 
