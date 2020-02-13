@@ -7,6 +7,7 @@ public class Curve_KeyPair {
 		this.privateKey = privateKey;
 		this.publicKey = publicKey;
 	}
+
 	/**
 	 * 
 	 * @return The public part of a key-pair

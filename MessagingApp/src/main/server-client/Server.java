@@ -7,7 +7,7 @@ public class Server
 { 
   
     // Vector to store active clients 
-    static Vector<ClientHandler> ar = new Vector<>(); 
+    static Vector<ClientHandler> ar = new Vector<>();
       
     // counter for clients 
     static int i = 0; 
@@ -21,7 +21,7 @@ public class Server
           
         // running infinite loop for getting 
         // client request 
-        while (true)  
+        while (true)
         { 
             // Accept the incoming request 
             s = ss.accept(); 
@@ -107,7 +107,7 @@ class ClientHandler implements Runnable
                 { 
                     // if the recipient is found, write on its 
                     // output stream 
-                    if (mc.name.equals(recipient) && mc.isloggedin==true)  
+                    if (mc.name.equals(recipient) && mc.isloggedin)
                     { 
                         mc.dos.writeUTF(this.name+" : "+MsgToSend); 
                         break; 
