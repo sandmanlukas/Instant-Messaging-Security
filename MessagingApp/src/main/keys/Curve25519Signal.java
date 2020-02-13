@@ -41,9 +41,34 @@ public class Curve25519Signal {
 
     */
    final static int KEY_LENGTH = 32;
-    final static int NUMBER_OF_EPHEMERAL_KEYS = 10;
-    final static Sha512 sha512provider = new sha512_provider();
+   final static int NUMBER_OF_EPHEMERAL_KEYS = 10;
+   final static Sha512 sha512provider = new sha512_provider();
 
+
+   public static void main(String[] args) {
+       Curve25519Signal curve = new Curve25519Signal();
+       byte [] randomPrivate = curve.getRandom(KEY_LENGTH);
+       byte [] privateKey = curve.generatePrivateKey(randomPrivate);
+       byte [] publicKey = curve.generatePublicKey(privateKey);
+
+       byte [] sharedSecret = curve.calculateAgreement(privateKey,publicKey);
+
+
+
+       Curve_KeyPair keyPair = new Curve_KeyPair(privateKey, publicKey);
+       //preKeyBundlePublic publicPreKeyBundle = new preKeyBundlePublic(); TODO: fix this
+
+
+       //preKeyBundle preKeys = new preKeyBundle();
+       //preKeyBundle preKeys = generatePreKeyBundle();
+
+
+
+       System.out.println("PrivateKey: " +  Arrays.toString(privateKey));
+
+
+   }
+    
 
     /**
      *
@@ -162,29 +187,5 @@ public class Curve25519Signal {
         byte[] p3 = calculateAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicPreKey());
         byte[] p4 = calculateAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicOneTimePreKey(0));
         byte[] result = appendArray(p1, appendArray(p2, appendArray(p3, p4)));
-    }
-
-    public static void main(String[] args) {
-        Curve25519Signal curve = new Curve25519Signal();
-        byte [] randomPrivate = curve.getRandom(KEY_LENGTH);
-        byte [] privateKey = curve.generatePrivateKey(randomPrivate);
-        byte [] publicKey = curve.generatePublicKey(privateKey);
-
-        byte [] sharedSecret = curve.calculateAgreement(privateKey,publicKey);
-
-
-
-        Curve_KeyPair keyPair = new Curve_KeyPair(privateKey, publicKey);
-        //preKeyBundlePublic publicPreKeyBundle = new preKeyBundlePublic(); TODO: fix this
-
-
-        //preKeyBundle preKeys = new preKeyBundle();
-        //preKeyBundle preKeys = generatePreKeyBundle();
-
-
-
-        System.out.println("PrivateKey: " +  Arrays.toString(privateKey));
-
-
     }
 }
