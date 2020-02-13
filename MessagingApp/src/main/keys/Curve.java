@@ -9,6 +9,7 @@ import org.whispersystems.libsignal.ecc.*;
 import org.whispersystems.libsignal.state.PreKeyRecord;
 import org.whispersystems.libsignal.util.KeyHelper;
 import org.whispersystems.libsignal.kdf.HKDF;
+import com.google.common.primitives.Bytes;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -110,7 +111,7 @@ public class Curve {
 
         return agreement;
     }
-
+/*
     public byte[] appendArray(byte[] array1, byte[] array2) {
         byte[] result = new byte[array1.length + array2.length];
         for(int i = 0; i < array1.length; i++) {
@@ -121,13 +122,14 @@ public class Curve {
         }
         return result;
     }
-
+*/
     public void init(preKeyBundlePrivate ours, preKeyBundlePublic theirs) {
         byte[] p1 = calculateAgreement(ours.getPrivateIdentityKey(), theirs.getPublicPreKey());
         byte[] p2 = calculateAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicIdentityKey());
         byte[] p3 = calculateAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicPreKey());
         byte[] p4 = calculateAgreement(ours.getPrivateOneTimePreKey(0), theirs.getPublicOneTimePreKey(0));
-        byte[] result = appendArray(p1, appendArray(p2, appendArray(p3, p4)));
+        //byte[] result = appendArray(p1, appendArray(p2, appendArray(p3, p4)));
+        byte [] result = Bytes.concat(p1,p2,p3,p4);
     }
 
     public static void main(String[] args) {
