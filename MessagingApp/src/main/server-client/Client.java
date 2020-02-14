@@ -14,7 +14,7 @@ public class Client
         InetAddress ip = InetAddress.getByName("localhost"); 
           
         // establish the connection 
-        Socket s = new Socket(ip, ServerPort); 
+        Socket s = new Socket("94.234.55.226", ServerPort); 
           
         // obtaining input and out streams 
         final DataInputStream dis = new DataInputStream(s.getInputStream());
