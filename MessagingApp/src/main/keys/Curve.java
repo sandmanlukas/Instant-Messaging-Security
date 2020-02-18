@@ -1,11 +1,10 @@
+import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.tuple.MutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
 import org.whispersystems.curve25519.JCESha512Provider;
 import org.whispersystems.curve25519.java.curve_sigs;
-import org.whispersystems.libsignal.kdf.DerivedRootSecrets;
-import org.whispersystems.libsignal.kdf.HKDF;
 import org.whispersystems.libsignal.util.Pair;
 
 import javax.crypto.spec.IvParameterSpec;
@@ -32,7 +31,11 @@ public class Curve {
         byte[] ephemeralAlice = initAlice.getLeft();
         byte[] ratchetAlice = initAlice.getMiddle();
 
-        init.initBob(ephemeralAlice, ratchetAlice, preKeysBob.getPrivateKeys(), preKeysAlice.getPublicKeys());
+        Pair<byte[], byte[] keys = init.initBob(ephemeralAlice, ratchetAlice, preKeysBob.getPrivateKeys(), preKeysAlice.getPublicKeys());
+
+        Triple<byte[], byte[], IvParameterSpec> triple =  Messages.sendMsg(keys.first(), keys.second(), "hej");
+        Messages.recieveMsg()
+
 
 
     }

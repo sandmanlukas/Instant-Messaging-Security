@@ -7,7 +7,6 @@ import org.whispersystems.libsignal.kdf.DerivedRootSecrets;
 import org.whispersystems.libsignal.kdf.HKDF;
 import org.whispersystems.libsignal.util.Pair;
 
-import javax.crypto.spec.IvParameterSpec;
 import java.util.ArrayList;
 
 public class Initialization {
@@ -54,7 +53,7 @@ public class Initialization {
         return new MutableTriple<byte[], byte[], ArrayList<byte[]>>(ephemeralPublic, ratchetPublic, theirs.getPublicOneTimePreKeys());
     }
 
-    public static void initBob (byte [] ephemeralAlice, byte [] ratchetAlice, preKeyBundlePrivate ours, preKeyBundlePublic bundleAlice){
+    public static Pair<byte[], byte[]> initBob(byte [] ephemeralAlice, byte [] ratchetAlice, preKeyBundlePrivate ours, preKeyBundlePublic bundleAlice){
 
         byte [] p1 = curve.calculateAgreement(bundleAlice.getPublicIdentityKey(), ours.getPrivatePreKey());
         byte [] p2 = curve.calculateAgreement(ephemeralAlice, ours.getPrivateIdentityKey());
@@ -73,16 +72,16 @@ public class Initialization {
 
         byte [] result2 = Bytes.concat(p5, root1);
 
-        byte [] message = Messages.deriveSecrets(result2, info, info, kdf);
+        byte [] secret2 = kdf.deriveSecrets(result2, info, 64);
+        DerivedRootSecrets rootSecrets2 = new DerivedRootSecrets(secret2);
+        byte [] root2 = rootSecrets2.getRootKey();
+        byte [] chain2 = rootSecrets2.getChainKey();
+        byte [] secret3 = kdf.deriveSecrets(chain2, info, 64);
+        DerivedRootSecrets rootSecrets3 = new DerivedRootSecrets(secret3);
+        byte [] message = rootSecrets3.getRootKey();
+        byte [] finalChain = rootSecrets3.getChainKey();
 
-        Pair<byte[], IvParameterSpec> encrypt = AES_encryption.encrypt("hej", message);
-        String test = AES_encryption.decrypt(encrypt.first(), message, encrypt.second());
-        System.out.println(test);
-        for(int i = 0; i < encrypt.first().length; i++) {
-            System.out.print(encrypt.first()[i]);
-        }
-        System.out.println(encrypt.first().length);
+        return new Pair(ratchetAlice, root2);
     }
-
 
 }
