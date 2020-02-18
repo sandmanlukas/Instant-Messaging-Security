@@ -1,30 +1,23 @@
 
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
+//import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
+import com.google.common.primitives.Bytes;
 import org.apache.commons.lang3.tuple.MutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
+import org.whispersystems.curve25519.JCESha512Provider;
 import org.whispersystems.curve25519.java.curve_sigs;
 import org.whispersystems.curve25519.java.scalarmult;
-import org.whispersystems.curve25519.JCESha512Provider;
-import org.whispersystems.libsignal.ecc.*;
-import org.whispersystems.libsignal.kdf.DerivedMessageSecrets;
 import org.whispersystems.libsignal.kdf.DerivedRootSecrets;
-import org.whispersystems.libsignal.state.PreKeyRecord;
-import org.whispersystems.libsignal.util.KeyHelper;
 import org.whispersystems.libsignal.kdf.HKDF;
-import com.google.common.primitives.Bytes;
 import org.whispersystems.libsignal.util.Pair;
-import org.apache.commons.lang3.tuple.Triple;
-
-
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 public class Curve {
@@ -164,68 +157,75 @@ public class Curve {
         byte [] message = rootSecrets3.getRootKey();
         byte [] realChain = rootSecrets3.getChainKey();
 
-
+        Pair<byte[], IvParameterSpec> encrypt = encrypt("hej", message);
+        String test = decrypt(encrypt.first(), message, encrypt.second());
+        System.out.println(test);
+        for(int i = 0; i < encrypt.first().length; i++) {
+            System.out.print(encrypt.first()[i]);
+        }
+        System.out.println();
+        System.out.println(encrypt.first().length);
     }
 
+    public Triple<byte [], byte [], IvParameterSpec> sendMsg(byte[] alicePublicRatchet, byte[] bobRoot, String msg) {
+        Curve25519KeyPair bobRatchet = curve.generateKeyPair();
+        byte[] info = new byte[0];
 
+        byte[] p1 = calculateAgreement(alicePublicRatchet, bobRatchet.getPrivateKey());
 
-    public Triple<byte [], byte [], ArrayList<byte []>> initAlice(preKeyBundlePrivate ours, preKeyBundlePublic theirs){
-        byte [] info = new byte [0];
+        byte[] secret = kdf.deriveSecrets(bobRoot, p1, 64);
+        DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secret);
+        byte[] temp = rootSecrets.getRootKey();
+        byte[] chain = rootSecrets. getChainKey();
+
+        byte[] secret2 = kdf.deriveSecrets(chain, info, 64);
+        DerivedRootSecrets rootSecrets1 = new DerivedRootSecrets(secret);
+        byte[] message = rootSecrets1.getRootKey();
+        byte[] finalChain = rootSecrets1.getChainKey();
+
+        Pair<byte[], IvParameterSpec> encrypt = encrypt(msg, message);
+        return new MutableTriple<byte [], byte[], IvParameterSpec>(bobRatchet.getPublicKey(), encrypt.first(), encrypt.second());
+    }
+
+    public Triple<byte [], byte [], ArrayList<byte []>> initAlice(preKeyBundlePrivate ours, preKeyBundlePublic theirs) {
+        byte[] info = new byte[0];
 
         Curve25519KeyPair ephemeralKeyPair = curve.generateKeyPair();
         Curve25519KeyPair ratchetKeyPair = curve.generateKeyPair();
 
-        byte [] ephemeralPrivate = ephemeralKeyPair.getPrivateKey();
+        byte[] ephemeralPrivate = ephemeralKeyPair.getPrivateKey();
 
         byte[] p1 = curve.calculateAgreement(theirs.getPublicPreKey(), ours.getPrivateIdentityKey());
         byte[] p2 = curve.calculateAgreement(theirs.getPublicIdentityKey(), ephemeralPrivate);
         byte[] p3 = curve.calculateAgreement(theirs.getPublicPreKey(), ephemeralPrivate);
         byte[] p4 = curve.calculateAgreement(theirs.getPublicOneTimePreKey(0), ephemeralPrivate);
 
-        byte [] result = Bytes.concat(p1,p2,p3,p4);
-        byte [] secret = kdf.deriveSecrets(result,info, 64 );
+        byte[] result = Bytes.concat(p1, p2, p3, p4);
+        byte[] secret = kdf.deriveSecrets(result, info, 64);
 
         DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secret);
-        byte [] root1 = rootSecrets.getRootKey();
-        byte [] chainTest = rootSecrets.getChainKey();
+        byte[] root1 = rootSecrets.getRootKey();
+        byte[] chainTest = rootSecrets.getChainKey();
 
-        byte [] p5 = curve.calculateAgreement(theirs.getPublicPreKey(), ratchetKeyPair.getPrivateKey());
-        byte [] result2 = Bytes.concat(p5, root1);
+        byte[] p5 = curve.calculateAgreement(theirs.getPublicPreKey(), ratchetKeyPair.getPrivateKey());
+        byte[] result2 = Bytes.concat(p5, root1);
 
-        byte [] secret2 = kdf.deriveSecrets(result2, info, 64);
+        byte[] secret2 = kdf.deriveSecrets(result2, info, 64);
         DerivedRootSecrets rootSecrets2 = new DerivedRootSecrets(secret2);
-        byte [] chain = rootSecrets2.getChainKey();
-        byte [] secret3 = kdf.deriveSecrets(chain, info, 64);
+        byte[] chain = rootSecrets2.getChainKey();
+        byte[] secret3 = kdf.deriveSecrets(chain, info, 64);
 
         DerivedRootSecrets rootSecrets3 = new DerivedRootSecrets(secret3);
-        byte [] message = rootSecrets3.getRootKey();
-        byte [] realChain = rootSecrets3.getChainKey();
+        byte[] message = rootSecrets3.getRootKey();
+        byte[] realChain = rootSecrets3.getChainKey();
 
         // Remove public ephemeralKey that was used.
         theirs.removePublicOneTimePreKey(0);
-        byte [] ephemeralPublic = ephemeralKeyPair.getPublicKey();
-        byte [] ratchetPublic = ratchetKeyPair.getPublicKey();
+        byte[] ephemeralPublic = ephemeralKeyPair.getPublicKey();
+        byte[] ratchetPublic = ratchetKeyPair.getPublicKey();
 
-        return new MutableTriple<byte [], byte[], ArrayList<byte[]>>(ephemeralPublic, ratchetPublic, theirs.getPublicOneTimePreKeys());
+        return new MutableTriple<byte[], byte[], ArrayList<byte[]>>(ephemeralPublic, ratchetPublic, theirs.getPublicOneTimePreKeys());
     }
-    public static String encrypt (String stringToEncrypt, byte [] secret){
-        try {
-            Curve curveClass = new Curve();
-            byte [] srandom = curveClass.getRandom(32);
-            IvParameterSpec iv = new IvParameterSpec(srandom);
-            SecretKeySpec skeyspec = new SecretKeySpec(secret, "AES");
-
-            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-            cipher.init(Cipher.ENCRYPT_MODE, skeyspec, iv);
-            byte [] encrypted = cipher.doFinal(stringToEncrypt.getBytes());
-            return Base64.encode(encrypted);
-        } catch (Exception ex){
-            ex.printStackTrace();
-        }
-
-        return  null;
-    }
-
     public static void main(String[] args) {
         Curve curveClass = new Curve();
 
@@ -247,11 +247,6 @@ public class Curve {
         ArrayList<byte []> newPreKeysAlice = initAlice.getRight();
 
         curveClass.initBob(ephemeralAlice, ratchetAlice, preKeysBob.getPrivateKeys(), preKeysAlice.getPublicKeys());
-
-
-
-
-
 
     }
 }
