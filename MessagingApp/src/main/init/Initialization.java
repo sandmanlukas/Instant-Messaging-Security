@@ -11,9 +11,9 @@ import javax.crypto.spec.IvParameterSpec;
 import java.util.ArrayList;
 
 public class Initialization {
-    static byte [] info = new byte [0];
-    static Curve25519 curve = Curve25519.getInstance(Curve25519.BEST);
-    static HKDF kdf = HKDF.createFor(3);
+    static final byte [] info = new byte [0];
+    static final Curve25519 curve = Curve25519.getInstance(Curve25519.BEST);
+    static final HKDF kdf = HKDF.createFor(3);
 
     public static Triple<byte [], byte [], ArrayList<byte []>> initAlice(preKeyBundlePrivate ours, preKeyBundlePublic theirs) {
 
@@ -55,33 +55,38 @@ public class Initialization {
     }
 
     public static void initBob (byte [] ephemeralAlice, byte [] ratchetAlice, preKeyBundlePrivate ours, preKeyBundlePublic bundleAlice){
+        try {
+            byte [] p1 = curve.calculateAgreement(bundleAlice.getPublicIdentityKey(), ours.getPrivatePreKey());
+            byte [] p2 = curve.calculateAgreement(ephemeralAlice, ours.getPrivateIdentityKey());
+            byte [] p3 = curve.calculateAgreement(ephemeralAlice, ours.getPrivatePreKey());
+            byte [] p4 = curve.calculateAgreement(ephemeralAlice, ours.getPrivateOneTimePreKey(0));
 
-        byte [] p1 = curve.calculateAgreement(bundleAlice.getPublicIdentityKey(), ours.getPrivatePreKey());
-        byte [] p2 = curve.calculateAgreement(ephemeralAlice, ours.getPrivateIdentityKey());
-        byte [] p3 = curve.calculateAgreement(ephemeralAlice, ours.getPrivatePreKey());
-        byte [] p4 = curve.calculateAgreement(ephemeralAlice, ours.getPrivateOneTimePreKey(0));
+            byte [] result = Bytes.concat(p1, p2, p3, p4);
 
-        byte [] result = Bytes.concat(p1, p2, p3, p4);
+            byte [] secret = kdf.deriveSecrets(result, info, 64);
 
-        byte [] secret = kdf.deriveSecrets(result, info, 64);
+            DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secret);
+            byte [] root1 = rootSecrets.getRootKey();
+            byte [] chainTest = rootSecrets.getChainKey();
 
-        DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secret);
-        byte [] root1 = rootSecrets.getRootKey();
-        byte [] chainTest = rootSecrets.getChainKey();
+            byte [] p5 = curve.calculateAgreement(ratchetAlice, ours.getPrivatePreKey());
 
-        byte [] p5 = curve.calculateAgreement(ratchetAlice, ours.getPrivatePreKey());
+            byte [] result2 = Bytes.concat(p5, root1);
 
-        byte [] result2 = Bytes.concat(p5, root1);
+            byte [] message = Messages.deriveSecrets(result2, info, info, kdf);
 
-        byte [] message = Messages.deriveSecrets(result2, info, info, kdf);
-
-        Pair<byte[], IvParameterSpec> encrypt = AES_encryption.encrypt("hej", message);
-        String test = AES_encryption.decrypt(encrypt.first(), message, encrypt.second());
-        System.out.println(test);
-        for(int i = 0; i < encrypt.first().length; i++) {
-            System.out.print(encrypt.first()[i]);
+            Pair<byte[], IvParameterSpec> encrypt = AES_encryption.encrypt("hej", message);
+            assert encrypt != null;
+            String test = AES_encryption.decrypt(encrypt.first(), message, encrypt.second());
+            System.out.println(test);
+            for(int i = 0; i < encrypt.first().length; i++) {
+                System.out.print(encrypt.first()[i]);
+            }
+            System.out.println(encrypt.first().length);
+        }catch (Exception e){
+            throw new NullPointerException();
         }
-        System.out.println(encrypt.first().length);
+
     }
 
 

@@ -7,7 +7,7 @@ public class Server
 { 
   
     // Vector to store active clients 
-    static Vector<ClientHandler> ar = new Vector();
+    static final Vector<ClientHandler> ar = new Vector();
       
     // counter for clients 
     static int i = 0; 
@@ -61,10 +61,10 @@ public class Server
 class ClientHandler implements Runnable  
 { 
     Scanner scn = new Scanner(System.in); 
-    private String name; 
+    private final String name;
     final DataInputStream dis; 
     final DataOutputStream dos; 
-    Socket s; 
+    private final Socket s;
     boolean isloggedin; 
       
     // constructor 

@@ -9,8 +9,8 @@ import org.whispersystems.libsignal.util.Pair;
 import javax.crypto.spec.IvParameterSpec;
 
 public class Messages {
-    static Curve25519 curve = Curve25519.getInstance(Curve25519.BEST);
-    static HKDF kdf = HKDF.createFor(3);
+    static final Curve25519 curve = Curve25519.getInstance(Curve25519.BEST);
+    static final HKDF kdf = HKDF.createFor(3);
 
 
     public static Triple<byte[], byte[], IvParameterSpec> sendMsg(byte[] alicePublicRatchet, byte[] bobRoot, String msg) {
@@ -22,10 +22,11 @@ public class Messages {
         byte[] message = deriveSecrets(bobRoot, info, p1, kdf);
 
         Pair<byte[], IvParameterSpec> encrypt = AES_encryption.encrypt(msg, message);
+        assert encrypt != null;
         return new MutableTriple<byte[], byte[], IvParameterSpec>(bobRatchet.getPublicKey(), encrypt.first(), encrypt.second());
     }
     public static void recieveMsg(){
-        
+
     }
 
     public static byte [] deriveSecrets(byte[] bobRoot, byte[] info, byte[] p1, HKDF kdf) {

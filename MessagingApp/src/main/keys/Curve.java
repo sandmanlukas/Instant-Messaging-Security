@@ -1,38 +1,32 @@
-import org.apache.commons.lang3.tuple.MutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
 import org.whispersystems.curve25519.JCESha512Provider;
 import org.whispersystems.curve25519.java.curve_sigs;
-import org.whispersystems.libsignal.kdf.DerivedRootSecrets;
-import org.whispersystems.libsignal.kdf.HKDF;
+
 import org.whispersystems.libsignal.util.Pair;
 
-import javax.crypto.spec.IvParameterSpec;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 
 public class Curve {
 
-    final static int KEY_LENGTH = 32;
     final static int NUMBER_OF_EPHEMERAL_KEYS = 10;
     final static JCESha512Provider sha512provider = new JCESha512Provider();
-    static Curve25519 curve = Curve25519.getInstance(Curve25519.BEST);
+    final static Curve25519 curve = Curve25519.getInstance(Curve25519.BEST);
 
     public static void main(String[] args) {
         Curve curveClass = new Curve();
-        AES_encryption aes = new AES_encryption();
-        Initialization init = new Initialization();
 
         preKeyBundle preKeysAlice = curveClass.generatePreKeyBundle();
         preKeyBundle preKeysBob = curveClass.generatePreKeyBundle();
 
-        Triple<byte[], byte[], ArrayList<byte[]>> initAlice = init.initAlice(preKeysAlice.getPrivateKeys(), preKeysBob.getPublicKeys());
+        Triple<byte[], byte[], ArrayList<byte[]>> initAlice = Initialization.initAlice(preKeysAlice.getPrivateKeys(), preKeysBob.getPublicKeys());
 
         byte[] ephemeralAlice = initAlice.getLeft();
         byte[] ratchetAlice = initAlice.getMiddle();
 
-        init.initBob(ephemeralAlice, ratchetAlice, preKeysBob.getPrivateKeys(), preKeysAlice.getPublicKeys());
+        Initialization.initBob(ephemeralAlice, ratchetAlice, preKeysBob.getPrivateKeys(), preKeysAlice.getPublicKeys());
 
 
     }
@@ -49,14 +43,14 @@ public class Curve {
     }
 
     public Pair<ArrayList<byte[]>, ArrayList<byte[]>> generateEphemeralKeys() {
-        ArrayList<byte[]> ephemeralPrivateKeys = new ArrayList<byte[]>();
-        ArrayList<byte[]> ephemeralPublicKeys = new ArrayList<byte[]>();
+        ArrayList<byte[]> ephemeralPrivateKeys = new ArrayList<>();
+        ArrayList<byte[]> ephemeralPublicKeys = new ArrayList<>();
         for (int i = 0; i < NUMBER_OF_EPHEMERAL_KEYS; i++) {
             Curve25519KeyPair ephemeralKeys = curve.generateKeyPair();
             ephemeralPrivateKeys.add(ephemeralKeys.getPrivateKey());
             ephemeralPublicKeys.add(ephemeralKeys.getPublicKey());
         }
-        return new Pair(ephemeralPrivateKeys, ephemeralPublicKeys);
+        return new Pair<ArrayList<byte[]>, ArrayList<byte[]>>(ephemeralPrivateKeys, ephemeralPublicKeys);
     }
 
     /**

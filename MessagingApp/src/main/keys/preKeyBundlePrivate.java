@@ -4,7 +4,7 @@ public class preKeyBundlePrivate {
 	
 	private final byte[] privateIdentityKey;
 	private final byte[] privatePreKey;
-	private ArrayList<byte[]> privateOneTimePreKeys;
+	private final ArrayList<byte[]> privateOneTimePreKeys;
 	
 	public preKeyBundlePrivate(byte[] privateIdentityKey, byte[] privatePreKey, ArrayList<byte[]> privateOneTimePreKeys) {
 		this.privateIdentityKey = privateIdentityKey;

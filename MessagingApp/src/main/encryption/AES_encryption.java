@@ -25,7 +25,7 @@ public class AES_encryption {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.ENCRYPT_MODE, skeyspec, iv);
             byte[] encrypted = cipher.doFinal(stringToEncrypt.getBytes());
-            return new Pair(encrypted, iv);
+            return new Pair<byte [], IvParameterSpec>(encrypted, iv);
         } catch(Exception ex) {
             ex.printStackTrace();
         }
