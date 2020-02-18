@@ -13,9 +13,7 @@ import org.whispersystems.libsignal.kdf.DerivedRootSecrets;
 import org.whispersystems.libsignal.kdf.HKDF;
 import org.whispersystems.libsignal.util.Pair;
 
-import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 
@@ -157,8 +155,8 @@ public class Curve {
         byte [] message = rootSecrets3.getRootKey();
         byte [] realChain = rootSecrets3.getChainKey();
 
-        Pair<byte[], IvParameterSpec> encrypt = encrypt("hej", message);
-        String test = decrypt(encrypt.first(), message, encrypt.second());
+        Pair<byte[], IvParameterSpec> encrypt = AES_encryption.encrypt("hej", message);
+        String test = AES_encryption.decrypt(encrypt.first(), message, encrypt.second());
         System.out.println(test);
         for(int i = 0; i < encrypt.first().length; i++) {
             System.out.print(encrypt.first()[i]);
@@ -183,7 +181,7 @@ public class Curve {
         byte[] message = rootSecrets1.getRootKey();
         byte[] finalChain = rootSecrets1.getChainKey();
 
-        Pair<byte[], IvParameterSpec> encrypt = encrypt(msg, message);
+        Pair<byte[], IvParameterSpec> encrypt = AES_encryption.encrypt(msg, message);
         return new MutableTriple<byte [], byte[], IvParameterSpec>(bobRatchet.getPublicKey(), encrypt.first(), encrypt.second());
     }
 
