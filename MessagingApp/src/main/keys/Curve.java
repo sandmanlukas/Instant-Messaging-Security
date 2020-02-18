@@ -26,7 +26,11 @@ public class Curve {
         byte[] ephemeralAlice = initAlice.getLeft();
         byte[] ratchetAlice = initAlice.getMiddle();
 
-        Initialization.initBob(ephemeralAlice, ratchetAlice, preKeysBob.getPrivateKeys(), preKeysAlice.getPublicKeys());
+        Pair<byte[], byte[] keys = init.initBob(ephemeralAlice, ratchetAlice, preKeysBob.getPrivateKeys(), preKeysAlice.getPublicKeys());
+
+        Triple<byte[], byte[], IvParameterSpec> triple =  Messages.sendMsg(keys.first(), keys.second(), "hej");
+        Messages.recieveMsg()
+
 
 
     }

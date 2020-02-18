@@ -19,18 +19,43 @@ public class Messages {
 
         byte[] p1 = curve.calculateAgreement(alicePublicRatchet, bobRatchet.getPrivateKey());
 
-        byte[] message = deriveSecrets(bobRoot, info, p1, kdf);
+        byte[] secrets = kdf.deriveSecrets(bobRoot, p1, 64);
+        DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secrets);
+        byte[] temp = rootSecrets.getRootKey();
+        byte[] chain = rootSecrets.getChainKey();
+
+        byte[] secrets2 = kdf.deriveSecrets(chain, info, 0);
+        DerivedRootSecrets rootSecrets2 = new DerivedRootSecrets(secrets2);
+
+        byte[] message = rootSecrets2.getRootKey();
+        byte[] finalChain = rootSecrets2.getChainKey();
 
         Pair<byte[], IvParameterSpec> encrypt = AES_encryption.encrypt(msg, message);
         assert encrypt != null;
         return new MutableTriple<byte[], byte[], IvParameterSpec>(bobRatchet.getPublicKey(), encrypt.first(), encrypt.second());
     }
-    public static void recieveMsg(){
+    public static Triple<String, byte[], byte[]> recieveMsg(byte[] alicePrivateRatchet, byte[] bobPublicRatchet, byte[] aliceRoot, byte[]encryptMsg, IvParameterSpec iv){
+        byte[] p1 = curve.calculateAgreement(bobPublicRatchet, alicePrivateRatchet);
+        byte[] info = new byte[0];
+
+        byte[] secrets = kdf.deriveSecrets(aliceRoot, p1, 64);
+        DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secrets);
+        byte[] temp = rootSecrets.getRootKey();
+        byte[] chain = rootSecrets.getChainKey();
+
+        byte[] secrets2 = kdf.deriveSecrets(chain, info, 64);
+        DerivedRootSecrets rootSecrets2 = new DerivedRootSecrets(secrets2);
+        byte[] message = rootSecrets2.getRootKey();
+        byte[] finalChain = rootSecrets2.getChainKey();
+
+        String msg = AES_encryption.decrypt(encryptMsg, message, iv);
+
+        return new MutableTriple<String, byte[], byte[]>(msg, temp, bobPublicRatchet);
 
     }
 
-    public static byte [] deriveSecrets(byte[] bobRoot, byte[] info, byte[] p1, HKDF kdf) {
-        byte[] secret = kdf.deriveSecrets(bobRoot, p1, 64);
+    public static byte [] deriveSecrets(byte[] bobRoot, byte[] info, HKDF kdf) {
+        byte[] secret = kdf.deriveSecrets(bobRoot, info, 64);
         DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secret);
         byte[] temp = rootSecrets.getRootKey();
         byte[] chain = rootSecrets.getChainKey();
