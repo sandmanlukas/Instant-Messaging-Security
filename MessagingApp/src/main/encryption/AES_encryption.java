@@ -5,7 +5,16 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class AES_encryption {
+    //private final SecretKeySpec   cipherKey;
+    //private final SecretKeySpec   macKey;
+/*
+    public AES_encryption(byte [] secret){
 
+    }
+
+
+
+ */
     public static Pair<byte[], IvParameterSpec> encrypt (String stringToEncrypt, byte [] secret){
         try {
             Curve curveClass = new Curve();
