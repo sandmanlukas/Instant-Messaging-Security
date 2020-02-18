@@ -53,24 +53,24 @@ public class Initialization {
         return new MutableTriple<byte[], byte[], ArrayList<byte[]>>(ephemeralPublic, ratchetPublic, theirs.getPublicOneTimePreKeys());
     }
 
-    public static Pair<byte[], byte[]> initBob(byte [] ephemeralAlice, byte [] ratchetAlice, preKeyBundlePrivate ours, preKeyBundlePublic bundleAlice){
+    public static Pair initBob(byte [] ephemeralAlice, byte [] ratchetAlice, preKeyBundlePrivate ours, preKeyBundlePublic bundleAlice){
 
         byte [] p1 = curve.calculateAgreement(bundleAlice.getPublicIdentityKey(), ours.getPrivatePreKey());
         byte [] p2 = curve.calculateAgreement(ephemeralAlice, ours.getPrivateIdentityKey());
         byte [] p3 = curve.calculateAgreement(ephemeralAlice, ours.getPrivatePreKey());
         byte [] p4 = curve.calculateAgreement(ephemeralAlice, ours.getPrivateOneTimePreKey(0));
 
-            byte [] result = Bytes.concat(p1, p2, p3, p4);
+        byte [] result = Bytes.concat(p1, p2, p3, p4);
 
-            byte [] secret = kdf.deriveSecrets(result, info, 64);
+        byte [] secret = kdf.deriveSecrets(result, info, 64);
 
-            DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secret);
-            byte [] root1 = rootSecrets.getRootKey();
-            byte [] chainTest = rootSecrets.getChainKey();
+        DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secret);
+        byte [] root1 = rootSecrets.getRootKey();
+        byte [] chainTest = rootSecrets.getChainKey();
 
-            byte [] p5 = curve.calculateAgreement(ratchetAlice, ours.getPrivatePreKey());
+        byte [] p5 = curve.calculateAgreement(ratchetAlice, ours.getPrivatePreKey());
 
-            byte [] result2 = Bytes.concat(p5, root1);
+        byte [] result2 = Bytes.concat(p5, root1);
 
         byte [] secret2 = kdf.deriveSecrets(result2, info, 64);
         DerivedRootSecrets rootSecrets2 = new DerivedRootSecrets(secret2);
@@ -81,7 +81,7 @@ public class Initialization {
         byte [] message = rootSecrets3.getRootKey();
         byte [] finalChain = rootSecrets3.getChainKey();
 
-        return new Pair(ratchetAlice, root2);
+        return new Pair<byte [], byte []>(ratchetAlice, root2);
     }
 
 }

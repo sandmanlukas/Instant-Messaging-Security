@@ -1,6 +1,4 @@
-import com.sun.crypto.provider.HmacSHA1KeyGenerator;
 import org.whispersystems.libsignal.util.Pair;
-import org.whispersystems.libsignal.protocol.SignalMessage;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
