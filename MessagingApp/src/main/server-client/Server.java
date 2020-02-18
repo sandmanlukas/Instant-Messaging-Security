@@ -1,6 +1,6 @@
-import java.io.*; 
-import java.util.*; 
-import java.net.*; 
+    import java.io.*; 
+    import java.util.*; 
+    import java.net.*; 
   
 // Server class 
 public class Server  
@@ -87,8 +87,7 @@ class ClientHandler implements Runnable
         { 
             try
             { 
-                // receive the string 
-                //received = dis.readUTF();
+                // receive the object
                 Message msg = (Message) dis.readObject();  
                 System.out.println(msg.getMsg()); 
                   
@@ -98,11 +97,7 @@ class ClientHandler implements Runnable
                     this.s.close(); 
                     break; 
                 } 
-                  
-                // break the string into message and recipient part 
-                //StringTokenizer st = new StringTokenizer(received, "#"); 
-                //String MsgToSend = st.nextToken(); 
-                //String recipient = st.nextToken(); 
+                   
                 String recipient=msg.getRec();
   
                 // search for the recipient in the connected devices list. 
@@ -113,8 +108,7 @@ class ClientHandler implements Runnable
                     // output stream 
                     if (mc.name.equals(recipient) && mc.isloggedin)
                     { 
-                        //mc.dos.writeUTF(this.name+" : "+MsgToSend);
-
+                        
                         mc.dos.writeObject(msg); 
                         break; 
                     } 

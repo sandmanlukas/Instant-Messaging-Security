@@ -18,9 +18,6 @@ public class Client {
         
         ObjectOutputStream objectOutput = new ObjectOutputStream(s.getOutputStream());
         ObjectInputStream objectInput = new ObjectInputStream(s.getInputStream());
-        //final DataInputStream dis = new DataInputStream(s.getInputStream());
-        //final DataOutputStream dos = new DataOutputStream(s.getOutputStream());
-
         // sendMessage thread
         Thread sendMessage = new Thread(new Runnable() {
             @Override
@@ -36,8 +33,6 @@ public class Client {
 
                     try {
                         // write on the output stream
-                        //dos.writeUTF(msg);
-                        //add serialization to send
                         objectOutput.writeObject(m);
                     } 
                     catch (Exception e){
@@ -57,7 +52,6 @@ public class Client {
                 while (true) {
                     try {
                         // read the message sent to this client
-                        //String msg = dis.readUTF();
                         Message msg = (Message) objectInput.readObject();
                         System.out.println(msg.getMsg());
                         }
