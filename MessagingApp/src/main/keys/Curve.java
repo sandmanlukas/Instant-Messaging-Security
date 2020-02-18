@@ -71,7 +71,6 @@ public class Curve {
     }
 */
     public Pair<ArrayList<byte []>, ArrayList<byte []>> generateEphemeralKeys() {
-        //Curve25519 curve = Curve25519.getInstance(Curve25519.BEST);
         ArrayList<byte[]> ephemeralPrivateKeys = new ArrayList<byte[]>();
         ArrayList<byte []> ephemeralPublicKeys = new ArrayList<byte[]>();
         for (int i = 0; i < NUMBER_OF_EPHEMERAL_KEYS; i++) {
@@ -88,7 +87,6 @@ public class Curve {
      */
 
     public preKeyBundle generatePreKeyBundle() {
-        //Curve25519 curve = Curve25519.getInstance(Curve25519.BEST);
         Curve25519KeyPair identityKeyPair = curve.generateKeyPair();
         Curve25519KeyPair preKeyPair = curve.generateKeyPair();
 
@@ -102,7 +100,7 @@ public class Curve {
         preKeyBundlePrivate privateKeys = new preKeyBundlePrivate(identityKeyPair.getPrivateKey(),
                 preKeyPair.getPrivateKey(), ephemeralPair.first());
         preKeyBundlePublic publicKeys = new preKeyBundlePublic(identityKeyPair.getPublicKey(),
-                signedPublicPreKey, preKeyPair.getPublicKey(), ephemeralPair.second());
+                 preKeyPair.getPublicKey(),signedPublicPreKey, ephemeralPair.second());
         return new preKeyBundle(privateKeys, publicKeys);
     }
 
@@ -128,19 +126,28 @@ public class Curve {
 
         return agreement;
     }
-    public void initBob (byte [] ephemeralAlice, byte [] ratchetAlice, ArrayList<byte []> preKeysAlice, preKeyBundlePrivate ours, preKeyBundlePublic bundleAlice){
+    public void initBob (byte [] ephemeralAlice, byte [] ratchetAlice, preKeyBundlePrivate ours, preKeyBundlePublic bundleAlice){
         byte [] info = new byte [0];
 
-        byte [] p1 = calculateAgreement(ours.getPrivatePreKey(), bundleAlice.getPublicIdentityKey());
-        byte [] p2 = calculateAgreement(ephemeralAlice, ours.getPrivateIdentityKey());
-        byte [] p3 = calculateAgreement(ephemeralAlice, ours.getPrivatePreKey());
-        byte [] p4 = calculateAgreement(ephemeralAlice, preKeysAlice.get(0));
+        /*
+        byte [] p1 = curve.calculateAgreement(ours.getPrivatePreKey(), bundleAlice.getPublicIdentityKey());
+        byte [] p2 = curve.calculateAgreement(ours.getPrivateIdentityKey(), ephemeralAlice);
+        byte [] p3 = curve.calculateAgreement(ours.getPrivatePreKey(), ephemeralAlice);
+        byte [] p4 = curve.calculateAgreement(ours.getPrivateOneTimePreKey(0), ephemeralAlice);
+        */
+
+        byte [] p1 = curve.calculateAgreement(bundleAlice.getPublicIdentityKey(), ours.getPrivatePreKey());
+        byte [] p2 = curve.calculateAgreement(ephemeralAlice, ours.getPrivateIdentityKey());
+        byte [] p3 = curve.calculateAgreement(ephemeralAlice, ours.getPrivatePreKey());
+        byte [] p4 = curve.calculateAgreement(ephemeralAlice, ours.getPrivateOneTimePreKey(0));
+
         byte [] result = Bytes.concat(p1, p2, p3, p4);
 
         byte [] secret = kdf.deriveSecrets(result, info, 64);
 
         DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secret);
         byte [] root1 = rootSecrets.getRootKey();
+        byte [] chainTest = rootSecrets.getChainKey();
 
         byte [] p5 = calculateAgreement(ours.getPrivatePreKey(), ratchetAlice);
         byte [] result2 = Bytes.concat(p5, root1);
@@ -158,6 +165,10 @@ public class Curve {
         byte [] message = rootSecrets3.getRootKey();
         byte [] realChain = rootSecrets3.getChainKey();
 
+        //System.out.println("Message key Bob: " + Arrays.toString(message));
+        //System.out.println("Chain key Bob: " + Arrays.toString(realChain));
+        System.out.println("Secret Bob: " + Arrays.toString(secret));
+
 
 
     }
@@ -166,21 +177,34 @@ public class Curve {
 
     public Triple<byte [], byte [], ArrayList<byte []>> initAlice(preKeyBundlePrivate ours, preKeyBundlePublic theirs){
         byte [] info = new byte [0];
+
         Curve25519KeyPair ephemeralKeyPair = curve.generateKeyPair();
         Curve25519KeyPair ratchetKeyPair = curve.generateKeyPair();
 
         byte [] ephemeralPrivate = ephemeralKeyPair.getPrivateKey();
 
-        byte[] p1 = calculateAgreement(ours.getPrivateIdentityKey(), theirs.getPublicPreKey());
-        byte[] p2 = calculateAgreement(ephemeralPrivate, theirs.getPublicIdentityKey());
-        byte[] p3 = calculateAgreement(ephemeralPrivate, theirs.getPublicPreKey());
-        byte[] p4 = calculateAgreement(ephemeralPrivate, theirs.getPublicOneTimePreKey(0));
+
+
+        /*
+        byte[] p1 = curve.calculateAgreement(ours.getPrivateIdentityKey(), theirs.getPublicPreKey());
+        byte[] p2 = curve.calculateAgreement(ephemeralPrivate, theirs.getPublicIdentityKey());
+        byte[] p3 = curve.calculateAgreement(ephemeralPrivate, theirs.getPublicPreKey());
+        byte[] p4 = curve.calculateAgreement(ephemeralPrivate, theirs.getPublicOneTimePreKey(0));
+        */
+        byte[] p1 = curve.calculateAgreement(theirs.getPublicPreKey(), ours.getPrivateIdentityKey());
+        byte[] p2 = curve.calculateAgreement(theirs.getPublicIdentityKey(), ephemeralPrivate);
+        byte[] p3 = curve.calculateAgreement(theirs.getPublicPreKey(), ephemeralPrivate);
+        byte[] p4 = curve.calculateAgreement(theirs.getPublicOneTimePreKey(0), ephemeralPrivate);
 
         byte [] result = Bytes.concat(p1,p2,p3,p4);
         byte [] secret = kdf.deriveSecrets(result,info, 64 );
 
         DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secret);
         byte [] root1 = rootSecrets.getRootKey();
+        byte [] chainTest = rootSecrets.getChainKey();
+        /*
+        byte [] p5 = calculateAgreement(ratchetKeyPair.getPrivateKey(), theirs.getPublicPreKey());
+        */
         byte [] p5 = calculateAgreement(ratchetKeyPair.getPrivateKey(), theirs.getPublicPreKey());
         byte [] result2 = Bytes.concat(p5, root1);
         byte [] secret2 = kdf.deriveSecrets(result2, info, 64);
@@ -197,6 +221,10 @@ public class Curve {
         theirs.removePublicOneTimePreKey(0);
         byte [] ephemeralPublic = ephemeralKeyPair.getPublicKey();
         byte [] ratchetPublic = ratchetKeyPair.getPublicKey();
+
+        //System.out.println("Message key Alice: " + Arrays.toString(message));
+        //System.out.println("Chain key Alice: " + Arrays.toString(realChain));
+        System.out.println("Secret Alice: " + Arrays.toString(secret));
 
         return new MutableTriple<byte [], byte[], ArrayList<byte[]>>(ephemeralPublic, ratchetPublic, theirs.getPublicOneTimePreKeys());
 
@@ -216,7 +244,14 @@ public class Curve {
         preKeyBundle preKeysAlice = curveClass.generatePreKeyBundle();
         preKeyBundle preKeysBob = curveClass.generatePreKeyBundle();
 
-        Triple<byte [], byte [], ArrayList<byte []>> initiation = curveClass.initAlice(preKeysAlice.getPrivateKeys(), preKeysBob.getPublicKeys());
+        Triple<byte [], byte [], ArrayList<byte []>> initAlice = curveClass.initAlice(preKeysAlice.getPrivateKeys(), preKeysBob.getPublicKeys());
+
+        byte [] ephemeralAlice = initAlice.getLeft();
+        byte [] ratchetAlice = initAlice.getMiddle();
+        ArrayList<byte []> newPreKeysAlice = initAlice.getRight();
+
+        curveClass.initBob(ephemeralAlice, ratchetAlice, preKeysBob.getPrivateKeys(), preKeysAlice.getPublicKeys());
+
 
     }
 }
