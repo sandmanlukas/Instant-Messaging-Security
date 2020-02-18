@@ -1,5 +1,6 @@
 
 
+import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import org.apache.commons.lang3.tuple.MutableTriple;
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
@@ -17,6 +18,10 @@ import org.whispersystems.libsignal.util.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 
 
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,13 +134,6 @@ public class Curve {
     public void initBob (byte [] ephemeralAlice, byte [] ratchetAlice, preKeyBundlePrivate ours, preKeyBundlePublic bundleAlice){
         byte [] info = new byte [0];
 
-        /*
-        byte [] p1 = curve.calculateAgreement(ours.getPrivatePreKey(), bundleAlice.getPublicIdentityKey());
-        byte [] p2 = curve.calculateAgreement(ours.getPrivateIdentityKey(), ephemeralAlice);
-        byte [] p3 = curve.calculateAgreement(ours.getPrivatePreKey(), ephemeralAlice);
-        byte [] p4 = curve.calculateAgreement(ours.getPrivateOneTimePreKey(0), ephemeralAlice);
-        */
-
         byte [] p1 = curve.calculateAgreement(bundleAlice.getPublicIdentityKey(), ours.getPrivatePreKey());
         byte [] p2 = curve.calculateAgreement(ephemeralAlice, ours.getPrivateIdentityKey());
         byte [] p3 = curve.calculateAgreement(ephemeralAlice, ours.getPrivatePreKey());
@@ -149,7 +147,8 @@ public class Curve {
         byte [] root1 = rootSecrets.getRootKey();
         byte [] chainTest = rootSecrets.getChainKey();
 
-        byte [] p5 = calculateAgreement(ours.getPrivatePreKey(), ratchetAlice);
+        byte [] p5 = curve.calculateAgreement(ratchetAlice, ours.getPrivatePreKey());
+
         byte [] result2 = Bytes.concat(p5, root1);
 
         byte [] secret2 = kdf.deriveSecrets(result2, info, 64);
@@ -165,11 +164,6 @@ public class Curve {
         byte [] message = rootSecrets3.getRootKey();
         byte [] realChain = rootSecrets3.getChainKey();
 
-        //System.out.println("Message key Bob: " + Arrays.toString(message));
-        //System.out.println("Chain key Bob: " + Arrays.toString(realChain));
-        System.out.println("Secret Bob: " + Arrays.toString(secret));
-
-
 
     }
 
@@ -183,14 +177,6 @@ public class Curve {
 
         byte [] ephemeralPrivate = ephemeralKeyPair.getPrivateKey();
 
-
-
-        /*
-        byte[] p1 = curve.calculateAgreement(ours.getPrivateIdentityKey(), theirs.getPublicPreKey());
-        byte[] p2 = curve.calculateAgreement(ephemeralPrivate, theirs.getPublicIdentityKey());
-        byte[] p3 = curve.calculateAgreement(ephemeralPrivate, theirs.getPublicPreKey());
-        byte[] p4 = curve.calculateAgreement(ephemeralPrivate, theirs.getPublicOneTimePreKey(0));
-        */
         byte[] p1 = curve.calculateAgreement(theirs.getPublicPreKey(), ours.getPrivateIdentityKey());
         byte[] p2 = curve.calculateAgreement(theirs.getPublicIdentityKey(), ephemeralPrivate);
         byte[] p3 = curve.calculateAgreement(theirs.getPublicPreKey(), ephemeralPrivate);
@@ -202,13 +188,11 @@ public class Curve {
         DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secret);
         byte [] root1 = rootSecrets.getRootKey();
         byte [] chainTest = rootSecrets.getChainKey();
-        /*
-        byte [] p5 = calculateAgreement(ratchetKeyPair.getPrivateKey(), theirs.getPublicPreKey());
-        */
-        byte [] p5 = calculateAgreement(ratchetKeyPair.getPrivateKey(), theirs.getPublicPreKey());
-        byte [] result2 = Bytes.concat(p5, root1);
-        byte [] secret2 = kdf.deriveSecrets(result2, info, 64);
 
+        byte [] p5 = curve.calculateAgreement(theirs.getPublicPreKey(), ratchetKeyPair.getPrivateKey());
+        byte [] result2 = Bytes.concat(p5, root1);
+
+        byte [] secret2 = kdf.deriveSecrets(result2, info, 64);
         DerivedRootSecrets rootSecrets2 = new DerivedRootSecrets(secret2);
         byte [] chain = rootSecrets2.getChainKey();
         byte [] secret3 = kdf.deriveSecrets(chain, info, 64);
@@ -222,12 +206,24 @@ public class Curve {
         byte [] ephemeralPublic = ephemeralKeyPair.getPublicKey();
         byte [] ratchetPublic = ratchetKeyPair.getPublicKey();
 
-        //System.out.println("Message key Alice: " + Arrays.toString(message));
-        //System.out.println("Chain key Alice: " + Arrays.toString(realChain));
-        System.out.println("Secret Alice: " + Arrays.toString(secret));
-
         return new MutableTriple<byte [], byte[], ArrayList<byte[]>>(ephemeralPublic, ratchetPublic, theirs.getPublicOneTimePreKeys());
+    }
+    public static String encrypt (String stringToEncrypt, byte [] secret){
+        try {
+            Curve curveClass = new Curve();
+            byte [] srandom = curveClass.getRandom(32);
+            IvParameterSpec iv = new IvParameterSpec(srandom);
+            SecretKeySpec skeyspec = new SecretKeySpec(secret, "AES");
 
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+            cipher.init(Cipher.ENCRYPT_MODE, skeyspec, iv);
+            byte [] encrypted = cipher.doFinal(stringToEncrypt.getBytes());
+            return Base64.encode(encrypted);
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
+
+        return  null;
     }
 
     public static void main(String[] args) {
@@ -251,6 +247,10 @@ public class Curve {
         ArrayList<byte []> newPreKeysAlice = initAlice.getRight();
 
         curveClass.initBob(ephemeralAlice, ratchetAlice, preKeysBob.getPrivateKeys(), preKeysAlice.getPublicKeys());
+
+
+
+
 
 
     }
