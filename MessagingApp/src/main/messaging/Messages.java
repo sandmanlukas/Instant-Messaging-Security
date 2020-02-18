@@ -32,9 +32,9 @@ public class Messages {
 
         Pair<byte[], IvParameterSpec> encrypt = AES_encryption.encrypt(msg, message);
         assert encrypt != null;
-        return new MutableTriple<byte[], byte[], IvParameterSpec>(bobRatchet.getPublicKey(), encrypt.first(), encrypt.second());
+        return new MutableTriple<>(bobRatchet.getPublicKey(), encrypt.first(), encrypt.second());
     }
-    public static Triple<String, byte[], byte[]> recieveMsg(byte[] alicePrivateRatchet, byte[] bobPublicRatchet, byte[] aliceRoot, byte[]encryptMsg, IvParameterSpec iv){
+    public static Triple<String, byte[], byte[]> receiveMsg(byte[] alicePrivateRatchet, byte[] bobPublicRatchet, byte[] aliceRoot, byte[]encryptMsg, IvParameterSpec iv){
         byte[] p1 = curve.calculateAgreement(bobPublicRatchet, alicePrivateRatchet);
         byte[] info = new byte[0];
 
@@ -50,7 +50,7 @@ public class Messages {
 
         String msg = AES_encryption.decrypt(encryptMsg, message, iv);
 
-        return new MutableTriple<String, byte[], byte[]>(msg, temp, bobPublicRatchet);
+        return new MutableTriple<>(msg, temp, bobPublicRatchet);
 
     }
 

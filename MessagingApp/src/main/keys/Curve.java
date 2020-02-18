@@ -6,6 +6,7 @@ import org.whispersystems.curve25519.java.curve_sigs;
 
 import org.whispersystems.libsignal.util.Pair;
 
+import javax.crypto.spec.IvParameterSpec;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 
@@ -26,10 +27,10 @@ public class Curve {
         byte[] ephemeralAlice = initAlice.getLeft();
         byte[] ratchetAlice = initAlice.getMiddle();
 
-        Pair<byte[], byte[] keys = init.initBob(ephemeralAlice, ratchetAlice, preKeysBob.getPrivateKeys(), preKeysAlice.getPublicKeys());
+        Pair<byte[], byte[]> keys = Initialization.initBob(ephemeralAlice, ratchetAlice, preKeysBob.getPrivateKeys(), preKeysAlice.getPublicKeys());
 
         Triple<byte[], byte[], IvParameterSpec> triple =  Messages.sendMsg(keys.first(), keys.second(), "hej");
-        Messages.recieveMsg()
+        //Messages.receiveMsg(); TODO: fix receive
 
 
 
@@ -54,7 +55,7 @@ public class Curve {
             ephemeralPrivateKeys.add(ephemeralKeys.getPrivateKey());
             ephemeralPublicKeys.add(ephemeralKeys.getPublicKey());
         }
-        return new Pair<ArrayList<byte[]>, ArrayList<byte[]>>(ephemeralPrivateKeys, ephemeralPublicKeys);
+        return new Pair<>(ephemeralPrivateKeys, ephemeralPublicKeys);
     }
 
     /**
