@@ -11,6 +11,8 @@ public class Client {
         // getting localhost ip
         InetAddress ip = InetAddress.getByName("localhost");
 
+        System.out.println("Connecting to " + ip + " on port " + ServerPort);
+
         // establish the connection
         Socket s = new Socket(ip, ServerPort);
 
