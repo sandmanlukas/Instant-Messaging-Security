@@ -13,9 +13,10 @@ public class Messages {
     static final HKDF kdf = HKDF.createFor(3);
 
 
-    public static Triple<byte[], byte[], IvParameterSpec> sendMsg(byte[] alicePublicRatchet, byte[] bobRoot, String msg) {
+    public static Triple<byte[], byte[], IvParameterSpec> sendMsg(byte[] alicePublicRatchet, byte[] bobRoot, String msg, Session session) {
         Curve25519KeyPair bobRatchet = curve.generateKeyPair();
         byte[] info = new byte[0];
+        session.setRatchetKeyAlice(bobRatchet);
 
         byte[] p1 = curve.calculateAgreement(alicePublicRatchet, bobRatchet.getPrivateKey());
 
@@ -23,6 +24,8 @@ public class Messages {
         DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secrets);
         byte[] temp = rootSecrets.getRootKey();
         byte[] chain = rootSecrets.getChainKey();
+
+        session.setTempKeyAlice(temp);
 
         byte[] secrets2 = kdf.deriveSecrets(chain, info, 0);
         DerivedRootSecrets rootSecrets2 = new DerivedRootSecrets(secrets2);
