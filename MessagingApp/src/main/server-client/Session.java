@@ -6,21 +6,21 @@ public class Session {
 
     private preKeyBundle aliceBundle;
     private preKeyBundlePublic bobBundle;
-    Curve25519KeyPair ratchetKeyAlice;
+    private Curve25519KeyPair ratchetKeyAlice;
+    private byte [] macKey = new byte [8];
     byte[] ratchetKeyBobPublic;
     byte[] rootKeyAlice;
     byte[] tempKeyAlice;
 
-    Session(String alice, String bob){
+    Session(String alice, String bob) {
         this.alice = alice;
         this.bob = bob;
     }
 
+
     Session(String alice, String bob, preKeyBundle aliceBundle, preKeyBundlePublic bobBundle) {
         this.alice = alice;
         this.bob = bob;
-        aliceBundle = aliceBundle;
-        bobBundle = bobBundle;
         ratchetKeyAlice = null;
         ratchetKeyBobPublic = null;
         rootKeyAlice = null;
@@ -55,9 +55,11 @@ public class Session {
         return rootKeyAlice;
     }
 
-     public byte[] getTempKeyAlice() {
+    public byte[] getTempKeyAlice() {
         return tempKeyAlice;
     }
+
+    public byte [] getMacKey(){ return macKey;}
 
     public void setAliceBundle(preKeyBundle aliceBundle) {
         this.aliceBundle = aliceBundle;
@@ -83,4 +85,5 @@ public class Session {
         this.tempKeyAlice = tempKeyAlice;
     }
 
+    public void  setMacKey(byte [] macKey){this.macKey = macKey;}
 }

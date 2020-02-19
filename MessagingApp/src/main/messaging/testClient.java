@@ -6,7 +6,7 @@ public class testClient {
 
     private final String username;
     private final int ip;
-    private HashMap<String, Session> map;
+    private final HashMap<String, Session> map;
 
     testClient(String username, int ip) {
         this.username = username;

@@ -5,7 +5,9 @@ import javax.crypto.Cipher;
 import javax.crypto.Mac;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 public class AES_encryption {
     private final SecretKeySpec   cipherKey;
@@ -25,7 +27,7 @@ public class AES_encryption {
     }
 
 
-    public static Pair<byte[], IvParameterSpec> encrypt (String stringToEncrypt, byte [] secret){
+    public static Pair<byte[], IvParameterSpec> encrypt (String stringToEncrypt, byte [] secret, Session session){
         try {
             Curve curveClass = new Curve();
             byte[] srandom = curveClass.getRandom(16);
@@ -36,6 +38,7 @@ public class AES_encryption {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.ENCRYPT_MODE, skeyspec, iv);
             byte[] encrypted = cipher.doFinal(stringToEncrypt.getBytes());
+            getMac(skeyspec.getEncoded(),session.getAliceBundle().getPublicKeys().getPublicIdentityKey(), session.getBobBundle().getPublicIdentityKey(), encrypted, session);
             return new Pair<>(encrypted, iv);
         } catch(Exception ex) {
             ex.printStackTrace();
@@ -43,8 +46,9 @@ public class AES_encryption {
         return null;
     }
 
-    public static String decrypt(byte[] encrypt, byte[] secret, IvParameterSpec iv) {
+    public static String decrypt(byte[] encrypt, byte[] secret, IvParameterSpec iv, Session session) {
         try {
+            verifyMac(session.getMacKey(),session);
             SecretKeySpec skeyspec = new SecretKeySpec(secret, "AES");
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.DECRYPT_MODE, skeyspec, iv);
@@ -56,29 +60,46 @@ public class AES_encryption {
         return null;
     }
 
-    public static byte[] getMac(byte [] secret,
+    public static void getMac(byte [] secret,
                           byte [] receiverIdentityPublic,
-                          byte [] senderIdentityPublic)
+                          byte [] senderIdentityPublic,
+                          byte [] message, Session session)
     {
         try {
             Mac mac = Mac.getInstance("HmacSHA256");
             SecretKeySpec keySpec = new SecretKeySpec(secret, "HMAC256");
             mac.init(keySpec);
             mac.update(receiverIdentityPublic);
-            byte [] fullMac = mac.doFinal(senderIdentityPublic);
+            mac.update(senderIdentityPublic);
+            byte [] fullMac = mac.doFinal(message);
+            session.setMacKey(fullMac);
+            System.out.println("Mac in getMac: " + Arrays.toString(session.getMacKey()));
 
 
-            return ByteUtil.trim(fullMac, MAC_LENGTH);
+            session.setMacKey(ByteUtil.trim(fullMac, MAC_LENGTH));
+
         } catch (NoSuchAlgorithmException | java.security.InvalidKeyException e) {
             throw new AssertionError(e);
         }
     }
 
-    public static void verifyMac(byte [] receiverIdentity, byte [] senderIdentity, byte [] mac)
+    public static void verifyMac(
+                                 byte [] mac,
+                                 Session session
+                                 )
             throws InvalidMessageException
     {
         byte [][] parts = ByteUtil.split(mac, mac.length-MAC_LENGTH, MAC_LENGTH);
-       // byte [] ourMac = getMac(senderIdentity, )
+        byte [] ourMac = session.getMacKey();
+        byte [] theirMac = parts[1];
+        System.out.println("Mac: " + Arrays.toString(ourMac));
+        System.out.println("TheirMac: " + Arrays.toString(theirMac));
+
+
+
+        if (!MessageDigest.isEqual(ourMac, theirMac)) {
+            throw new InvalidMessageException("Bad Mac!");
+        }
 
     }
 

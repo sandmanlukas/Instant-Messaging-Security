@@ -20,7 +20,7 @@ public class Server
         Socket s; 
           
         // running infinite loop for getting 
-        // client request 
+        // client request
         while (true)
         {
             try {
@@ -59,7 +59,7 @@ public class Server
                 e.printStackTrace();
             }
   
-        } 
+        }
     } 
 } 
   

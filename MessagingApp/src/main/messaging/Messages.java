@@ -36,7 +36,7 @@ public class Messages {
         //perform encryption
         Pair <byte [], byte []> secretPair = generateSecretSend(session);
         byte [] message = secretPair.first();
-        Pair<byte[], IvParameterSpec> encrypt = AES_encryption.encrypt(msg, message);
+        Pair<byte[], IvParameterSpec> encrypt = AES_encryption.encrypt(msg, message, session);
         assert encrypt != null;
         /*
         //equip keys to session
@@ -77,7 +77,7 @@ public class Messages {
 
 
          */
-        return AES_encryption.decrypt(encryptMsg, message, iv);
+        return AES_encryption.decrypt(encryptMsg, message, iv, session);
 
     }
 

@@ -46,17 +46,17 @@ public class Curve {
 
 
         byte [] sender = session1.getAliceBundle().getPublicKeys().getPublicIdentityKey();
-        byte [] receiever = session2.ratchetKeyBobPublic;
+        byte [] receiver = session2.ratchetKeyBobPublic;
         byte [] sendSecret = (byte[]) Messages.generateSecretSend(session1).first();
         System.out.println("SecretSecret: " + Arrays.toString(sendSecret));
 
         byte [] receiveSecret = (byte[]) Messages.generateSecretSend(session1).first();
 
-       byte [] mac1 = AES_encryption.getMac(sendSecret, receiever, sender);
-       byte [] mac2 = AES_encryption.getMac(sendSecret, sender, receiever);
+       //byte [] mac1 = AES_encryption.getMac(sendSecret, receiver, sender);
+       //byte [] mac2 = AES_encryption.getMac(sendSecret, sender, receiver);
 
-        System.out.println("Mac1: " + Arrays.toString(mac1));
-        System.out.println("Mac2: " + Arrays.toString(mac2));
+        //System.out.println("Mac1: " + Arrays.toString(mac1));
+        //System.out.println("Mac2: " + Arrays.toString(mac2));
 
 
 
