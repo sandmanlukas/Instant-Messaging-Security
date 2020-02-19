@@ -9,6 +9,7 @@ import org.whispersystems.libsignal.util.Pair;
 import javax.crypto.spec.IvParameterSpec;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Curve {
 
@@ -17,7 +18,6 @@ public class Curve {
     final static Curve25519 curve = Curve25519.getInstance(Curve25519.BEST);
 
     public static void main(String[] args) {
-        Curve curveClass = new Curve();
 
         Session session1 = Initialization.init1("Alice", "Bob");
         Session session2 = Initialization.init1("Bob", "Alice");
@@ -43,6 +43,20 @@ public class Curve {
         msgRe = Messages.receiveMsg(msg.left, msg.middle, msg.right, session2);
 
         System.out.println(msgRe);
+
+
+        byte [] sender = session1.getAliceBundle().getPublicKeys().getPublicIdentityKey();
+        byte [] receiever = session2.ratchetKeyBobPublic;
+        byte [] sendSecret = (byte[]) Messages.generateSecretSend(session1).first();
+        System.out.println("SecretSecret: " + Arrays.toString(sendSecret));
+
+        byte [] receiveSecret = (byte[]) Messages.generateSecretSend(session1).first();
+
+       byte [] mac1 = AES_encryption.getMac(sendSecret, receiever, sender);
+       byte [] mac2 = AES_encryption.getMac(sendSecret, sender, receiever);
+
+        System.out.println("Mac1: " + Arrays.toString(mac1));
+        System.out.println("Mac2: " + Arrays.toString(mac2));
 
 
 

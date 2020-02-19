@@ -1,12 +1,17 @@
+import org.whispersystems.libsignal.InvalidMessageException;
+import org.whispersystems.libsignal.util.ByteUtil;
 import org.whispersystems.libsignal.util.Pair;
 import javax.crypto.Cipher;
+import javax.crypto.Mac;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.security.NoSuchAlgorithmException;
 
 public class AES_encryption {
     private final SecretKeySpec   cipherKey;
     private final SecretKeySpec   macKey;
     private final IvParameterSpec iv;
+    private static final int MAC_LENGTH = 8;
     private final byte [] senderIdentity;
     private final byte [] receiverIdentity;
 
@@ -49,6 +54,32 @@ public class AES_encryption {
             ex.printStackTrace();
         }
         return null;
+    }
+
+    public static byte[] getMac(byte [] secret,
+                          byte [] receiverIdentityPublic,
+                          byte [] senderIdentityPublic)
+    {
+        try {
+            Mac mac = Mac.getInstance("HmacSHA256");
+            SecretKeySpec keySpec = new SecretKeySpec(secret, "HMAC256");
+            mac.init(keySpec);
+            mac.update(receiverIdentityPublic);
+            byte [] fullMac = mac.doFinal(senderIdentityPublic);
+
+
+            return ByteUtil.trim(fullMac, MAC_LENGTH);
+        } catch (NoSuchAlgorithmException | java.security.InvalidKeyException e) {
+            throw new AssertionError(e);
+        }
+    }
+
+    public static void verifyMac(byte [] receiverIdentity, byte [] senderIdentity, byte [] mac)
+            throws InvalidMessageException
+    {
+        byte [][] parts = ByteUtil.split(mac, mac.length-MAC_LENGTH, MAC_LENGTH);
+       // byte [] ourMac = getMac(senderIdentity, )
+
     }
 
     public SecretKeySpec getCipherKey() {

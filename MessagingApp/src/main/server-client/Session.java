@@ -82,4 +82,5 @@ public class Session {
     public void setTempKeyAlice(byte[] tempKeyAlice) {
         this.tempKeyAlice = tempKeyAlice;
     }
+
 }

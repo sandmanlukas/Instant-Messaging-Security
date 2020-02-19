@@ -27,7 +27,6 @@ public class testClient {
     }
 
     public Session getSession(String bob) {
-        Session session = map.get(bob);
-        return session;
+        return map.get(bob);
     }
 }

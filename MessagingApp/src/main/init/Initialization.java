@@ -28,7 +28,7 @@ public class Initialization {
         Curve25519KeyPair ratchetKeyPair = curve.generateKeyPair();
         byte[] ephemeralPrivate = ephemeralKeyPair.getPrivateKey();
 
-        //perform calculations and concatinate them
+        //perform calculations and concatenate them
         byte[] p1 = curve.calculateAgreement(theirs.getPublicPreKey(), session.getAliceBundle().getPrivateKeys().getPrivateIdentityKey());
         byte[] p2 = curve.calculateAgreement(theirs.getPublicIdentityKey(), ephemeralPrivate);
         byte[] p3 = curve.calculateAgreement(theirs.getPublicPreKey(), ephemeralPrivate);
@@ -41,7 +41,7 @@ public class Initialization {
         byte[] root1 = rootSecrets.getRootKey();
         byte[] chainTest = rootSecrets.getChainKey();
 
-        //perform calculations and concatinate them
+        //perform calculations and concatenate them
         byte[] p5 = curve.calculateAgreement(theirs.getPublicPreKey(), ratchetKeyPair.getPrivateKey());
         byte[] result2 = Bytes.concat(p5, root1);
 
@@ -67,25 +67,25 @@ public class Initialization {
         session.setRatchetKeyAlice(ratchetKeyPair);
         session.setRootKeyAlice(root2);
 
-        return new MutableTriple<byte[], byte[], ArrayList<byte[]>>(ephemeralPublic, ratchetPublic, theirs.getPublicOneTimePreKeys());
+        return new MutableTriple<>(ephemeralPublic, ratchetPublic, theirs.getPublicOneTimePreKeys());
     }
 
     public static void initBob(byte [] ephemeralAlice, byte [] ratchetAlice, preKeyBundlePublic bundleAlice, Session session){
 
-        //calculateAgreements and concatinate them
+        //calculateAgreements and concatenate them
         byte [] p1 = curve.calculateAgreement(bundleAlice.getPublicIdentityKey(), session.getAliceBundle().getPrivateKeys().getPrivatePreKey());
         byte [] p2 = curve.calculateAgreement(ephemeralAlice, session.getAliceBundle().getPrivateKeys().getPrivateIdentityKey());
         byte [] p3 = curve.calculateAgreement(ephemeralAlice, session.getAliceBundle().getPrivateKeys().getPrivatePreKey());
         byte [] p4 = curve.calculateAgreement(ephemeralAlice, session.getAliceBundle().getPrivateKeys().getPrivateOneTimePreKey(0));
         byte [] result = Bytes.concat(p1, p2, p3, p4);
 
-        //perform first HDKF
+        //perform first HKDF
         byte [] secret = kdf.deriveSecrets(result, info, 64);
         DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secret);
         byte [] root1 = rootSecrets.getRootKey();
         byte [] chainTest = rootSecrets.getChainKey();
 
-        //calculateAgreement and concatinate them
+        //calculateAgreement and concatenate them
         byte [] p5 = curve.calculateAgreement(ratchetAlice, session.getAliceBundle().getPrivateKeys().getPrivatePreKey());
         byte [] result2 = Bytes.concat(p5, root1);
 
