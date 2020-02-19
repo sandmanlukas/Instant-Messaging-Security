@@ -19,8 +19,8 @@ public class Curve {
     public static void main(String[] args) {
         Curve curveClass = new Curve();
 
-        Session session1 = Initialization.init1(1, 1, 2);
-        Session session2 = Initialization.init1(1, 2, 1);
+        Session session1 = Initialization.init1("Alice", "Bob");
+        Session session2 = Initialization.init1("Bob", "Alice");
 
         Triple<byte[], byte[], ArrayList<byte[]>> initAlice = Initialization.initAlice2(session1, session2.getAliceBundle().getPublicKeys());
 

@@ -1,9 +1,8 @@
 import org.whispersystems.curve25519.Curve25519KeyPair;
 
 public class Session {
-    private final int sessionID;
-    private final int aliceID;
-    private final int bobID;
+    private final String alice;
+    private final String bob;
 
     private preKeyBundle aliceBundle;
     private preKeyBundlePublic bobBundle;
@@ -12,34 +11,28 @@ public class Session {
     byte[] rootKeyAlice;
     byte[] tempKeyAlice;
 
-    Session(int sessionID, int aliceID, int bobID){
-        this.sessionID = sessionID;
-        this.aliceID = aliceID;
-        this.bobID = bobID;
+    Session(String alice, String bob){
+        this.alice = alice;
+        this.bob = bob;
     }
 
-    Session(int sessionID, int aliceID, int bobID, preKeyBundle alice, preKeyBundlePublic bob) {
-        this.sessionID = sessionID;
-        this.aliceID = aliceID;
-        this.bobID = bobID;
-        aliceBundle = alice;
-        bobBundle = bob;
+    Session(String alice, String bob, preKeyBundle aliceBundle, preKeyBundlePublic bobBundle) {
+        this.alice = alice;
+        this.bob = bob;
+        aliceBundle = aliceBundle;
+        bobBundle = bobBundle;
         ratchetKeyAlice = null;
         ratchetKeyBobPublic = null;
         rootKeyAlice = null;
         tempKeyAlice = null;
     }
 
-    public int getAliceID() {
-        return aliceID;
+    public String getAlice() {
+        return alice;
     }
 
-    public int getBobID() {
-        return bobID;
-    }
-
-    public int getSessionID() {
-        return sessionID;
+    public String getBob() {
+        return bob;
     }
 
     public preKeyBundle getAliceBundle() {
