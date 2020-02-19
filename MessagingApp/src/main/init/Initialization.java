@@ -5,7 +5,7 @@ import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
 import org.whispersystems.libsignal.kdf.DerivedRootSecrets;
 import org.whispersystems.libsignal.kdf.HKDF;
-import org.whispersystems.libsignal.util.Pair;
+
 import java.util.ArrayList;
 
 public class Initialization {
@@ -14,14 +14,14 @@ public class Initialization {
     static final HKDF kdf = HKDF.createFor(3);
     static final Curve curveClass = new Curve();
 
-    public static preKeyBundle init1(int id, int aliceID, int bobID) {
+    public static Session init1(int id, int aliceID, int bobID) {
         preKeyBundle result = curveClass.generatePreKeyBundle();
         Session session = new Session(id, aliceID, bobID);
         session.setAliceBundle(result);
-        return result;
+        return session;
     }
 
-    public static Triple<byte [], byte [], ArrayList<byte []>> initAlice2(preKeyBundlePrivate ours, preKeyBundlePublic theirs, Session session) {
+    public static Triple<byte [], byte [], ArrayList<byte []>> initAlice2(Session session, preKeyBundlePublic theirs) {
 
         //Generate keys for init
         Curve25519KeyPair ephemeralKeyPair = curve.generateKeyPair();
@@ -29,7 +29,7 @@ public class Initialization {
         byte[] ephemeralPrivate = ephemeralKeyPair.getPrivateKey();
 
         //perform calculations and concatinate them
-        byte[] p1 = curve.calculateAgreement(theirs.getPublicPreKey(), ours.getPrivateIdentityKey());
+        byte[] p1 = curve.calculateAgreement(theirs.getPublicPreKey(), session.getAliceBundle().getPrivateKeys().getPrivateIdentityKey());
         byte[] p2 = curve.calculateAgreement(theirs.getPublicIdentityKey(), ephemeralPrivate);
         byte[] p3 = curve.calculateAgreement(theirs.getPublicPreKey(), ephemeralPrivate);
         byte[] p4 = curve.calculateAgreement(theirs.getPublicOneTimePreKey(0), ephemeralPrivate);
@@ -70,30 +70,32 @@ public class Initialization {
         return new MutableTriple<byte[], byte[], ArrayList<byte[]>>(ephemeralPublic, ratchetPublic, theirs.getPublicOneTimePreKeys());
     }
 
-    public static Pair initBob(byte [] ephemeralAlice, byte [] ratchetAlice, preKeyBundlePrivate ours, preKeyBundlePublic bundleAlice, Session session){
+    public static void initBob(byte [] ephemeralAlice, byte [] ratchetAlice, preKeyBundlePublic bundleAlice, Session session){
 
-        byte [] p1 = curve.calculateAgreement(bundleAlice.getPublicIdentityKey(), ours.getPrivatePreKey());
-        byte [] p2 = curve.calculateAgreement(ephemeralAlice, ours.getPrivateIdentityKey());
-        byte [] p3 = curve.calculateAgreement(ephemeralAlice, ours.getPrivatePreKey());
-        byte [] p4 = curve.calculateAgreement(ephemeralAlice, ours.getPrivateOneTimePreKey(0));
-
+        //calculateAgreements and concatinate them
+        byte [] p1 = curve.calculateAgreement(bundleAlice.getPublicIdentityKey(), session.getAliceBundle().getPrivateKeys().getPrivatePreKey());
+        byte [] p2 = curve.calculateAgreement(ephemeralAlice, session.getAliceBundle().getPrivateKeys().getPrivateIdentityKey());
+        byte [] p3 = curve.calculateAgreement(ephemeralAlice, session.getAliceBundle().getPrivateKeys().getPrivatePreKey());
+        byte [] p4 = curve.calculateAgreement(ephemeralAlice, session.getAliceBundle().getPrivateKeys().getPrivateOneTimePreKey(0));
         byte [] result = Bytes.concat(p1, p2, p3, p4);
 
+        //perform first HDKF
         byte [] secret = kdf.deriveSecrets(result, info, 64);
-
         DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secret);
         byte [] root1 = rootSecrets.getRootKey();
         byte [] chainTest = rootSecrets.getChainKey();
 
-        byte [] p5 = curve.calculateAgreement(ratchetAlice, ours.getPrivatePreKey());
-
+        //calculateAgreement and concatinate them
+        byte [] p5 = curve.calculateAgreement(ratchetAlice, session.getAliceBundle().getPrivateKeys().getPrivatePreKey());
         byte [] result2 = Bytes.concat(p5, root1);
 
+        //perform second HKDF
         byte [] secret2 = kdf.deriveSecrets(result2, info, 64);
         DerivedRootSecrets rootSecrets2 = new DerivedRootSecrets(secret2);
         byte [] root2 = rootSecrets2.getRootKey();
-        session.setRootKeyAlice(root2);
         byte [] chain2 = rootSecrets2.getChainKey();
+
+        // perform third HKDF
         byte [] secret3 = kdf.deriveSecrets(chain2, info, 64);
         DerivedRootSecrets rootSecrets3 = new DerivedRootSecrets(secret3);
         byte [] message = rootSecrets3.getRootKey();
@@ -102,8 +104,9 @@ public class Initialization {
         //equip to session
         session.setBobBundle(bundleAlice);
         session.setRatchetKeyBobPublic(ratchetAlice);
+        session.setRootKeyAlice(root2);
 
-        return new Pair<byte [], byte []>(ratchetAlice, root2);
+        //return new Pair<byte [], byte []>(ratchetAlice, root2);
     }
 
 }

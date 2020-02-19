@@ -1,5 +1,4 @@
 import org.apache.commons.lang3.tuple.MutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
 import org.whispersystems.libsignal.kdf.DerivedRootSecrets;
@@ -13,35 +12,45 @@ public class Messages {
     static final HKDF kdf = HKDF.createFor(3);
 
 
-    public static Triple<byte[], byte[], IvParameterSpec> sendMsg(byte[] alicePublicRatchet, byte[] bobRoot, String msg, Session session) {
+    public static MutableTriple<byte[], byte[], IvParameterSpec> sendMsg(String msg, Session session) {
+
         Curve25519KeyPair bobRatchet = curve.generateKeyPair();
         byte[] info = new byte[0];
-        session.setRatchetKeyAlice(bobRatchet);
+        byte[] p1 = curve.calculateAgreement(session.getRatchetKeyBobPublic(), bobRatchet.getPrivateKey());
 
-        byte[] p1 = curve.calculateAgreement(alicePublicRatchet, bobRatchet.getPrivateKey());
-
-        byte[] secrets = kdf.deriveSecrets(bobRoot, p1, 64);
+        //perform first HKDF
+        byte[] secrets = kdf.deriveSecrets(session.getRootKeyAlice(), p1, 64);
         DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secrets);
         byte[] temp = rootSecrets.getRootKey();
         byte[] chain = rootSecrets.getChainKey();
 
-        session.setTempKeyAlice(temp);
-
-        byte[] secrets2 = kdf.deriveSecrets(chain, info, 0);
+        //perform second HKDF
+        byte[] secrets2 = kdf.deriveSecrets(chain, info, 64);
         DerivedRootSecrets rootSecrets2 = new DerivedRootSecrets(secrets2);
-
         byte[] message = rootSecrets2.getRootKey();
         byte[] finalChain = rootSecrets2.getChainKey();
 
+        for(int i = 0; i < message.length; i++) {
+            System.out.print(message[i]);
+        }
+        System.out.println();
+
+        //perform encryption
         Pair<byte[], IvParameterSpec> encrypt = AES_encryption.encrypt(msg, message);
         assert encrypt != null;
-        return new MutableTriple<>(bobRatchet.getPublicKey(), encrypt.first(), encrypt.second());
+
+        //equip keys to session
+        session.setRatchetKeyAlice(bobRatchet);
+        session.setTempKeyAlice(temp);
+
+        return new MutableTriple<byte[], byte[], IvParameterSpec>(bobRatchet.getPublicKey(), encrypt.first(), encrypt.second());
     }
-    public static Triple<String, byte[], byte[]> receiveMsg(byte[] alicePrivateRatchet, byte[] bobPublicRatchet, byte[] aliceRoot, byte[]encryptMsg, IvParameterSpec iv){
-        byte[] p1 = curve.calculateAgreement(bobPublicRatchet, alicePrivateRatchet);
+    public static String receiveMsg(byte[] ratchetBob, byte[]encryptMsg, IvParameterSpec iv, Session session){
+        session.setRatchetKeyBobPublic(ratchetBob);
+        byte[] p1 = curve.calculateAgreement(session.getRatchetKeyBobPublic(), session.getRatchetKeyAlice().getPrivateKey());
         byte[] info = new byte[0];
 
-        byte[] secrets = kdf.deriveSecrets(aliceRoot, p1, 64);
+        byte[] secrets = kdf.deriveSecrets(session.getRootKeyAlice(), p1, 64);
         DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secrets);
         byte[] temp = rootSecrets.getRootKey();
         byte[] chain = rootSecrets.getChainKey();
@@ -51,9 +60,16 @@ public class Messages {
         byte[] message = rootSecrets2.getRootKey();
         byte[] finalChain = rootSecrets2.getChainKey();
 
+        for(int i = 0; i < message.length; i++) {
+            System.out.print(message[i]);
+        }
+        System.out.println();
+
         String msg = AES_encryption.decrypt(encryptMsg, message, iv);
 
-        return new MutableTriple<>(msg, temp, bobPublicRatchet);
+        session.setTempKeyAlice(temp);
+
+        return msg;
 
     }
 

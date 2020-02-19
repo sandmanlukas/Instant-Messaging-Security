@@ -1,9 +1,9 @@
+import org.apache.commons.lang3.tuple.MutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
 import org.whispersystems.curve25519.JCESha512Provider;
 import org.whispersystems.curve25519.java.curve_sigs;
-
 import org.whispersystems.libsignal.util.Pair;
 
 import javax.crypto.spec.IvParameterSpec;
@@ -19,18 +19,31 @@ public class Curve {
     public static void main(String[] args) {
         Curve curveClass = new Curve();
 
-        preKeyBundle preKeysAlice = curveClass.generatePreKeyBundle();
-        preKeyBundle preKeysBob = curveClass.generatePreKeyBundle();
+        Session session1 = Initialization.init1(1, 1, 2);
+        Session session2 = Initialization.init1(1, 2, 1);
 
-        Triple<byte[], byte[], ArrayList<byte[]>> initAlice = Initialization.initAlice(preKeysAlice.getPrivateKeys(), preKeysBob.getPublicKeys());
+        Triple<byte[], byte[], ArrayList<byte[]>> initAlice = Initialization.initAlice2(session1, session2.getAliceBundle().getPublicKeys());
 
         byte[] ephemeralAlice = initAlice.getLeft();
         byte[] ratchetAlice = initAlice.getMiddle();
 
-        Pair<byte[], byte[]> keys = Initialization.initBob(ephemeralAlice, ratchetAlice, preKeysBob.getPrivateKeys(), preKeysAlice.getPublicKeys());
+        Initialization.initBob(ephemeralAlice, ratchetAlice, session1.getAliceBundle().getPublicKeys(), session2);
 
-        Triple<byte[], byte[], IvParameterSpec> triple =  Messages.sendMsg(keys.first(), keys.second(), "hej");
-        //Messages.receiveMsg(); TODO: fix receive
+        MutableTriple<byte[], byte[], IvParameterSpec> msg = Messages.sendMsg("hej", session2);
+        String msgRe = Messages.receiveMsg(msg.left, msg.middle, msg.right, session1);
+
+        System.out.println(msgRe);
+
+        msg = Messages.sendMsg("hej2", session2);
+        msgRe = Messages.receiveMsg(msg.left, msg.middle, msg.right, session1);
+
+        System.out.println(msgRe);
+
+        msg = Messages.sendMsg("hej3", session1);
+        msgRe = Messages.receiveMsg(msg.left, msg.middle, msg.right, session2);
+
+        System.out.println(msgRe);
+
 
 
 
