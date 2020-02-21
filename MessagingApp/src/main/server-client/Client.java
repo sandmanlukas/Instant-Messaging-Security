@@ -1,6 +1,6 @@
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class Client {
     final static int ServerPort = 1234;
@@ -9,9 +9,9 @@ public class Client {
         final Scanner scn = new Scanner(System.in);
         Curve curveClass = new Curve();
 
-        testClient client = new testClient("User1", curveClass.generatePreKeyBundle(), "localhost", 1234 );
+        testClient client = new testClient("User1", curveClass.generatePreKeyBundle(), "192.168.0.2", 1234 );
 
-        // getting localhost ip
+        /*// getting localhost ip
         InetAddress ip = client.getIp();
 
         System.out.println("Connecting to " + ip + " on port " + ServerPort);
@@ -20,7 +20,7 @@ public class Client {
         final String userName = scn.nextLine();
 
         // establish the connection
-        Socket s = client.getSocket();
+        Socket s = client.getSocket();*/
 
         client.initMessage();
 
