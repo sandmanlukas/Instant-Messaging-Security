@@ -14,6 +14,11 @@ public class Client {
         // getting localhost ip
         InetAddress ip = client.getIp();
 
+        System.out.println("Connecting to " + ip + " on port " + ServerPort);
+        System.out.println("Type in Username: ");
+
+        final String userName = scn.nextLine();
+
         // establish the connection
         Socket s = client.getSocket();
 
@@ -35,6 +40,19 @@ public class Client {
                     String msgToSend = st.nextToken();
                     String recipient = st.nextToken();
                     client.sendMessage(recipient, msgToSend);
+
+                    Message m = new Message(" ",recipient,"message",msgToSend);
+                    //Message m = new Message(userName, recipient, "message", msgToSend);
+
+                    try {
+                        // write on the output stream
+                        client.objectOutput.writeObject(m);
+                    }
+                    catch (Exception e) {
+
+                        e.printStackTrace();
+
+                    }
                 }
             }
         });
