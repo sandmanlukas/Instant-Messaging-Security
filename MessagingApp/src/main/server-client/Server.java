@@ -1,13 +1,14 @@
 import java.io.*;
-import java.util.*;
-import java.net.*;
+    import java.util.*;
+    import java.net.*;
 
 // Server class 
 public class Server {
 
     // Vector to store active clients
-    public static Vector<ClientHandler> ar = new Vector<>();
+    static Vector<ClientHandler> ar = new Vector<>();
 
+      
     // counter for clients 
     static int i = 0; 
   
@@ -34,7 +35,7 @@ public class Server {
             System.out.println("Creating a new handler for this client..."); 
   
             // Create a new handler object for handling this request. 
-            ClientHandler mtch = new ClientHandler(s,"client " + i, dis, dos);
+            ClientHandler mtch = new ClientHandler(s,"client " + i, dis, dos); 
   
             // Create a new Thread with this object. 
             Thread t = new Thread(mtch); 
@@ -54,12 +55,14 @@ public class Server {
   
         } 
     } 
-} 
+}
 
 // ClientHandler class
 class ClientHandler implements Runnable {
     Scanner scn = new Scanner(System.in);
     private String name;
+    // final DataInputStream dis;
+    // final DataOutputStream dos;
     ObjectOutputStream dos;
     ObjectInputStream dis;
     Socket s;
@@ -77,18 +80,12 @@ class ClientHandler implements Runnable {
     @Override
     public void run() {
 
-        testServer server = new testServer();
-
         // String received;
         while (true) {
             try {
                 // receive the object
                 Message msg = (Message) dis.readObject();
                 System.out.println(msg.getMsg());
-
-                if((msg.getType().equals("initMsg"))) {
-                    server.addClient(msg.getSnd(), (preKeyBundlePublic) msg.getMsg(), "donno");
-                }
 
                 // if(received.equals("logout")){
                 if ((msg.getType()).equals("logout")) {
@@ -126,3 +123,4 @@ class ClientHandler implements Runnable {
         }
     }
 }
+
