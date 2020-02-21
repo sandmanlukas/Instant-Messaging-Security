@@ -11,6 +11,11 @@ public class Client {
         // getting localhost ip
         InetAddress ip = InetAddress.getByName("localhost");
 
+        System.out.println("Connecting to " + ip + " on port " + ServerPort);
+        System.out.println("Type in Username: ");
+
+        final String userName = scn.nextLine();
+
         // establish the connection
         Socket s = new Socket(ip, ServerPort);
 
@@ -29,13 +34,21 @@ public class Client {
                     StringTokenizer st = new StringTokenizer(msg, "#");
                     String msgToSend = st.nextToken();
                     String recipient = st.nextToken();
+<<<<<<< HEAD
                     Message m = new Message(" ",recipient,"message",msgToSend);
+=======
+                    Message m = new Message(userName, recipient, "message", msgToSend);
+>>>>>>> sockets
 
                     try {
                         // write on the output stream
                         objectOutput.writeObject(m);
+<<<<<<< HEAD
                     }
                     catch (Exception e){
+=======
+                    } catch (Exception e) {
+>>>>>>> sockets
                         e.printStackTrace();
 
                     }
@@ -53,9 +66,8 @@ public class Client {
                     try {
                         // read the message sent to this client
                         Message msg = (Message) objectInput.readObject();
-                        System.out.println(msg.getMsg());
-                        }
-                    catch(Exception e) {
+                        System.out.println(msg.getSnd() + ": " + msg.getMsg());
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
