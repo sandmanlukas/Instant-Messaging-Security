@@ -7,17 +7,22 @@ public class Client {
 
     public static void main(String args[]) throws IOException, ClassNotFoundException {
         final Scanner scn = new Scanner(System.in);
+        Curve curveClass = new Curve();
+
+        testClient client = new testClient("User1", curveClass.generatePreKeyBundle(), "localhost", 1234 );
 
         // getting localhost ip
-        InetAddress ip = InetAddress.getByName("localhost");
+        InetAddress ip = client.getIp();
 
         // establish the connection
-        Socket s = new Socket(ip, ServerPort);
+        Socket s = client.getSocket();
+
+        client.initMessage();
 
         // obtaining input and out streams
 
-        ObjectOutputStream objectOutput = new ObjectOutputStream(s.getOutputStream());
-        ObjectInputStream objectInput = new ObjectInputStream(s.getInputStream());
+        //ObjectOutputStream objectOutput = new ObjectOutputStream(s.getOutputStream());
+        //ObjectInputStream objectInput = new ObjectInputStream(s.getInputStream());
         // sendMessage thread
         Thread sendMessage = new Thread(new Runnable() {
             @Override
@@ -29,17 +34,7 @@ public class Client {
                     StringTokenizer st = new StringTokenizer(msg, "#");
                     String msgToSend = st.nextToken();
                     String recipient = st.nextToken();
-                    Message m = new Message(" ",recipient,"message",msgToSend);
-
-                    try {
-                        // write on the output stream
-                        objectOutput.writeObject(m);
-                    }
-                    catch (Exception e){
-                        e.printStackTrace();
-
-                    }
-
+                    client.sendMessage(recipient, msgToSend);
                 }
             }
         });
@@ -52,7 +47,7 @@ public class Client {
                 while (true) {
                     try {
                         // read the message sent to this client
-                        Message msg = (Message) objectInput.readObject();
+                        Message msg = (Message) client.objectInput.readObject();
                         System.out.println(msg.getMsg());
                         }
                     catch(Exception e) {

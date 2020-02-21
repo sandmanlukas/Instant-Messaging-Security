@@ -8,7 +8,7 @@ public class Server
   
     // Vector to store active clients 
     static Vector<ClientHandler> ar = new Vector<>();
-      
+
     // counter for clients 
     static int i = 0; 
   
@@ -35,7 +35,7 @@ public class Server
             System.out.println("Creating a new handler for this client..."); 
   
             // Create a new handler object for handling this request. 
-            ClientHandler mtch = new ClientHandler(s,"client " + i, dis, dos); 
+            ClientHandler mtch = new ClientHandler(s,"client " + i, dis, dos);
   
             // Create a new Thread with this object. 
             Thread t = new Thread(mtch); 
@@ -80,8 +80,8 @@ class ClientHandler implements Runnable
     } 
   
     @Override
-    public void run() { 
-  
+    public void run() {
+        testServer server = new testServer();
         //String received;
         while (true)  
         { 
@@ -89,6 +89,9 @@ class ClientHandler implements Runnable
             { 
                 // receive the object
                 Message msg = (Message) dis.readObject();
+                if (msg.getType() == "initMsg") {
+                    server.addClient(msg.getSnd(), (preKeyBundlePublic) msg.getMsg(), "donno");
+                }
                 System.out.println(msg.getMsg());
                   
                 //if(received.equals("logout")){

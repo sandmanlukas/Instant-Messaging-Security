@@ -3,21 +3,20 @@ import java.util.HashMap;
 
 public class testServer {
 
-    private final int ip;
     private int activeUsers;
-    public HashMap<String, Pair<preKeyBundlePublic,Integer>> clients;
+    public HashMap<String, Pair<preKeyBundlePublic,String>> clients;
 
-    public testServer(int ip) {
-        this.ip = ip;
+    public testServer() {
         activeUsers = 0;
         HashMap<String, Pair<preKeyBundlePublic, Integer>> clients = new HashMap<>();
     }
 
-    public void addClient(String client, preKeyBundlePublic preKeys, int ip) {
+    public void addClient(String client, preKeyBundlePublic preKeys, String ip) {
         clients.put(client, new Pair(preKeys, ip));
+        activeUsers++;
     }
 
-    public Pair<preKeyBundlePublic, Integer> getClient(String client) {
+    public Pair<preKeyBundlePublic, String> getClient(String client) {
         return clients.get(client);
     }
 
