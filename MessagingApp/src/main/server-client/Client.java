@@ -12,12 +12,15 @@ public class Client {
         InetAddress ip = InetAddress.getByName("localhost");
 
         System.out.println("Connecting to " + ip + " on port " + ServerPort);
+        System.out.println("Type in Username: ");
+
+        final String userName = scn.nextLine();
 
         // establish the connection
         Socket s = new Socket(ip, ServerPort);
 
         // obtaining input and out streams
-        
+
         ObjectOutputStream objectOutput = new ObjectOutputStream(s.getOutputStream());
         ObjectInputStream objectInput = new ObjectInputStream(s.getInputStream());
         // sendMessage thread
@@ -28,20 +31,19 @@ public class Client {
 
                     // read the message to deliver.
                     String msg = scn.nextLine();
-                    StringTokenizer st = new StringTokenizer(msg, "#"); 
-                    String msgToSend = st.nextToken(); 
-                    String recipient = st.nextToken(); 
-                    Message m = new Message(" ",recipient,"message",msgToSend);
+                    StringTokenizer st = new StringTokenizer(msg, "#");
+                    String msgToSend = st.nextToken();
+                    String recipient = st.nextToken();
+                    Message m = new Message(userName, recipient, "message", msgToSend);
 
                     try {
                         // write on the output stream
                         objectOutput.writeObject(m);
-                    } 
-                    catch (Exception e){
-                        e.printStackTrace();             
+                    } catch (Exception e) {
+                        e.printStackTrace();
 
-                    } 
-                    
+                    }
+
                 }
             }
         });
@@ -55,9 +57,8 @@ public class Client {
                     try {
                         // read the message sent to this client
                         Message msg = (Message) objectInput.readObject();
-                        System.out.println(msg.getMsg());
-                        }
-                    catch(Exception e) {
+                        System.out.println(msg.getSnd() + ": " + msg.getMsg());
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
