@@ -1,6 +1,6 @@
-    import java.io.*; 
-    import java.util.*; 
-    import java.net.*; 
+    import java.io.*;
+    import java.util.*;
+    import java.net.*;
   
 // Server class 
 public class Server  
@@ -29,8 +29,8 @@ public class Server
             System.out.println("New client request received : " + s); 
               
             // obtain input and output streams 
-            ObjectInputStream dis = new ObjectInputStream(s.getInputStream()); 
-            ObjectOutputStream dos = new ObjectOutputStream(s.getOutputStream()); 
+            ObjectInputStream dis = new ObjectInputStream(s.getInputStream());
+            ObjectOutputStream dos = new ObjectOutputStream(s.getOutputStream());
               
             System.out.println("Creating a new handler for this client..."); 
   
@@ -62,8 +62,8 @@ class ClientHandler implements Runnable
 { 
     Scanner scn = new Scanner(System.in); 
     private String name; 
-    //final DataInputStream dis; 
-    //final DataOutputStream dos; 
+    //final DataInputStream dis;
+    //final DataOutputStream dos;
     ObjectOutputStream dos;
     ObjectInputStream dis;
     Socket s; 
@@ -71,7 +71,7 @@ class ClientHandler implements Runnable
       
     // constructor 
     public ClientHandler(Socket s, String name, 
-                            ObjectInputStream dis, ObjectOutputStream dos) { 
+                            ObjectInputStream dis, ObjectOutputStream dos) {
         this.dis = dis; 
         this.dos = dos; 
         this.name = name; 
@@ -82,14 +82,14 @@ class ClientHandler implements Runnable
     @Override
     public void run() { 
   
-        //String received; 
+        //String received;
         while (true)  
         { 
             try
             { 
                 // receive the object
-                Message msg = (Message) dis.readObject();  
-                System.out.println(msg.getMsg()); 
+                Message msg = (Message) dis.readObject();
+                System.out.println(msg.getMsg());
                   
                 //if(received.equals("logout")){
                 if((msg.getType()).equals("logout")) {
@@ -97,7 +97,7 @@ class ClientHandler implements Runnable
                     this.s.close(); 
                     break; 
                 } 
-                   
+
                 String recipient=msg.getRec();
   
                 // search for the recipient in the connected devices list. 
@@ -108,12 +108,12 @@ class ClientHandler implements Runnable
                     // output stream 
                     if (mc.name.equals(recipient) && mc.isloggedin)
                     { 
-                        
-                        mc.dos.writeObject(msg); 
+
+                        mc.dos.writeObject(msg);
                         break; 
                     } 
                 } 
-            } catch (Exception e) { 
+            } catch (Exception e) {
                   
                 e.printStackTrace(); 
             } 
