@@ -87,7 +87,7 @@ class ClientHandler implements Runnable {
                 System.out.println(msg.getMsg());
 
                 if((msg.getType().equals("initMsg"))) {
-                    server.addClient(msg.getSnd(), (preKeyBundlePublic) msg.getMsg(), "donno");
+                    server.addClient(msg.getSnd(), (preKeyBundlePublic) msg.getMsg());
                 }
 
                 // if(received.equals("logout")){
