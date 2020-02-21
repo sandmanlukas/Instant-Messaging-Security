@@ -19,8 +19,13 @@ public class Curve {
 
     public static void main(String[] args) {
 
-        Session session1 = Initialization.init1("Alice", "Bob");
-        Session session2 = Initialization.init1("Bob", "Alice");
+        Curve curveClass = new Curve();
+
+        preKeyBundle pk1 = curveClass.generatePreKeyBundle();
+        preKeyBundle pk2 = curveClass.generatePreKeyBundle();
+
+        Session session1 = Initialization.init1(pk1,"Alice", "Bob");
+        Session session2 = Initialization.init1(pk2,"Bob", "Alice");
 
         Triple<byte[], byte[], ArrayList<byte[]>> initAlice = Initialization.initAlice2(session1, session2.getAliceBundle().getPublicKeys());
 

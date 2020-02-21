@@ -14,10 +14,9 @@ public class Initialization {
     static final HKDF kdf = HKDF.createFor(3);
     static final Curve curveClass = new Curve();
 
-    public static Session init1(String alice, String bob) {
-        preKeyBundle result = curveClass.generatePreKeyBundle();
+    public static Session init1(preKeyBundle preKeys, String alice, String bob) {
         Session session = new Session(alice, bob);
-        session.setAliceBundle(result);
+        session.setAliceBundle(preKeys);
         return session;
     }
 
