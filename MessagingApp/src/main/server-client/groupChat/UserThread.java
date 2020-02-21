@@ -34,24 +34,21 @@ public class UserThread extends Thread {
             String clientMessage;
             do {
                 clientMessage = reader.readLine();
-                StringTokenizer st = new StringTokenizer(clientMessage, "#");
-                String msg = st.nextToken();
-                String recipients = st.nextToken();
+                String[] st = clientMessage.split("#");
+                String msg = st[0];
+                String tempRec = st[1];
+                String[] recipients = tempRec.split(" ");
 
-                // StringTokenizer recTokens = new StringTokenizer(recipients);
-                // while (recTokens.hasMoreTokens())
-                // try {
-                if (recipients.equals("All") || recipients.equals("all")) {
-                    serverMessage = "[" + userName + "]: " + msg;
-                    server.broadcast(serverMessage, this);
-                } else {
-                    serverMessage = "[" + userName + "]: " + msg;
-                    server.sendMessageTo(serverMessage, recipients);
-                }
-
-                // } catch (NoSuchElementException e) {
-                // System.out.println("Hej");
-                // }
+    
+                    for(int i = 0;i < recipients.length; i++){
+                        if (recipients[i].equals("All") || recipients[i].equals("all")) {
+                            serverMessage = "[" + userName + "]: " + msg;
+                            server.broadcast(serverMessage, this);
+                        } else {
+                            serverMessage = "[" + userName + "]: " + msg;
+                            server.sendMessageTo(serverMessage, recipients[i]);
+                        }
+                    }
 
             } while (!clientMessage.equals("bye"));
 
