@@ -1,6 +1,7 @@
-import java.net.*;
-import java.io.*;
-import java.util.*;
+
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class ChatClient {
 
@@ -13,7 +14,7 @@ public class ChatClient {
         this.port = port;
     }
 
-    public void execute() {
+    public void execute() throws IOException {
         try {
             Socket socket = new Socket(host, port);
             System.out.println("Connected to the server successfully");
@@ -24,6 +25,8 @@ public class ChatClient {
         } catch (IOException e) {
             System.out.println("I/O Error: " + e.getMessage());
         }
+        Curve curveClass = new Curve();
+        testClient tclient = new testClient(this.getUserName(), curveClass.generatePreKeyBundle());
 
     }
 
@@ -35,13 +38,11 @@ public class ChatClient {
         return this.userName;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         if (args.length < 2)
             return;
-
         String host = args[0];
         int port = Integer.parseInt(args[1]);
-
         ChatClient client = new ChatClient(host, port);
         client.execute();
     }

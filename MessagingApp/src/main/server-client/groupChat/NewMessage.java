@@ -1,4 +1,3 @@
-import java.io.*;
 
 /**
  * NewMessage
@@ -9,12 +8,12 @@ public class NewMessage implements java.io.Serializable {
 
     public String message;
 
-    public Message ( UserThread recipient, String message){
+    public NewMessage(UserThread recipient, String message){
 		this.recipient=recipient;
 		this.message=message;
 	}
 
-    public String getRec() {
+    public UserThread getRec() {
         return this.recipient;
     }
 

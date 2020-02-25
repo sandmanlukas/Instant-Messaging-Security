@@ -1,15 +1,20 @@
-import java.util.*;
-import java.net.*;
-import java.io.*;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ChatServer {
 
     private int port;
     private Set<String> userNames = new HashSet<String>();
     private Set<UserThread> userThreads = new HashSet<UserThread>();
+    public testServer server;
 
     public ChatServer(int port) {
         this.port = port;
+        server = new testServer();
     }
 
     public void execute() {

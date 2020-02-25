@@ -9,7 +9,7 @@ public class Client {
         final Scanner scn = new Scanner(System.in);
         Curve curveClass = new Curve();
 
-        testClient client = new testClient("User1", curveClass.generatePreKeyBundle(), "192.168.0.2", 1234 );
+        //testClient client = new testClient("User1", curveClass.generatePreKeyBundle(), "192.168.0.2", 1234 );
 
         /*// getting localhost ip
         InetAddress ip = client.getIp();
@@ -22,7 +22,7 @@ public class Client {
         // establish the connection
         Socket s = client.getSocket();*/
 
-        client.initMessage();
+        //client.initMessage();
 
         // obtaining input and out streams
 
@@ -39,14 +39,14 @@ public class Client {
                     StringTokenizer st = new StringTokenizer(msg, "#");
                     String msgToSend = st.nextToken();
                     String recipient = st.nextToken();
-                    client.sendMessage(recipient, msgToSend);
+                    //client.sendMessage(recipient, msgToSend);
 
                     Message m = new Message(" ",recipient,"message",msgToSend);
                     //Message m = new Message(userName, recipient, "message", msgToSend);
 
                     try {
                         // write on the output stream
-                        client.objectOutput.writeObject(m);
+                        //client.objectOutput.writeObject(m);
                     }
                     catch (Exception e) {
 
@@ -65,8 +65,8 @@ public class Client {
                 while (true) {
                     try {
                         // read the message sent to this client
-                        Message msg = (Message) client.objectInput.readObject();
-                        System.out.println(msg.getMsg());
+                        //Message msg = (Message) client.objectInput.readObject();
+                        //System.out.println(msg.getMsg());
                     }
                     catch(Exception e) {
                         e.printStackTrace();

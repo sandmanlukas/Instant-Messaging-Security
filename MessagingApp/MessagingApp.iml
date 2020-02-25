@@ -13,6 +13,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/kdf" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/encryption" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/messaging" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/server-client/groupChat" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
