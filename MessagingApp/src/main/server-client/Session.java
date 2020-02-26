@@ -25,8 +25,10 @@ public class Session {
     Session(String ours, String theirs, preKeyBundle ourBundle, preKeyBundlePublic theirBundle) {
         this.ours = ours;
         this.theirs = theirs;
-        ratchetKeyOurs = null;
-        ratchetKeyTheirPublic = null;
+        this.ourBundle = ourBundle;
+        this.theirBundle = theirBundle;
+        this.ratchetKeyOurs = null;
+        ratchetKeyTheirPublic = theirBundle.getPublicPreKey();
         rootKeyOurs = null;
         tempKeyOurs = null;
     }

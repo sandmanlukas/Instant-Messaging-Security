@@ -32,6 +32,7 @@ public class Messages {
     }
     public static Pair generateSecretSend(Session session){
         Curve25519KeyPair ourRatchet = curve.generateKeyPair();
+        System.out.println("RatchetKeyTheirPublic2: " + session.getRatchetKeyTheirPublic() + " session name: " + session.getOurs());
         byte [] p1 = curve.calculateAgreement(session.getRatchetKeyTheirPublic(), ourRatchet.getPrivateKey());
         byte [] message = generateSecret(session, p1);
         session.setRatchetKeyOurs(ourRatchet);

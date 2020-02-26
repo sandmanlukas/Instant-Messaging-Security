@@ -68,7 +68,7 @@ public class Initialization {
         return new MutableTriple<>(ephemeralPublic, ratchetPublic, theirs.getPublicOneTimePreKeys());
     }
 
-    public static void establishContact(byte [] ephemeralTheirs, byte [] ratchetTheirs, preKeyBundlePublic bundleTheirs,
+    public static Session establishContact(byte [] ephemeralTheirs, byte [] ratchetTheirs, preKeyBundlePublic bundleTheirs,
                                         String ours, String theirs, preKeyBundle ourBundle){
         Session session = new Session(ours, theirs, ourBundle, bundleTheirs);
         //calculateAgreements and concatenate them
@@ -80,6 +80,7 @@ public class Initialization {
 
         //perform first HKDF
         byte [] secret = kdf.deriveSecrets(result, info, 64);
+
         DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secret);
         byte [] root1 = rootSecrets.getRootKey();
         byte [] chainTest = rootSecrets.getChainKey();
@@ -103,9 +104,9 @@ public class Initialization {
         //equip to session
         session.setTheirBundle(bundleTheirs);
         session.setRatchetKeyTheirPublic(ratchetTheirs);
+        System.out.println("RatchetKeyTheirPublic: " + session.getRatchetKeyTheirPublic()+ " session name: " + session.getOurs());
         session.setRootKeyOurs(root2);
-
-        //return new Pair<byte [], byte []>(ratchetSender, root2);
+        return session;
     }
 
 }
