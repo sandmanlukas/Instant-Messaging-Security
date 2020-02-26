@@ -119,13 +119,16 @@ public class Client {
                                 ourKeys[0] = ourPublicIdentityKey;
                                 ourKeys[1] = ourPublicPreKey;
                                 ourKeys[2] = ourSignedPublicPreKey;
-
                                 for(int i = 0; i < ourBundle.getPublicOneTimePreKeys().size(); i++) {
                                     ourKeys[3 + i] = ourBundle.getPublicOneTimePreKey(i);
                                 }
-                                m = new Message(client.getUsername(), msg.getSnd(),"firstStep", "");
+                                byte[][][] result = new byte[2][][];
+                                result[0] = sendKeys;
+                                result[1] = ourKeys;
+                                m = new Message(client.getUsername(), msg.getSnd(),"firstStep",result);
                                 objectOutput.writeObject(m);
-
+                                break;
+                            case "firstStep":
                             default:
                                 break;
                         }
