@@ -104,10 +104,12 @@ public class Client {
                                 }
                                 preKeyBundlePublic preKeys = new preKeyBundlePublic(serverKeys[0], serverKeys[1], serverKeys[2], arrayKeys);
                                 Session s = client.getSession(msg.getSnd());
+                                s.setTheirBundle(preKeys);
                                 MutableTriple<byte[], byte[], ArrayList<byte[]>> derivedKeys = Initialization.serverBundleResponse(s, preKeys);
                                 byte[][] sendKeys = new byte[2 + preKeys.getPublicOneTimePreKeys().size()][];
                                 sendKeys[0] = derivedKeys.left;
                                 sendKeys[1] = derivedKeys.middle;
+
                                 for(int i = 0; i < derivedKeys.right.size(); i++) {
                                     sendKeys[2 + i] = derivedKeys.right.get(i);
                                 }
@@ -129,6 +131,26 @@ public class Client {
                                 objectOutput.writeObject(m);
                                 break;
                             case "firstStep":
+                                System.out.println("vetifan");
+                                byte[][][] received = (byte[][][]) msg.getMsg();
+                                byte[][] first = received[0];
+                                byte[][] theirsBundle = received[1];
+                                byte[] theirsEphemeralPublic = first[0];
+                                byte[] theirsRatchetPublic = first[1];
+                                ArrayList<byte[]> theirsEphemeralKeys = new ArrayList<>();
+                                for(int i = 2; i < first.length; i++) {
+                                    theirsEphemeralKeys.add(first[i]);
+                                }
+                                byte[] theirsPublicIdentityKey = theirsBundle[0];
+                                byte[] theirsPublicPreKey = theirsBundle[1];
+                                byte[] theirsSignedPublicPreKey = theirsBundle[2];
+                                ArrayList<byte[]> theirsOneTimePreKeys = new ArrayList<>();
+                                for(int j = 3; j < theirsBundle.length; j++) {
+                                    theirsOneTimePreKeys.add(theirsBundle[j]);
+                                }
+                                preKeyBundlePublic theirsPreKeys = new preKeyBundlePublic(theirsPublicIdentityKey, theirsPublicPreKey, theirsSignedPublicPreKey, theirsOneTimePreKeys);
+
+                                Initialization.establishContact(theirsEphemeralPublic, theirsRatchetPublic, theirsPreKeys, client.getUsername(), msg.sender, client.getPreKeys());
                             default:
                                 break;
                         }

@@ -12,10 +12,13 @@ public class Initialization {
     static final Curve25519 curve = Curve25519.getInstance(Curve25519.BEST);
     static final HKDF kdf = HKDF.createFor(3);
     static final Curve curveClass = new Curve();
+    private static testClient client;
 
     public static Session startSession(preKeyBundle preKeys, String ours, String theirs) {
         Session session = new Session(ours, theirs);
         session.setOurBundle(preKeys);
+        client = new testClient(ours, preKeys);
+        client.addSession(session);
         return session;
     }
 
@@ -71,6 +74,7 @@ public class Initialization {
     public static void establishContact(byte [] ephemeralTheirs, byte [] ratchetTheirs, preKeyBundlePublic bundleTheirs,
                                         String ours, String theirs, preKeyBundle ourBundle){
         Session session = new Session(ours, theirs, ourBundle, bundleTheirs);
+        testClient.addSession(session);
         //calculateAgreements and concatenate them
         byte [] p1 = curve.calculateAgreement(bundleTheirs.getPublicIdentityKey(), session.getOurBundle().getPrivateKeys().getPrivatePreKey());
         byte [] p2 = curve.calculateAgreement(ephemeralTheirs, session.getOurBundle().getPrivateKeys().getPrivateIdentityKey());

@@ -3,7 +3,6 @@ import org.whispersystems.curve25519.Curve25519KeyPair;
 public class Session {
     private final String ours;
     private final String theirs;
-
     private preKeyBundle ourBundle;
     private preKeyBundlePublic theirBundle;
     private Curve25519KeyPair ratchetKeyOurs;
