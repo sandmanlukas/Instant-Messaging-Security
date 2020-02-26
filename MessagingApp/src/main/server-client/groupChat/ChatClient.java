@@ -25,9 +25,6 @@ public class ChatClient {
         } catch (IOException e) {
             System.out.println("I/O Error: " + e.getMessage());
         }
-        Curve curveClass = new Curve();
-        testClient tclient = new testClient(this.getUserName(), curveClass.generatePreKeyBundle());
-
     }
 
     void setUserName(String userName) {

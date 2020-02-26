@@ -1,8 +1,6 @@
-import org.apache.commons.lang3.tuple.Triple;
+import org.apache.commons.lang3.tuple.MutableTriple;
 
 import javax.crypto.spec.IvParameterSpec;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,33 +10,17 @@ public class testClient {
     Curve curveClass = new Curve();
 
     private final String username;
-    //private final InetAddress ip;
-    //private final Socket socket;
     private final preKeyBundle preKeys;
     private final HashMap<String, Session> map;
-    public ObjectOutputStream objectOutput;
-    public ObjectInputStream objectInput;
 
-    testClient(String username, preKeyBundle preKeys) throws IOException {
+    testClient(String username, preKeyBundle preKeys) {
         this.username = username;
         this.preKeys = preKeys;
-        //this.ip = InetAddress.getByName(ip);
-        //this.socket = new Socket(ip, serverport);
         map = new HashMap<>();
-
-        //objectInput = new ObjectInputStream(socket.getInputStream());
-        //objectOutput = new ObjectOutputStream(socket.getOutputStream());
 
     }
 
     public String getUsername() { return username; }
-
-    /*public Socket getSocket() {
-        return socket;
-    }
-    public InetAddress getIp() {
-        return ip;
-    }*/
 
     public preKeyBundle getPreKeys() {
         return preKeys;
@@ -50,10 +32,19 @@ public class testClient {
 
     public Session getSession(String bob) { return map.get(bob); }
 
-    public void initMessage() {
+    public static void initMessage(String sender, byte[][] preKeys, ObjectOutputStream oO) {
+        Message m = new Message(sender, "", "initMsg", preKeys);
+        try {
+            // write on the output stream
+            oO.writeObject(m);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+
+        }
     }
 
-    public void sendMessage(String recepient, String msg) {
+    public void sendMessage(String recepient, String msg, ObjectOutputStream objectOutput) {
         Session s = getSession(recepient);
         if (s == null) {
             s = Initialization.init1(getPreKeys(), getUsername(), recepient);
@@ -61,7 +52,7 @@ public class testClient {
             Message m = new Message(getUsername(), recepient, "publicBundleRequest", "");
             try {
                 // write on the output stream
-                //objectOutput.writeObject(m);
+                objectOutput.writeObject(m);
             }
             catch (Exception e){
                 e.printStackTrace();
@@ -75,7 +66,7 @@ public class testClient {
 
     public void receiveMessage(preKeyBundlePublic bobPublic, String sender) {
         Session s = Initialization.init1(getPreKeys(), getUsername(), sender);
-        Triple<byte [], byte [], ArrayList<byte []>> data = Initialization.initAlice2(s, bobPublic);
+        MutableTriple<byte [], byte [], ArrayList<byte []>> data = Initialization.initAlice2(s, bobPublic);
         //Skicka detta meddelande till sender
     }
 

@@ -1,6 +1,5 @@
 import com.google.common.primitives.Bytes;
 import org.apache.commons.lang3.tuple.MutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
 import org.whispersystems.libsignal.kdf.DerivedRootSecrets;
@@ -20,7 +19,7 @@ public class Initialization {
         return session;
     }
 
-    public static Triple<byte [], byte [], ArrayList<byte []>> initAlice2(Session session, preKeyBundlePublic theirs) {
+    public static MutableTriple<byte [], byte [], ArrayList<byte []>> initAlice2(Session session, preKeyBundlePublic theirs) {
 
         //Generate keys for init
         Curve25519KeyPair ephemeralKeyPair = curve.generateKeyPair();

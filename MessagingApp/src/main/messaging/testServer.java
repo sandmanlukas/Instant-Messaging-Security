@@ -7,7 +7,7 @@ public class testServer {
 
     public testServer() {
         activeUsers = 0;
-        HashMap<String, preKeyBundlePublic> clients = new HashMap<>();
+        clients = new HashMap<>();
     }
 
     public void addClient(String client, preKeyBundlePublic preKeys) {
