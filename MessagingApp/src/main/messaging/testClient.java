@@ -5,6 +5,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static org.checkerframework.checker.units.UnitsTools.s;
+
 public class testClient {
 
     Curve curveClass = new Curve();
@@ -27,10 +29,10 @@ public class testClient {
     }
 
     public void addSession(Session session) {
-        map.put(session.getBob(), session);
+        map.put(session.getTheirs(), session);
     }
 
-    public Session getSession(String bob) { return map.get(bob); }
+    public Session getSession(String theirs) { return map.get(theirs); }
 
     public static void initMessage(String sender, byte[][] preKeys, ObjectOutputStream oO) {
         Message m = new Message(sender, "", "initMsg", preKeys);
@@ -44,12 +46,12 @@ public class testClient {
         }
     }
 
-    public void sendMessage(String recepient, String msg, ObjectOutputStream objectOutput) {
-        Session s = getSession(recepient);
+    public void sendMessage(String recipient, String msg, ObjectOutputStream objectOutput) {
+        Session s = getSession(recipient);
         if (s == null) {
-            s = Initialization.init1(getPreKeys(), getUsername(), recepient);
+            s = Initialization.startSession(getPreKeys(), getUsername(), recipient);
             addSession(s);
-            Message m = new Message(getUsername(), recepient, "publicBundleRequest", "");
+            Message m = new Message(getUsername(), recipient, "publicBundleRequest", "");
             try {
                 // write on the output stream
                 objectOutput.writeObject(m);
@@ -64,19 +66,18 @@ public class testClient {
         }
     }
 
-    public void receiveMessage(preKeyBundlePublic bobPublic, String sender) {
-        Session s = Initialization.init1(getPreKeys(), getUsername(), sender);
-        MutableTriple<byte [], byte [], ArrayList<byte []>> data = Initialization.initAlice2(s, bobPublic);
+    public void receiveMessage(preKeyBundlePublic theirsPublic, String theirs) {
+        Session session = Initialization.startSession(getPreKeys(), getUsername(), theirs);
+        MutableTriple<byte [], byte [], ArrayList<byte []>> data = Initialization.serverBundleResponse(session, theirsPublic);
         //Skicka detta meddelande till sender
     }
 
-    public void receiveMessage(byte [] ephemeralAlice, byte [] ratchetAlice, preKeyBundlePublic bundleAlice, String sender) {
-        Session s = getSession(sender);
-        Initialization.initBob(ephemeralAlice, ratchetAlice, bundleAlice, s);
+    public void receiveMessage(byte [] ephemeralTheirs, byte [] ratchetTheirs, preKeyBundlePublic bundleTheirs, String theirs ) {
+        Initialization.establishContact(ephemeralTheirs, ratchetTheirs, bundleTheirs,getUsername(),theirs,getPreKeys());
     }
 
-    public void receiveMessage(byte[] ratchetBob, byte[]encryptMsg, IvParameterSpec iv, String sender) {
-        Session s = getSession(sender);
-        Messages.receiveMsg(ratchetBob, encryptMsg, iv, s);
+    public void receiveMessage(byte[] ratchetTheirs, byte[]encryptMsg, IvParameterSpec iv, String theirs) {
+        Session s = getSession(theirs);
+        Messages.receiveMsg(ratchetTheirs, encryptMsg, iv, s);
     }
 }

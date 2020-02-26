@@ -1,88 +1,92 @@
 import org.whispersystems.curve25519.Curve25519KeyPair;
 
 public class Session {
-    private final String alice;
-    private final String bob;
+    private final String ours;
+    private final String theirs;
 
-    private preKeyBundle aliceBundle;
-    private preKeyBundlePublic bobBundle;
-    private Curve25519KeyPair ratchetKeyAlice;
+    private preKeyBundle ourBundle;
+    private preKeyBundlePublic theirBundle;
+    private Curve25519KeyPair ratchetKeyOurs;
     private byte [] macKey = new byte [8];
-    byte[] ratchetKeyBobPublic;
-    byte[] rootKeyAlice;
-    byte[] tempKeyAlice;
+    byte[] ratchetKeyTheirPublic;
+    byte[] rootKeyOurs;
+    byte[] tempKeyOurs;
 
-    Session(String alice, String bob) {
-        this.alice = alice;
-        this.bob = bob;
+    Session(String ours, String theirs) {
+        this.ours = ours;
+        this.theirs = theirs;
     }
 
 
-    Session(String alice, String bob, preKeyBundle aliceBundle, preKeyBundlePublic bobBundle) {
-        this.alice = alice;
-        this.bob = bob;
-        ratchetKeyAlice = null;
-        ratchetKeyBobPublic = null;
-        rootKeyAlice = null;
-        tempKeyAlice = null;
+
+
+
+
+    Session(String ours, String theirs, preKeyBundle ourBundle, preKeyBundlePublic theirBundle) {
+        this.ours = ours;
+        this.theirs = theirs;
+        ratchetKeyOurs = null;
+        ratchetKeyTheirPublic = null;
+        rootKeyOurs = null;
+        tempKeyOurs = null;
     }
 
-    public String getAlice() {
-        return alice;
+    public String getOurs() {
+        return ours;
     }
 
-    public String getBob() {
-        return bob;
+    public String getTheirs() {
+        return theirs;
     }
 
-    public preKeyBundle getAliceBundle() {
-        return aliceBundle;
+    public preKeyBundle getOurBundle() {
+        return ourBundle;
     }
 
-    public preKeyBundlePublic getBobBundle() {
-        return bobBundle;
+    public preKeyBundlePublic getTheirBundle() {
+        return theirBundle;
     }
 
-    public Curve25519KeyPair getRatchetKeyAlice() {
-        return ratchetKeyAlice;
+    public Curve25519KeyPair getRatchetKeyOurs() {
+        return ratchetKeyOurs;
     }
 
-    public byte[] getRatchetKeyBobPublic() {
-        return ratchetKeyBobPublic;
+    public byte[] getRatchetKeyTheirPublic() {
+        return ratchetKeyTheirPublic;
     }
 
-    public byte[] getRootKeyAlice() {
-        return rootKeyAlice;
+    public byte[] getRootKeyOurs() {
+        return rootKeyOurs;
     }
 
-    public byte[] getTempKeyAlice() {
-        return tempKeyAlice;
+    public byte[] getTempKeyOurs() {
+        return tempKeyOurs;
     }
 
     public byte [] getMacKey(){ return macKey;}
 
-    public void setAliceBundle(preKeyBundle aliceBundle) {
-        this.aliceBundle = aliceBundle;
+    public void setOurBundle(preKeyBundle ourBundle) {
+        this.ourBundle = ourBundle;
     }
 
-    public void setBobBundle(preKeyBundlePublic bobBundle) {
-        this.bobBundle = bobBundle;
+    public void setTheirBundle(preKeyBundlePublic theirBundle) {
+        this.theirBundle = theirBundle;
     }
 
-    public void setRatchetKeyAlice(Curve25519KeyPair ratchetKeyAlice) {
-        this.ratchetKeyAlice = ratchetKeyAlice;
+    public void setRatchetKeyOurs(Curve25519KeyPair ratchetKeyOurs) {
+        this.ratchetKeyOurs = ratchetKeyOurs;
     }
 
-    public void setRatchetKeyBobPublic(byte[] ratchetKeyBobPublic) {
-        this.ratchetKeyBobPublic = ratchetKeyBobPublic;
+    public void setRatchetKeyTheirPublic(byte[] ratchetKeyTheirPublic) {
+        this.ratchetKeyTheirPublic = ratchetKeyTheirPublic;
     }
 
-    public void setRootKeyAlice(byte[] rootKeyAlice) {
-        this.rootKeyAlice = rootKeyAlice;
+    public void setRootKeyOurs(byte[] rootKeyOurs) {
+        this.rootKeyOurs = rootKeyOurs;
     }
 
-    public void setTempKeyAlice(byte[] tempKeyAlice) {
-        this.tempKeyAlice = tempKeyAlice;
+    public void setTempKeyOurs(byte[] tempKeyOurs) {
+        this.tempKeyOurs = tempKeyOurs;
     }
 
     public void  setMacKey(byte [] macKey){this.macKey = macKey;}

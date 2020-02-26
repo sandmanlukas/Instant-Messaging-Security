@@ -9,7 +9,6 @@ import org.whispersystems.libsignal.util.Pair;
 import javax.crypto.spec.IvParameterSpec;
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Curve {
 
@@ -24,36 +23,41 @@ public class Curve {
         preKeyBundle pk1 = curveClass.generatePreKeyBundle();
         preKeyBundle pk2 = curveClass.generatePreKeyBundle();
 
-        Session session1 = Initialization.init1(pk1,"Alice", "Bob");
-        Session session2 = Initialization.init1(pk2,"Bob", "Alice");
+        Session session1 = Initialization.startSession(pk1,"Alice", "Bob");
+        Session session2 = Initialization.startSession(pk2,"Bob", "Alice");
 
-        Triple<byte[], byte[], ArrayList<byte[]>> initAlice = Initialization.initAlice2(session1, session2.getAliceBundle().getPublicKeys());
+
+
+
+        Triple<byte[], byte[], ArrayList<byte[]>> initAlice = Initialization.serverBundleResponse(session1, session2.getOurBundle().getPublicKeys());
 
         byte[] ephemeralAlice = initAlice.getLeft();
         byte[] ratchetAlice = initAlice.getMiddle();
 
-        Initialization.initBob(ephemeralAlice, ratchetAlice, session1.getAliceBundle().getPublicKeys(), session2);
+       // Initialization.establishContact(ephemeralAlice, ratchetAlice, session1.getOurBundle().getPublicKeys(), session2);
 
         MutableTriple<byte[], byte[], IvParameterSpec> msg = Messages.sendMsg("hej", session2);
         String msgRe = Messages.receiveMsg(msg.left, msg.middle, msg.right, session1);
 
-        System.out.println(msgRe);
+        //System.out.println(msgRe);
 
         msg = Messages.sendMsg("hej2", session2);
         msgRe = Messages.receiveMsg(msg.left, msg.middle, msg.right, session1);
 
-        System.out.println(msgRe);
+        //System.out.println(msgRe);
 
         msg = Messages.sendMsg("hej3", session1);
         msgRe = Messages.receiveMsg(msg.left, msg.middle, msg.right, session2);
 
-        System.out.println(msgRe);
+        //System.out.println(msgRe);
 
+        msg = Messages.sendMsg("test", session2);
+        msgRe = Messages.receiveMsg(msg.left,msg.middle, msg.right, session1);
 
-        byte [] sender = session1.getAliceBundle().getPublicKeys().getPublicIdentityKey();
-        byte [] receiver = session2.ratchetKeyBobPublic;
+        byte [] sender = session1.getOurBundle().getPublicKeys().getPublicIdentityKey();
+        byte [] receiver = session2.ratchetKeyTheirPublic;
         byte [] sendSecret = (byte[]) Messages.generateSecretSend(session1).first();
-        System.out.println("SecretSecret: " + Arrays.toString(sendSecret));
+        //System.out.println("SecretSecret: " + Arrays.toString(sendSecret));
 
         byte [] receiveSecret = (byte[]) Messages.generateSecretSend(session1).first();
 

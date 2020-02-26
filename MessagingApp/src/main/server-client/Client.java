@@ -104,7 +104,7 @@ public class Client {
                                 }
                                 preKeyBundlePublic preKeys = new preKeyBundlePublic(serverKeys[0], serverKeys[1], serverKeys[2], arrayKeys);
                                 Session s = client.getSession(msg.getSnd());
-                                MutableTriple<byte[], byte[], ArrayList<byte[]>> derivedKeys = Initialization.initAlice2(s, preKeys);
+                                MutableTriple<byte[], byte[], ArrayList<byte[]>> derivedKeys = Initialization.serverBundleResponse(s, preKeys);
                                 byte[][] sendKeys = new byte[2 + preKeys.getPublicOneTimePreKeys().size()][];
                                 sendKeys[0] = derivedKeys.left;
                                 sendKeys[1] = derivedKeys.middle;
