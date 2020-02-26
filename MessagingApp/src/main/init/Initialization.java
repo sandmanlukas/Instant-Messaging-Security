@@ -13,13 +13,13 @@ public class Initialization {
     static final HKDF kdf = HKDF.createFor(3);
     static final Curve curveClass = new Curve();
 
-    public static Session init1(preKeyBundle preKeys, String alice, String bob) {
-        Session session = new Session(alice, bob);
-        session.setAliceBundle(preKeys);
+    public static Session startSession(preKeyBundle preKeys, String ours, String theirs) {
+        Session session = new Session(ours, theirs);
+        session.setOurBundle(preKeys);
         return session;
     }
 
-    public static MutableTriple<byte [], byte [], ArrayList<byte []>> initAlice2(Session session, preKeyBundlePublic theirs) {
+    public static MutableTriple<byte [], byte [], ArrayList<byte []>> serverBundleResponse(Session session, preKeyBundlePublic theirs) {
 
         //Generate keys for init
         Curve25519KeyPair ephemeralKeyPair = curve.generateKeyPair();
@@ -27,7 +27,7 @@ public class Initialization {
         byte[] ephemeralPrivate = ephemeralKeyPair.getPrivateKey();
 
         //perform calculations and concatenate them
-        byte[] p1 = curve.calculateAgreement(theirs.getPublicPreKey(), session.getAliceBundle().getPrivateKeys().getPrivateIdentityKey());
+        byte[] p1 = curve.calculateAgreement(theirs.getPublicPreKey(), session.getOurBundle().getPrivateKeys().getPrivateIdentityKey());
         byte[] p2 = curve.calculateAgreement(theirs.getPublicIdentityKey(), ephemeralPrivate);
         byte[] p3 = curve.calculateAgreement(theirs.getPublicPreKey(), ephemeralPrivate);
         byte[] p4 = curve.calculateAgreement(theirs.getPublicOneTimePreKey(0), ephemeralPrivate);
@@ -61,20 +61,21 @@ public class Initialization {
         byte[] ratchetPublic = ratchetKeyPair.getPublicKey();
 
         //equip keys to session
-        session.setBobBundle(theirs);
-        session.setRatchetKeyAlice(ratchetKeyPair);
-        session.setRootKeyAlice(root2);
+        session.setTheirBundle(theirs);
+        session.setRatchetKeyOurs(ratchetKeyPair);
+        session.setRootKeyOurs(root2);
 
         return new MutableTriple<>(ephemeralPublic, ratchetPublic, theirs.getPublicOneTimePreKeys());
     }
 
-    public static void initBob(byte [] ephemeralAlice, byte [] ratchetAlice, preKeyBundlePublic bundleAlice, Session session){
-
+    public static void establishContact(byte [] ephemeralTheirs, byte [] ratchetTheirs, preKeyBundlePublic bundleTheirs,
+                                        String ours, String theirs, preKeyBundle ourBundle){
+        Session session = new Session(ours, theirs, ourBundle, bundleTheirs);
         //calculateAgreements and concatenate them
-        byte [] p1 = curve.calculateAgreement(bundleAlice.getPublicIdentityKey(), session.getAliceBundle().getPrivateKeys().getPrivatePreKey());
-        byte [] p2 = curve.calculateAgreement(ephemeralAlice, session.getAliceBundle().getPrivateKeys().getPrivateIdentityKey());
-        byte [] p3 = curve.calculateAgreement(ephemeralAlice, session.getAliceBundle().getPrivateKeys().getPrivatePreKey());
-        byte [] p4 = curve.calculateAgreement(ephemeralAlice, session.getAliceBundle().getPrivateKeys().getPrivateOneTimePreKey(0));
+        byte [] p1 = curve.calculateAgreement(bundleTheirs.getPublicIdentityKey(), session.getOurBundle().getPrivateKeys().getPrivatePreKey());
+        byte [] p2 = curve.calculateAgreement(ephemeralTheirs, session.getOurBundle().getPrivateKeys().getPrivateIdentityKey());
+        byte [] p3 = curve.calculateAgreement(ephemeralTheirs, session.getOurBundle().getPrivateKeys().getPrivatePreKey());
+        byte [] p4 = curve.calculateAgreement(ephemeralTheirs, session.getOurBundle().getPrivateKeys().getPrivateOneTimePreKey(0));
         byte [] result = Bytes.concat(p1, p2, p3, p4);
 
         //perform first HKDF
@@ -84,7 +85,7 @@ public class Initialization {
         byte [] chainTest = rootSecrets.getChainKey();
 
         //calculateAgreement and concatenate them
-        byte [] p5 = curve.calculateAgreement(ratchetAlice, session.getAliceBundle().getPrivateKeys().getPrivatePreKey());
+        byte [] p5 = curve.calculateAgreement(ratchetTheirs, session.getOurBundle().getPrivateKeys().getPrivatePreKey());
         byte [] result2 = Bytes.concat(p5, root1);
 
         //perform second HKDF
@@ -100,11 +101,11 @@ public class Initialization {
         byte [] finalChain = rootSecrets3.getChainKey();
 
         //equip to session
-        session.setBobBundle(bundleAlice);
-        session.setRatchetKeyBobPublic(ratchetAlice);
-        session.setRootKeyAlice(root2);
+        session.setTheirBundle(bundleTheirs);
+        session.setRatchetKeyTheirPublic(ratchetTheirs);
+        session.setRootKeyOurs(root2);
 
-        //return new Pair<byte [], byte []>(ratchetAlice, root2);
+        //return new Pair<byte [], byte []>(ratchetSender, root2);
     }
 
 }
