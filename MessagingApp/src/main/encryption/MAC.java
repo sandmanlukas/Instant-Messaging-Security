@@ -33,7 +33,7 @@ public class MAC {
             mac.update(receiverIdentityPublic);
             mac.update(senderIdentityPublic);
             byte [] fullMac = mac.doFinal(message);
-            session.setMacKey(fullMac);
+            //session.setMacKey(fullMac);
 
 
             session.setMacKey(ByteUtil.trim(fullMac, MAC_LENGTH));

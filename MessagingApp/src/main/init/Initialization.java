@@ -6,6 +6,7 @@ import org.whispersystems.libsignal.kdf.DerivedRootSecrets;
 import org.whispersystems.libsignal.kdf.HKDF;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Initialization {
     static final byte [] info = new byte [0];
@@ -63,11 +64,17 @@ public class Initialization {
         byte[] ephemeralPublic = ephemeralKeyPair.getPublicKey();
         byte[] ratchetPublic = ratchetKeyPair.getPublicKey();
 
+        //create a mac key and set it to session
+        MAC.getMac(secret3,
+                theirs.getPublicIdentityKey(),
+                session.getOurBundle().getPublicKeys().getPublicIdentityKey(),
+                message,
+                session);
+
         //equip keys to session
         session.setTheirBundle(theirs);
         session.setRatchetKeyOurs(ratchetKeyPair);
         session.setRootKeyOurs(root2);
-
         return new MutableTriple<>(ephemeralPublic, ratchetPublic, theirs.getPublicOneTimePreKeys());
     }
 
@@ -104,12 +111,19 @@ public class Initialization {
         byte [] message = rootSecrets3.getRootKey();
         byte [] finalChain = rootSecrets3.getChainKey();
 
+        //create a mac key and set it to session
+        MAC.getMac(secret3,
+                bundleTheirs.getPublicIdentityKey(),
+                session.getOurBundle().getPublicKeys().getPublicIdentityKey(),
+                message,
+                session);
+
         //equip to session
         session.setTheirBundle(bundleTheirs);
         session.setRatchetKeyTheirPublic(ratchetTheirs);
-        //System.out.println("RatchetKeyTheirPublic: " + session.getRatchetKeyTheirPublic()+ " session name: " + session.getOurs());
         session.setRootKeyOurs(root2);
         //testClient.addSession(session);
+
         return session;
     }
 
