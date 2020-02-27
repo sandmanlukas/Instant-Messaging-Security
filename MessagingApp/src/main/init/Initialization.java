@@ -74,7 +74,6 @@ public class Initialization {
     public static Session establishContact(byte [] ephemeralTheirs, byte [] ratchetTheirs, preKeyBundlePublic bundleTheirs,
                                         String ours, String theirs, preKeyBundle ourBundle){
         Session session = new Session(ours, theirs, ourBundle, bundleTheirs);
-        testClient.addSession(session);
         //calculateAgreements and concatenate them
         byte [] p1 = curve.calculateAgreement(bundleTheirs.getPublicIdentityKey(), session.getOurBundle().getPrivateKeys().getPrivatePreKey());
         byte [] p2 = curve.calculateAgreement(ephemeralTheirs, session.getOurBundle().getPrivateKeys().getPrivateIdentityKey());
@@ -108,8 +107,9 @@ public class Initialization {
         //equip to session
         session.setTheirBundle(bundleTheirs);
         session.setRatchetKeyTheirPublic(ratchetTheirs);
-        System.out.println("RatchetKeyTheirPublic: " + session.getRatchetKeyTheirPublic()+ " session name: " + session.getOurs());
+        //System.out.println("RatchetKeyTheirPublic: " + session.getRatchetKeyTheirPublic()+ " session name: " + session.getOurs());
         session.setRootKeyOurs(root2);
+        //testClient.addSession(session);
         return session;
     }
 

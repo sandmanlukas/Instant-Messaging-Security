@@ -150,7 +150,8 @@ public class Client {
                                 }
                                 preKeyBundlePublic theirsPreKeys = new preKeyBundlePublic(theirsPublicIdentityKey, theirsPublicPreKey, theirsSignedPublicPreKey, theirsOneTimePreKeys);
 
-                                Initialization.establishContact(theirsEphemeralPublic, theirsRatchetPublic, theirsPreKeys, client.getUsername(), msg.sender, client.getPreKeys());
+                                Session session = Initialization.establishContact(theirsEphemeralPublic, theirsRatchetPublic, theirsPreKeys, client.getUsername(), msg.sender, client.getPreKeys());
+                                client.addSession(session);
                             default:
                                 break;
                         }

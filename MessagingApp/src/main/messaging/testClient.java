@@ -5,8 +5,6 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static org.checkerframework.checker.units.UnitsTools.s;
-
 public class testClient {
 
     Curve curveClass = new Curve();
@@ -19,7 +17,6 @@ public class testClient {
         this.username = username;
         this.preKeys = preKeys;
         map = new HashMap<>();
-
     }
 
     public String getUsername() { return username; }
