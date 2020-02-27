@@ -6,8 +6,8 @@ import java.net.Socket;
  * UserThread
  */
 public class UserThread extends Thread {
-    private Socket socket;
-    private ChatServer server;
+    private final Socket socket;
+    private final ChatServer server;
     private PrintWriter writer;
     private String userName;
 
@@ -39,16 +39,16 @@ public class UserThread extends Thread {
                 String tempRec = st[1];
                 String[] recipients = tempRec.split(" ");
 
-    
-                    for(int i = 0;i < recipients.length; i++){
-                        if (recipients[i].equals("All") || recipients[i].equals("all")) {
-                            serverMessage = "[" + userName + "]: " + msg;
-                            server.broadcast(serverMessage, this);
-                        } else {
-                            serverMessage = "[" + userName + "]: " + msg;
-                            server.sendMessageTo(serverMessage, recipients[i]);
-                        }
+
+                for (String recipient : recipients) {
+                    if (recipient.equals("All") || recipient.equals("all")) {
+                        serverMessage = "[" + userName + "]: " + msg;
+                        server.broadcast(serverMessage, this);
+                    } else {
+                        serverMessage = "[" + userName + "]: " + msg;
+                        server.sendMessageTo(serverMessage, recipient);
                     }
+                }
 
             } while (!clientMessage.equals("bye"));
 

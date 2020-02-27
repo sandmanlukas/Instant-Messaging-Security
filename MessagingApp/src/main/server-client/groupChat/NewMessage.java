@@ -4,9 +4,9 @@
  */
 public class NewMessage implements java.io.Serializable {
 
-    public UserThread recipient;
+    public final UserThread recipient;
 
-    public String message;
+    public final String message;
 
     public NewMessage(UserThread recipient, String message){
 		this.recipient=recipient;

@@ -15,11 +15,11 @@ public class Messages {
     /*
     Updates all the session keys depending on whether a message was received or sent in
     order make sure that both clients share similar keys and will be able to keep on
-    deriving keys as they continue to send eachother messages
+    deriving keys as they continue to send each other messages
     */
 
     public static MutableTriple<byte[], byte[], IvParameterSpec> sendMsg(String msg, Session session) {
-        Pair <byte [], byte []> secretPair = generateSecretSend(session);
+        Pair<byte [], byte []> secretPair = generateSecretSend(session);
         byte [] message = secretPair.first();
         Pair<byte[], IvParameterSpec> encrypt = AES_encryption.encrypt(msg, message, session);
         assert encrypt != null;
@@ -36,13 +36,12 @@ public class Messages {
         byte [] p1 = curve.calculateAgreement(session.getRatchetKeyTheirPublic(), session.getRatchetKeyOurs().getPrivateKey());
         return generateSecret(session, p1);
     }
-    public static Pair generateSecretSend(Session session){
+    public static Pair<byte [], byte []> generateSecretSend(Session session){
         Curve25519KeyPair ourRatchet = curve.generateKeyPair();
-        System.out.println("RatchetKeyTheirPublic2: " + session.getRatchetKeyTheirPublic() + " session name: " + session.getOurs());
         byte [] p1 = curve.calculateAgreement(session.getRatchetKeyTheirPublic(), ourRatchet.getPrivateKey());
         byte [] message = generateSecret(session, p1);
         session.setRatchetKeyOurs(ourRatchet);
-        return new Pair(message, ourRatchet.getPublicKey());
+        return new Pair<>(message, ourRatchet.getPublicKey());
     }
     public static byte [] generateSecret (Session session, byte [] result){
         //perform first HKDF

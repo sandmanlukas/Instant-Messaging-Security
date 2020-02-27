@@ -19,8 +19,11 @@ public class AES_encryption {
         this.receiverIdentity = receiverIdentity;
     }
 
-
-    public static Pair<byte[], IvParameterSpec> encrypt(String stringToEncrypt, byte [] secret, Session session){
+    /*
+      encrypts a plaintext message with AES encryption and also creates a MAC-key to be able to
+      verify the corrects user receives the message
+     */
+    public static Pair<byte[], IvParameterSpec> encrypt (String stringToEncrypt, byte [] secret, Session session){
         try {
             Curve curveClass = new Curve();
 
@@ -49,6 +52,10 @@ public class AES_encryption {
         return null;
     }
 
+    /*
+    Method to decrypt encrypted messages. First checks so that the MAC-keys of the two clients match and thus
+    confirming the correct client sent the message and then decrypts the AES-encrypted message.
+     */
     public static String decrypt(byte[] encrypt, byte[] secret, IvParameterSpec iv, Session session) {
         try {
             MAC.verifyMac(session.getMacKey(), session);

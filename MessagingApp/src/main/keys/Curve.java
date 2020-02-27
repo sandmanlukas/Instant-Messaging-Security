@@ -40,11 +40,11 @@ public class Curve {
         String msgRe = Messages.receiveMsg(msg.left, msg.middle, msg.right, AliceSession);
 
         //System.out.println(msgRe);
-
-        msg = Messages.sendMsg("hej2", BobSession);
+        /*
+                msg = Messages.sendMsg("hej2", BobSession);
         msgRe = Messages.receiveMsg(msg.left, msg.middle, msg.right, AliceSession);
 
-        //System.out.println(msgRe);
+        System.out.println(msgRe);
 
         msg = Messages.sendMsg("hej3", AliceSession);
         msgRe = Messages.receiveMsg(msg.left, msg.middle, msg.right, BobSession);
@@ -53,13 +53,15 @@ public class Curve {
 
         msg = Messages.sendMsg("test", BobSession);
         msgRe = Messages.receiveMsg(msg.left,msg.middle, msg.right, AliceSession);
+         */
+
 
         byte [] sender = AliceSession.getOurBundle().getPublicKeys().getPublicIdentityKey();
         byte [] receiver = BobSession.ratchetKeyTheirPublic;
-        byte [] sendSecret = (byte[]) Messages.generateSecretSend(AliceSession).first();
+        byte [] sendSecret = Messages.generateSecretSend(AliceSession).first();
         //System.out.println("SecretSecret: " + Arrays.toString(sendSecret));
 
-        byte [] receiveSecret = (byte[]) Messages.generateSecretSend(AliceSession).first();
+        byte [] receiveSecret = Messages.generateSecretSend(AliceSession).first();
 
        //byte [] mac1 = AES_encryption.getMac(sendSecret, receiver, sender);
        //byte [] mac2 = AES_encryption.getMac(sendSecret, sender, receiver);

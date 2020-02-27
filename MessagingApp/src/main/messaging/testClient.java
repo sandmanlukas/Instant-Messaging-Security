@@ -99,7 +99,6 @@ public class testClient {
 
         Session session = Initialization.startSession(getPreKeys(), getUsername(), theirs);
         MutableTriple<byte [], byte [], ArrayList<byte []>> data = Initialization.serverBundleResponse(session, theirsPublic);
-        //Skicka detta meddelande till sender
     }
 
     public void receiveMessage(byte [] ephemeralTheirs, byte [] ratchetTheirs, preKeyBundlePublic bundleTheirs, String theirs ) {

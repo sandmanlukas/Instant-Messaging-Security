@@ -6,8 +6,8 @@ import java.net.*;
  */
 public class WriteThread extends Thread {
     private PrintWriter writer;
-    private Socket socket;
-    private ChatClient client;
+    private final Socket socket;
+    private final ChatClient client;
 
     public WriteThread(Socket socket, ChatClient client) {
         this.socket = socket;

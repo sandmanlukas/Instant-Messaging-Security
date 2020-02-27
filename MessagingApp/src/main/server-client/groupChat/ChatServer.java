@@ -7,10 +7,10 @@ import java.util.Set;
 
 public class ChatServer {
 
-    private int port;
-    private Set<String> userNames = new HashSet<String>();
-    private Set<UserThread> userThreads = new HashSet<UserThread>();
-    public testServer server;
+    private final int port;
+    private final Set<String> userNames = new HashSet<>();
+    private final Set<UserThread> userThreads = new HashSet<>();
+    public final testServer server;
 
     public ChatServer(int port) {
         this.port = port;
@@ -23,14 +23,20 @@ public class ChatServer {
             System.out.println("Server is listening on port: " + port);
 
             while (true) {
-                Socket socket = serverSocket.accept();
-                System.out.println("New user connected");
-                UserThread newUser = new UserThread(socket, this);
-                userThreads.add(newUser);
-                newUser.start();
+                try {
+                    Socket socket = serverSocket.accept();
+                    System.out.println("New user connected");
+                    UserThread newUser = new UserThread(socket, this);
+                    userThreads.add(newUser);
+                    newUser.start();
+                }catch (IOException e){
+                    System.out.println("Error in the server: " + e.getMessage());
+                    e.printStackTrace();
+                    break;
+                }
+
             }
         } catch (IOException e) {
-            System.out.println("Error in the server: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -66,7 +72,7 @@ public class ChatServer {
         boolean removed = userNames.remove(userName);
         if (removed) {
             userThreads.remove(aUser);
-            System.out.println("The user " + userName + " quitted");
+            System.out.println("The user " + userName + " has quit the application");
 
         }
     }

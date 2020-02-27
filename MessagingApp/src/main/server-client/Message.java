@@ -1,8 +1,8 @@
 public class Message implements java.io.Serializable{
-	public String sender;
-	public String recipient;
-	public String type;
-	public Object message;
+	public final String sender;
+	public final String recipient;
+	public final String type;
+	public final Object message;
 
 	public Message (String sender, String recipient, String type, Object message){
 		this.sender=sender;
