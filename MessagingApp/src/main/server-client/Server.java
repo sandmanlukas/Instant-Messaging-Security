@@ -152,7 +152,7 @@ class ClientHandler implements Runnable {
                         break;
                     default:
                         String recipient = msg.getRec();
-                        System.out.println("hejhej");
+                        System.out.println("Forwarded a message");
                         // search for the recipient in the connected devices list.
                         // ar is the vector storing client of active users
                         for (ClientHandler mc2 : Server.ar) {

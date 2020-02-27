@@ -12,12 +12,15 @@ public class testClient {
     private final String username;
     private final preKeyBundle preKeys;
     private final HashMap<String, Session> map;
+    private String initMsg;
 
     testClient(String username, preKeyBundle preKeys) {
         this.username = username;
         this.preKeys = preKeys;
         map = new HashMap<>();
     }
+
+    public String getInitMsg() { return initMsg; }
 
     public String getUsername() { return username; }
 
@@ -46,8 +49,10 @@ public class testClient {
     public void sendMessage(String recipient, String msg, ObjectOutputStream objectOutput) {
         Session s = getSession(recipient);
         if (s == null) {
+            initMsg = msg;
             s = Initialization.startSession(getPreKeys(), getUsername(), recipient);
             addSession(s);
+            System.out.println("Sending publicBundleRequest");
             Message m = new Message(getUsername(), recipient, "publicBundleRequest", "");
             try {
                 // write on the output stream
@@ -59,7 +64,24 @@ public class testClient {
             }
         }
         else {
-            Messages.sendMsg(msg, s);
+            System.out.println("Sending ordinary Message");
+            MutableTriple<byte[], byte[], IvParameterSpec> result = Messages.sendMsg(msg, s);
+            byte[] ourPublicRatchetKey = result.left;
+            byte[] encryptedMsg = result.middle;
+            byte[] iv = result.right.getIV();
+            byte[][] toBeSent = new byte[3][];
+            toBeSent[0] = ourPublicRatchetKey;
+            toBeSent[1] = encryptedMsg;
+            toBeSent[2] = iv;
+            Message m = new Message(getUsername(), recipient, "encryptMsg", toBeSent);
+            try {
+                // write on the output stream
+                objectOutput.writeObject(m);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+
+            }
         }
     }
 
@@ -73,8 +95,8 @@ public class testClient {
         Initialization.establishContact(ephemeralTheirs, ratchetTheirs, bundleTheirs,getUsername(),theirs,getPreKeys());
     }
 
-    public void receiveMessage(byte[] ratchetTheirs, byte[]encryptMsg, IvParameterSpec iv, String theirs) {
+    public String receiveMessage(byte[] ratchetTheirs, byte[]encryptMsg, IvParameterSpec iv, String theirs) {
         Session s = getSession(theirs);
-        Messages.receiveMsg(ratchetTheirs, encryptMsg, iv, s);
+        return Messages.receiveMsg(ratchetTheirs, encryptMsg, iv, s);
     }
 }

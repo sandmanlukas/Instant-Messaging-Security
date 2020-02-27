@@ -10,6 +10,7 @@ public class Session {
     byte[] ratchetKeyTheirPublic;
     byte[] rootKeyOurs;
     byte[] tempKeyOurs;
+    byte[] firstMsgKey;
 
     Session(String ours, String theirs) {
         this.ours = ours;
@@ -30,6 +31,7 @@ public class Session {
         ratchetKeyTheirPublic = theirBundle.getPublicPreKey();
         rootKeyOurs = null;
         tempKeyOurs = null;
+        firstMsgKey = null;
     }
 
     public String getOurs() {
@@ -68,6 +70,10 @@ public class Session {
 
     public void setOurBundle(preKeyBundle ourBundle) {
         this.ourBundle = ourBundle;
+    }
+
+    public void setFirstMsgKey(byte[] msgKey) {
+        firstMsgKey = msgKey;
     }
 
     public void setTheirBundle(preKeyBundlePublic theirBundle) {

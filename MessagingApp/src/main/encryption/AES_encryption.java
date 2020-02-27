@@ -20,7 +20,7 @@ public class AES_encryption {
     }
 
 
-    public static Pair<byte[], IvParameterSpec> encrypt (String stringToEncrypt, byte [] secret, Session session){
+    public static Pair<byte[], IvParameterSpec> encrypt(String stringToEncrypt, byte [] secret, Session session){
         try {
             Curve curveClass = new Curve();
             byte[] srandom = curveClass.getRandom(16);

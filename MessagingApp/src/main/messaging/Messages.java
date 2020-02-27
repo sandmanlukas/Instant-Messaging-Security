@@ -19,6 +19,7 @@ public class Messages {
         assert encrypt != null;
         return new MutableTriple<>(secretPair.second(), encrypt.first(), encrypt.second());
     }
+
     public static String receiveMsg(byte[] ratchetTheirs, byte[] encryptMsg, IvParameterSpec iv, Session session){
         byte [] message = generateSecretReceive(session, ratchetTheirs);
         return AES_encryption.decrypt(encryptMsg, message, iv, session);

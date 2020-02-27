@@ -1,4 +1,7 @@
 import org.apache.commons.lang3.tuple.MutableTriple;
+import org.whispersystems.libsignal.util.Pair;
+
+import javax.crypto.spec.IvParameterSpec;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -124,14 +127,22 @@ public class Client {
                                 for(int i = 0; i < ourBundle.getPublicOneTimePreKeys().size(); i++) {
                                     ourKeys[3 + i] = ourBundle.getPublicOneTimePreKey(i);
                                 }
-                                byte[][][] result = new byte[2][][];
+                                byte[][][] result = new byte[3][][];
                                 result[0] = sendKeys;
                                 result[1] = ourKeys;
+                                //test
+                                String initMsg = client.getInitMsg();
+                                byte[] initMsgKey = s.firstMsgKey;
+                                Pair<byte[], IvParameterSpec> firstMsg = AES_encryption.encrypt(initMsg, initMsgKey, s);
+                                byte[][] firstMsgResult = new byte[2][];
+                                firstMsgResult[0] = firstMsg.first();
+                                firstMsgResult[1] = firstMsg.second().getIV();
+                                result[2] = firstMsgResult;
                                 m = new Message(client.getUsername(), msg.getSnd(),"firstStep",result);
                                 objectOutput.writeObject(m);
+
                                 break;
                             case "firstStep":
-                                System.out.println("vetifan");
                                 byte[][][] received = (byte[][][]) msg.getMsg();
                                 byte[][] first = received[0];
                                 byte[][] theirsBundle = received[1];
@@ -152,6 +163,18 @@ public class Client {
 
                                 Session session = Initialization.establishContact(theirsEphemeralPublic, theirsRatchetPublic, theirsPreKeys, client.getUsername(), msg.sender, client.getPreKeys());
                                 client.addSession(session);
+                                byte[][] firstMsgRecieved = received[2];
+                                String fMsg = AES_encryption.decrypt(firstMsgRecieved[0], session.firstMsgKey, new IvParameterSpec(firstMsgRecieved[1]), session);
+                                System.out.println(msg.getSnd() + ": " + fMsg);
+                                break;
+                            case "encryptMsg":
+                                byte[][] receivedMsg = (byte[][]) msg.getMsg();
+                                byte[] theirPublicRatchetKey = receivedMsg[0];
+                                byte[] encryptedMsg = receivedMsg[1];
+                                IvParameterSpec iv = new IvParameterSpec(receivedMsg[2]);
+                                String message = client.receiveMessage(theirPublicRatchetKey, encryptedMsg, iv, msg.sender);
+                                System.out.println(msg.getSnd() + ": " + message);
+                                break;
                             default:
                                 break;
                         }
