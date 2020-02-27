@@ -75,6 +75,8 @@ public class Initialization {
         session.setTheirBundle(theirs);
         session.setRatchetKeyOurs(ratchetKeyPair);
         session.setRootKeyOurs(root2);
+        session.setFirstMsgKey(message);
+
         return new MutableTriple<>(ephemeralPublic, ratchetPublic, theirs.getPublicOneTimePreKeys());
     }
 
@@ -122,6 +124,7 @@ public class Initialization {
         session.setTheirBundle(bundleTheirs);
         session.setRatchetKeyTheirPublic(ratchetTheirs);
         session.setRootKeyOurs(root2);
+        session.setFirstMsgKey(message);
         //testClient.addSession(session);
 
         return session;
