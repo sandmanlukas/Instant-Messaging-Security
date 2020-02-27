@@ -12,6 +12,12 @@ public class Messages {
     static final HKDF kdf = HKDF.createFor(3);
 
 
+    /*
+    Updates all the session keys depending on whether a message was received or sent in
+    order make sure that both clients share similar keys and will be able to keep on
+    deriving keys as they continue to send eachother messages
+    */
+
     public static MutableTriple<byte[], byte[], IvParameterSpec> sendMsg(String msg, Session session) {
         Pair <byte [], byte []> secretPair = generateSecretSend(session);
         byte [] message = secretPair.first();
@@ -25,7 +31,6 @@ public class Messages {
         return AES_encryption.decrypt(encryptMsg, message, iv, session);
 
     }
-
     public static byte [] generateSecretReceive(Session session, byte [] ratchetTheirs) {
         session.setRatchetKeyTheirPublic(ratchetTheirs);
         byte [] p1 = curve.calculateAgreement(session.getRatchetKeyTheirPublic(), session.getRatchetKeyOurs().getPrivateKey());

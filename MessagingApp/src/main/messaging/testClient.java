@@ -2,7 +2,6 @@ import org.apache.commons.lang3.tuple.MutableTriple;
 
 import javax.crypto.spec.IvParameterSpec;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class testClient {
@@ -34,7 +33,7 @@ public class testClient {
 
     public Session getSession(String theirs) { return map.get(theirs); }
 
-    public static void initMessage(String sender, byte[][] preKeys, ObjectOutputStream oO) {
+    /*public static void initMessage(String sender, byte[][] preKeys, ObjectOutputStream oO) {
         Message m = new Message(sender, "", "initMsg", preKeys);
         try {
             // write on the output stream
@@ -44,28 +43,37 @@ public class testClient {
             e.printStackTrace();
 
         }
-    }
+    }*/
 
     public void sendMessage(String recipient, String msg, ObjectOutputStream objectOutput) {
         Session s = getSession(recipient);
+        //Checks if their is a previously initialized session with the recipient
         if (s == null) {
+            //Saves the message for when a message key is derived
             initMsg = msg;
+
+            //Initialize a session with the recipient
             s = Initialization.startSession(getPreKeys(), getUsername(), recipient);
             addSession(s);
-            System.out.println("Sending publicBundleRequest");
+
+            //Sends a message to the server requesting the preKeyBundlePublic for the recipient
             Message m = new Message(getUsername(), recipient, "publicBundleRequest", "");
+
             try {
                 // write on the output stream
                 objectOutput.writeObject(m);
             }
             catch (Exception e){
                 e.printStackTrace();
-
             }
         }
+
         else {
-            System.out.println("Sending ordinary Message");
+
+            //encrypts the message using the current keys for the session
             MutableTriple<byte[], byte[], IvParameterSpec> result = Messages.sendMsg(msg, s);
+
+            //make the encrypted message serializable by putting it into a 2D byte array
             byte[] ourPublicRatchetKey = result.left;
             byte[] encryptedMsg = result.middle;
             byte[] iv = result.right.getIV();
@@ -73,6 +81,8 @@ public class testClient {
             toBeSent[0] = ourPublicRatchetKey;
             toBeSent[1] = encryptedMsg;
             toBeSent[2] = iv;
+
+            //sends the message to the recipient
             Message m = new Message(getUsername(), recipient, "encryptMsg", toBeSent);
             try {
                 // write on the output stream
@@ -85,7 +95,8 @@ public class testClient {
         }
     }
 
-    public void receiveMessage(preKeyBundlePublic theirsPublic, String theirs) {
+    /*public void receiveMessage(preKeyBundlePublic theirsPublic, String theirs) {
+
         Session session = Initialization.startSession(getPreKeys(), getUsername(), theirs);
         MutableTriple<byte [], byte [], ArrayList<byte []>> data = Initialization.serverBundleResponse(session, theirsPublic);
         //Skicka detta meddelande till sender
@@ -94,7 +105,7 @@ public class testClient {
     public void receiveMessage(byte [] ephemeralTheirs, byte [] ratchetTheirs, preKeyBundlePublic bundleTheirs, String theirs ) {
         Initialization.establishContact(ephemeralTheirs, ratchetTheirs, bundleTheirs,getUsername(),theirs,getPreKeys());
     }
-
+    */
     public String receiveMessage(byte[] ratchetTheirs, byte[]encryptMsg, IvParameterSpec iv, String theirs) {
         Session s = getSession(theirs);
         return Messages.receiveMsg(ratchetTheirs, encryptMsg, iv, s);

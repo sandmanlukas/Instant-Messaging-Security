@@ -49,7 +49,7 @@ public class Client {
                     String recipient = st.nextToken();
                     client.sendMessage(recipient, msgToSend, objectOutput);
 
-                    //Message m = new Message(" ",recipient,"message",msgToSend);
+                    /*//Message m = new Message(" ",recipient,"message",msgToSend);
                     //Message m = new Message(userName, recipient, "message", msgToSend);
 
                     try {
@@ -60,7 +60,7 @@ public class Client {
 
                         e.printStackTrace();
 
-                    }
+                    }*/
                 }
             }
         });
@@ -82,6 +82,7 @@ public class Client {
                                 objectOutput.writeObject(m);
                                 break;
                             case "usernameRec":
+                                //sets up a message to transfer preKeyBundlePublic to server
                                 byte[] publicIdentityKey = preKeys.getPublicKeys().getPublicIdentityKey();
                                 byte[] publicPreKey = preKeys.getPublicKeys().getPublicPreKey();
                                 byte[] signedPublicPreKey = preKeys.getPublicKeys().getSignedPublicPreKey();
@@ -89,33 +90,41 @@ public class Client {
                                 keys[0] = publicIdentityKey;
                                 keys[1] = publicPreKey;
                                 keys[2] = signedPublicPreKey;
-
                                 for(int i = 0; i < preKeys.getPublicKeys().getPublicOneTimePreKeys().size(); i++) {
                                  keys[3 + i] = preKeys.getPublicKeys().getPublicOneTimePreKey(i);
                                 }
+
                                 m = new Message(userName, "Server", "initMsg", keys);
                                 objectOutput.writeObject(m);
+
                                 break;
                             case "initRec":
+                                //Affirms that the server has received preKeyBundlePublic
                                 break;
                             case "publicBundleRequestRec":
-                                System.out.println("bob preKeys received");
+                                //their preKeyBundlePublic has been received and is formated
                                 byte[][] serverKeys = (byte[][]) msg.getMsg();
                                 ArrayList<byte[]> arrayKeys = new ArrayList<>();
                                 for(int i = 3; i < serverKeys.length; i++) {
                                     arrayKeys.add(serverKeys[i]);
                                 }
                                 preKeyBundlePublic preKeys = new preKeyBundlePublic(serverKeys[0], serverKeys[1], serverKeys[2], arrayKeys);
+
+                                //Creates a session and equips their preKeyBundlePublic to the session
                                 Session s = client.getSession(msg.getSnd());
                                 s.setTheirBundle(preKeys);
+
+                                //performs an initialization where the generated keys are equipped to the the session
                                 MutableTriple<byte[], byte[], ArrayList<byte[]>> derivedKeys = Initialization.serverBundleResponse(s, preKeys);
+
+                                //makes the generated keys serializable by putting them in a 2D byte array
                                 byte[][] sendKeys = new byte[2 + preKeys.getPublicOneTimePreKeys().size()][];
                                 sendKeys[0] = derivedKeys.left;
                                 sendKeys[1] = derivedKeys.middle;
-
                                 for(int i = 0; i < derivedKeys.right.size(); i++) {
                                     sendKeys[2 + i] = derivedKeys.right.get(i);
                                 }
+                                //makes the preKeyBundlePublic serializable by putting it in a 2D byte array
                                 preKeyBundlePublic ourBundle = client.getPreKeys().getPublicKeys();
                                 byte[] ourPublicIdentityKey = ourBundle.getPublicIdentityKey();
                                 byte[] ourPublicPreKey = ourBundle.getPublicPreKey();
@@ -127,31 +136,42 @@ public class Client {
                                 for(int i = 0; i < ourBundle.getPublicOneTimePreKeys().size(); i++) {
                                     ourKeys[3 + i] = ourBundle.getPublicOneTimePreKey(i);
                                 }
-                                byte[][][] result = new byte[3][][];
-                                result[0] = sendKeys;
-                                result[1] = ourKeys;
-                                //test
+
+                                //encrypts the first message send by us and make it serializable
                                 String initMsg = client.getInitMsg();
                                 byte[] initMsgKey = s.firstMsgKey;
                                 Pair<byte[], IvParameterSpec> firstMsg = AES_encryption.encrypt(initMsg, initMsgKey, s);
                                 byte[][] firstMsgResult = new byte[2][];
                                 firstMsgResult[0] = firstMsg.first();
                                 firstMsgResult[1] = firstMsg.second().getIV();
+
+                                //generate a container for the serialized objects, a 3D byte array, and insert them
+                                byte[][][] result = new byte[3][][];
+                                result[0] = sendKeys;
+                                result[1] = ourKeys;
                                 result[2] = firstMsgResult;
+
                                 m = new Message(client.getUsername(), msg.getSnd(),"firstStep",result);
                                 objectOutput.writeObject(m);
 
                                 break;
                             case "firstStep":
+
+                                //retrives the objects from the 3D container
                                 byte[][][] received = (byte[][][]) msg.getMsg();
                                 byte[][] first = received[0];
                                 byte[][] theirsBundle = received[1];
+                                byte[][] firstMsgRecieved = received[2];
+
+                                //retrives their generated keys
                                 byte[] theirsEphemeralPublic = first[0];
                                 byte[] theirsRatchetPublic = first[1];
                                 ArrayList<byte[]> theirsEphemeralKeys = new ArrayList<>();
                                 for(int i = 2; i < first.length; i++) {
                                     theirsEphemeralKeys.add(first[i]);
                                 }
+
+                                //retrives their preKeyBundlePublic
                                 byte[] theirsPublicIdentityKey = theirsBundle[0];
                                 byte[] theirsPublicPreKey = theirsBundle[1];
                                 byte[] theirsSignedPublicPreKey = theirsBundle[2];
@@ -161,17 +181,23 @@ public class Client {
                                 }
                                 preKeyBundlePublic theirsPreKeys = new preKeyBundlePublic(theirsPublicIdentityKey, theirsPublicPreKey, theirsSignedPublicPreKey, theirsOneTimePreKeys);
 
+                                //crates a session for the sender and adds it to our client
                                 Session session = Initialization.establishContact(theirsEphemeralPublic, theirsRatchetPublic, theirsPreKeys, client.getUsername(), msg.sender, client.getPreKeys());
                                 client.addSession(session);
-                                byte[][] firstMsgRecieved = received[2];
+
+                                //decrypts the first received message and print it in the console
                                 String fMsg = AES_encryption.decrypt(firstMsgRecieved[0], session.firstMsgKey, new IvParameterSpec(firstMsgRecieved[1]), session);
                                 System.out.println(msg.getSnd() + ": " + fMsg);
+
                                 break;
                             case "encryptMsg":
+                                //retrives the recieved message, their ratchet and the IV
                                 byte[][] receivedMsg = (byte[][]) msg.getMsg();
                                 byte[] theirPublicRatchetKey = receivedMsg[0];
                                 byte[] encryptedMsg = receivedMsg[1];
                                 IvParameterSpec iv = new IvParameterSpec(receivedMsg[2]);
+
+                                //Decrypts the message and updates the session, then print it in the console
                                 String message = client.receiveMessage(theirPublicRatchetKey, encryptedMsg, iv, msg.sender);
                                 System.out.println(msg.getSnd() + ": " + message);
                                 break;

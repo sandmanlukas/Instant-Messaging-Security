@@ -108,10 +108,8 @@ public class Initialization {
         //equip to session
         session.setTheirBundle(bundleTheirs);
         session.setRatchetKeyTheirPublic(ratchetTheirs);
-        //System.out.println("RatchetKeyTheirPublic: " + session.getRatchetKeyTheirPublic()+ " session name: " + session.getOurs());
         session.setRootKeyOurs(root2);
         session.setFirstMsgKey(message);
-        //testClient.addSession(session);
         return session;
     }
 

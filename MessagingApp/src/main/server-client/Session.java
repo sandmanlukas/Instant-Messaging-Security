@@ -16,12 +16,7 @@ public class Session {
         this.ours = ours;
         this.theirs = theirs;
     }
-
-
-
-
-
-
+    
     Session(String ours, String theirs, preKeyBundle ourBundle, preKeyBundlePublic theirBundle) {
         this.ours = ours;
         this.theirs = theirs;

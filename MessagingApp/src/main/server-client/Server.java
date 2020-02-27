@@ -47,6 +47,7 @@ public class Server {
             // Create a new Thread with this object.
             Thread t = new Thread(mtch);
 
+            //Sends and initial message to the client in order received its username and its preKeyBundlePublic
             Message m = new Message("Server", "client" + i, "usernameMsg", "");
             dos.writeObject(m);
   
@@ -98,30 +99,33 @@ class ClientHandler implements Runnable {
             try {
                 // receive the object
                 Message msg = (Message) dis.readObject();
-                //System.out.println(msg.getType());
 
                 switch(msg.getType()) {
                     case "usernameMsg":
                         for(ClientHandler mc : Server.ar) {
-                            //System.out.println(mc.name);
                             if (mc.name.equals(msg.getSnd())) {
+
+                                //Sets the users name according to their choice, sends a message to verify the change
                                 mc.setName((String) msg.getMsg());
                                 Message m = new Message("Server", mc.name, "usernameRec", "");
                                 mc.dos.writeObject(m);
-                                //System.out.println(msg.getType());
                                 break;
                             }
                         }
                         break;
+
                     case "initMsg":
                         for(ClientHandler mc : Server.ar) {
                             if (mc.name.equals(msg.getSnd())) {
+
+                                //retrives the preKeyBundlePublic and formats it
                                 byte[][] keys = (byte[][]) msg.getMsg();
                                 ArrayList<byte[]> arrayKeys = new ArrayList<>();
                                 for(int i = 3; i < keys.length; i++) {
                                     arrayKeys.add(keys[i]);
                                 }
-                                //System.out.println(msg.getType());
+
+                                //Adds the client to a map of clients, then sends an verification message
                                 Server.server.addClient(mc.name, new preKeyBundlePublic(keys[0], keys[1], keys[2], arrayKeys));
                                 Message m = new Message("Server", mc.name, "initRec", "");
                                 mc.dos.writeObject(m);
@@ -129,9 +133,12 @@ class ClientHandler implements Runnable {
                             }
                         }
                         break;
+
                     case "publicBundleRequest":
                         for(ClientHandler mc : Server.ar) {
                             if (mc.name.equals(msg.getSnd())) {
+
+                                //retrives the requested preKeyBundlePublic and make it serializable by putting it in a 2D byte array
                                 preKeyBundlePublic preKeys = Server.server.getClient(msg.getRec());
                                 byte[] publicIdentityKey = preKeys.getPublicIdentityKey();
                                 byte[] publicPreKey = preKeys.getPublicPreKey();
@@ -140,26 +147,33 @@ class ClientHandler implements Runnable {
                                 keys[0] = publicIdentityKey;
                                 keys[1] = publicPreKey;
                                 keys[2] = signedPublicPreKey;
-
                                 for(int i = 0; i < preKeys.getPublicOneTimePreKeys().size(); i++) {
                                     keys[3 + i] = preKeys.getPublicOneTimePreKey(i);
                                 }
+
                                 Message m = new Message(msg.getRec(), mc.name, "publicBundleRequestRec", keys);
                                 mc.dos.writeObject(m);
                                 break;
                             }
                         }
                         break;
-                    default:
-                        String recipient = msg.getRec();
-                        System.out.println("Forwarded a message");
-                        // search for the recipient in the connected devices list.
-                        // ar is the vector storing client of active users
-                        for (ClientHandler mc2 : Server.ar) {
-                            // if the recipient is found, write on its
-                            // output stream
-                            if (mc2.name.equals(recipient) && mc2.isloggedin) {
 
+                    case "logout":
+                        for (ClientHandler mc : Server.ar) {
+                            if (mc.name.equals(msg.getSnd())) {
+                                //silently close the connection for the user
+                                this.isloggedin = false;
+                                this.s.close();
+                                break;
+                            }
+                        }
+                        break;
+                    default:
+                        System.out.println("Forwarded a message");
+                        for (ClientHandler mc2 : Server.ar) {
+
+                            //forwards the message to the correct online user
+                            if (mc2.name.equals(msg.getRec()) && mc2.isloggedin) {
                                 mc2.dos.writeObject(msg);
                                 break;
                             }
@@ -167,26 +181,11 @@ class ClientHandler implements Runnable {
                         break;
                 }
 
-                // if(received.equals("logout")){
-                if ((msg.getType()).equals("logout")) {
-                    this.isloggedin = false;
-                    this.s.close();
-                    break;
-                }
-
             } catch (Exception e) {
 
                 e.printStackTrace();
             }
 
-        }
-        try {
-            // closing resources
-            this.dis.close();
-            this.dos.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }
