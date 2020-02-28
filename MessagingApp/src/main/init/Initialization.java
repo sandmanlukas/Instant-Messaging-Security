@@ -6,6 +6,7 @@ import org.whispersystems.libsignal.kdf.DerivedRootSecrets;
 import org.whispersystems.libsignal.kdf.HKDF;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Initialization {
     static final byte [] info = new byte [0];
@@ -63,6 +64,13 @@ public class Initialization {
         byte[] ephemeralPublic = ephemeralKeyPair.getPublicKey();
         byte[] ratchetPublic = ratchetKeyPair.getPublicKey();
 
+        //create a mac key and set it to session
+        MAC.getMac(secret3,
+                theirs.getPublicIdentityKey(),
+                session.getOurBundle().getPublicKeys().getPublicIdentityKey(),
+                message,
+                session);
+
         //equip keys to session
         session.setTheirBundle(theirs);
         session.setRatchetKeyOurs(ratchetKeyPair);
@@ -106,12 +114,20 @@ public class Initialization {
         byte [] message = rootSecrets3.getRootKey();
         byte [] finalChain = rootSecrets3.getChainKey();
 
+        //create a mac key and set it to session
+        MAC.getMac(secret3,
+                bundleTheirs.getPublicIdentityKey(),
+                session.getOurBundle().getPublicKeys().getPublicIdentityKey(),
+                message,
+                session);
+
         //equip to session
         session.setTheirBundle(bundleTheirs);
         session.setRatchetKeyTheirPublic(ratchetTheirs);
         session.setRootKeyOurs(root2);
         session.setFirstMsgKey(message);
         session.setChainKey(finalChain);
+        
         return session;
     }
 
