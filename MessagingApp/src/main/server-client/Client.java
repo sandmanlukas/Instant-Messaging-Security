@@ -201,6 +201,18 @@ public class Client {
                                 String message = client.receiveMessage(theirPublicRatchetKey, encryptedMsg, iv, msg.sender);
                                 System.out.println(msg.getSnd() + ": " + message);
                                 break;
+                            case "noResponseEncryptMsg":
+
+                                //update the message and the chain key
+                                session = client.getSession(msg.getSnd());
+                                session = Initialization.noResponseKeyUpdate(session);
+
+                                //decrypt received message
+                                firstMsgRecieved = (byte[][]) msg.getMsg();
+                                fMsg = AES_encryption.decrypt(firstMsgRecieved[0], session.firstMsgKey, new IvParameterSpec(firstMsgRecieved[1]), session);
+                                System.out.println(msg.getSnd() + ": " + fMsg);
+
+                                break;
                             default:
                                 break;
                         }

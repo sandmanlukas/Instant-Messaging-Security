@@ -1,4 +1,5 @@
 import org.apache.commons.lang3.tuple.MutableTriple;
+import org.whispersystems.libsignal.util.Pair;
 
 import javax.crypto.spec.IvParameterSpec;
 import java.io.ObjectOutputStream;
@@ -70,27 +71,49 @@ public class testClient {
 
         else {
 
-            //encrypts the message using the current keys for the session
-            MutableTriple<byte[], byte[], IvParameterSpec> result = Messages.sendMsg(msg, s);
+            if (s.getRatchetKeyTheirPublic() == null) {
+                //updates message- and chain key
+                s = Initialization.noResponseKeyUpdate(s);
 
-            //make the encrypted message serializable by putting it into a 2D byte array
-            byte[] ourPublicRatchetKey = result.left;
-            byte[] encryptedMsg = result.middle;
-            byte[] iv = result.right.getIV();
-            byte[][] toBeSent = new byte[3][];
-            toBeSent[0] = ourPublicRatchetKey;
-            toBeSent[1] = encryptedMsg;
-            toBeSent[2] = iv;
+                //encrypts the message using the current keys for the session
+                byte[] initMsgKey = s.firstMsgKey;
+                Pair<byte[], IvParameterSpec> firstMsg = AES_encryption.encrypt(initMsg, initMsgKey, s);
+                byte[][] firstMsgResult = new byte[2][];
+                firstMsgResult[0] = firstMsg.first();
+                firstMsgResult[1] = firstMsg.second().getIV();
 
-            //sends the message to the recipient
-            Message m = new Message(getUsername(), recipient, "encryptMsg", toBeSent);
-            try {
-                // write on the output stream
-                objectOutput.writeObject(m);
+                //sends the message to the recipient
+                Message m = new Message(getUsername(), recipient, "noResponseEncryptMsg", firstMsgResult);
+                try {
+                    // write on the output stream
+                    objectOutput.writeObject(m);
+                } catch (Exception e) {
+                    e.printStackTrace();
+
+                }
             }
-            catch (Exception e){
-                e.printStackTrace();
+            else {
+                //encrypts the message using the current keys for the session
+                MutableTriple<byte[], byte[], IvParameterSpec> result = Messages.sendMsg(msg, s);
 
+                //make the encrypted message serializable by putting it into a 2D byte array
+                byte[] ourPublicRatchetKey = result.left;
+                byte[] encryptedMsg = result.middle;
+                byte[] iv = result.right.getIV();
+                byte[][] toBeSent = new byte[3][];
+                toBeSent[0] = ourPublicRatchetKey;
+                toBeSent[1] = encryptedMsg;
+                toBeSent[2] = iv;
+
+                //sends the message to the recipient
+                Message m = new Message(getUsername(), recipient, "encryptMsg", toBeSent);
+                try {
+                    // write on the output stream
+                    objectOutput.writeObject(m);
+                } catch (Exception e) {
+                    e.printStackTrace();
+
+                }
             }
         }
     }

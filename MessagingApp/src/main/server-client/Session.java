@@ -11,12 +11,13 @@ public class Session {
     byte[] rootKeyOurs;
     byte[] tempKeyOurs;
     byte[] firstMsgKey;
+    byte[] chainKey;
 
     Session(String ours, String theirs) {
         this.ours = ours;
         this.theirs = theirs;
     }
-    
+
     Session(String ours, String theirs, preKeyBundle ourBundle, preKeyBundlePublic theirBundle) {
         this.ours = ours;
         this.theirs = theirs;
@@ -70,6 +71,8 @@ public class Session {
     public void setFirstMsgKey(byte[] msgKey) {
         firstMsgKey = msgKey;
     }
+
+    public void setChainKey(byte[] chainKey) { this.chainKey = chainKey; }
 
     public void setTheirBundle(preKeyBundlePublic theirBundle) {
         this.theirBundle = theirBundle;

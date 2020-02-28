@@ -68,6 +68,7 @@ public class Initialization {
         session.setRatchetKeyOurs(ratchetKeyPair);
         session.setRootKeyOurs(root2);
         session.setFirstMsgKey(message);
+        session.setChainKey(realChain);
 
         return new MutableTriple<>(ephemeralPublic, ratchetPublic, theirs.getPublicOneTimePreKeys());
     }
@@ -110,7 +111,21 @@ public class Initialization {
         session.setRatchetKeyTheirPublic(ratchetTheirs);
         session.setRootKeyOurs(root2);
         session.setFirstMsgKey(message);
+        session.setChainKey(finalChain);
         return session;
     }
 
+    //Updates the message key when no respone is received
+    public static Session noResponseKeyUpdate(Session session) {
+
+        byte[] secret = kdf.deriveSecrets(session.chainKey, info, 64);
+        DerivedRootSecrets root = new DerivedRootSecrets(secret);
+        byte[] message = root.getRootKey();
+        byte[] chain = root.getChainKey();
+
+        session.setChainKey(chain);
+        session.setFirstMsgKey(message);
+
+        return session;
+    }
 }
