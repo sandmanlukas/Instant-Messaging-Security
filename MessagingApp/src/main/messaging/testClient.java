@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class testClient {
 
-    Curve curveClass = new Curve();
+    //Curve curveClass = new Curve();
 
     private final String username;
     private final preKeyBundle preKeys;
@@ -79,6 +79,7 @@ public class testClient {
                 byte[] initMsgKey = s.firstMsgKey;
                 Pair<byte[], IvParameterSpec> firstMsg = AES_encryption.encrypt(initMsg, initMsgKey, s);
                 byte[][] firstMsgResult = new byte[2][];
+                assert firstMsg != null;
                 firstMsgResult[0] = firstMsg.first();
                 firstMsgResult[1] = firstMsg.second().getIV();
 
@@ -118,16 +119,6 @@ public class testClient {
         }
     }
 
-    /*public void receiveMessage(preKeyBundlePublic theirsPublic, String theirs) {
-
-        Session session = Initialization.startSession(getPreKeys(), getUsername(), theirs);
-        MutableTriple<byte [], byte [], ArrayList<byte []>> data = Initialization.serverBundleResponse(session, theirsPublic);
-    }
-
-    public void receiveMessage(byte [] ephemeralTheirs, byte [] ratchetTheirs, preKeyBundlePublic bundleTheirs, String theirs ) {
-        Initialization.establishContact(ephemeralTheirs, ratchetTheirs, bundleTheirs,getUsername(),theirs,getPreKeys());
-    }
-    */
     public String receiveMessage(byte[] ratchetTheirs, byte[]encryptMsg, IvParameterSpec iv, String theirs) {
         Session s = getSession(theirs);
         return Messages.receiveMsg(ratchetTheirs, encryptMsg, iv, s);

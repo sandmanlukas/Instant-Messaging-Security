@@ -4,7 +4,6 @@ import org.whispersystems.curve25519.Curve25519KeyPair;
 import org.whispersystems.libsignal.kdf.DerivedRootSecrets;
 import org.whispersystems.libsignal.kdf.HKDF;
 import org.whispersystems.libsignal.util.Pair;
-
 import javax.crypto.spec.IvParameterSpec;
 
 public class Messages {
@@ -54,7 +53,7 @@ public class Messages {
         byte [] secrets2 = kdf.deriveSecrets(chain, Initialization.info,64);
         DerivedRootSecrets rootSecrets2 = new DerivedRootSecrets(secrets2);
         byte [] message = rootSecrets2.getRootKey();
-        byte [] finalChain = rootSecrets2.getChainKey();
+        //byte [] finalChain = rootSecrets2.getChainKey();
         session.setTempKeyOurs(temp);
         return message;
     }

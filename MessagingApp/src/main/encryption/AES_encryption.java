@@ -4,13 +4,16 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class AES_encryption {
+    /*
+    private final byte [] senderIdentity;
+    private final byte [] receiverIdentity;
     private final SecretKeySpec   cipherKey;
     private final SecretKeySpec   macKey;
     private final IvParameterSpec iv;
-    private final byte [] senderIdentity;
-    private final byte [] receiverIdentity;
 
-    public AES_encryption(SecretKeySpec cipherKey, SecretKeySpec macKey, IvParameterSpec iv, byte [] senderIdentity,
+
+
+     public AES_encryption(SecretKeySpec cipherKey, SecretKeySpec macKey, IvParameterSpec iv, byte [] senderIdentity,
                           byte [] receiverIdentity) {
         this.cipherKey = cipherKey;
         this.macKey = macKey;
@@ -18,6 +21,8 @@ public class AES_encryption {
         this.senderIdentity = senderIdentity;
         this.receiverIdentity = receiverIdentity;
     }
+     */
+
 
     /*
       encrypts a plaintext message with AES encryption and also creates a MAC-key to be able to
@@ -74,18 +79,4 @@ public class AES_encryption {
     }
 
 
-
-    public SecretKeySpec getCipherKey() {
-        return cipherKey;
-    }
-
-    public SecretKeySpec getMacKey() {
-        return macKey;
-    }
-
-    public IvParameterSpec getIv() { return iv; }
-
-    public byte [] getSenderIdentity(){return senderIdentity;}
-
-    public byte[] getReceiverIdentity() { return receiverIdentity; }
 }

@@ -18,7 +18,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="Instant-Messaging-Security" />
     <orderEntry type="library" name="Maven: org.whispersystems:curve25519-java:0.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.whispersystems:signal-protocol-java:2.8.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-javalite:3.10.0" level="project" />

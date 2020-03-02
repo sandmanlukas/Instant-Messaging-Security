@@ -1,4 +1,3 @@
-import org.apache.commons.lang3.tuple.MutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
@@ -6,7 +5,6 @@ import org.whispersystems.curve25519.JCESha512Provider;
 import org.whispersystems.curve25519.java.curve_sigs;
 import org.whispersystems.libsignal.util.Pair;
 
-import javax.crypto.spec.IvParameterSpec;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 
@@ -34,13 +32,13 @@ public class Curve {
         byte[] ephemeralKeyTheirs = serverBundle.getLeft();
         byte[] ratchetKeyTheirs = serverBundle.getMiddle();
 
-       BobSession = Initialization.establishContact(ephemeralKeyTheirs, ratchetKeyTheirs, AliceSession.getOurBundle().getPublicKeys(),BobSession.getOurs(), AliceSession.getOurs(),BobSession.getOurBundle());
+       //BobSession = Initialization.establishContact(ephemeralKeyTheirs, ratchetKeyTheirs, AliceSession.getOurBundle().getPublicKeys(),BobSession.getOurs(), AliceSession.getOurs(),BobSession.getOurBundle());
 
+       /*
         MutableTriple<byte[], byte[], IvParameterSpec> msg = Messages.sendMsg("hej", BobSession);
         String msgRe = Messages.receiveMsg(msg.left, msg.middle, msg.right, AliceSession);
 
-        //System.out.println(msgRe);
-        /*
+
                 msg = Messages.sendMsg("hej2", BobSession);
         msgRe = Messages.receiveMsg(msg.left, msg.middle, msg.right, AliceSession);
 
@@ -54,23 +52,6 @@ public class Curve {
         msg = Messages.sendMsg("test", BobSession);
         msgRe = Messages.receiveMsg(msg.left,msg.middle, msg.right, AliceSession);
          */
-
-
-        byte [] sender = AliceSession.getOurBundle().getPublicKeys().getPublicIdentityKey();
-        byte [] receiver = BobSession.ratchetKeyTheirPublic;
-        byte [] sendSecret = Messages.generateSecretSend(AliceSession).first();
-        //System.out.println("SecretSecret: " + Arrays.toString(sendSecret));
-
-        byte [] receiveSecret = Messages.generateSecretSend(AliceSession).first();
-
-       //byte [] mac1 = AES_encryption.getMac(sendSecret, receiver, sender);
-       //byte [] mac2 = AES_encryption.getMac(sendSecret, sender, receiver);
-
-        //System.out.println("Mac1: " + Arrays.toString(mac1));
-        //System.out.println("Mac2: " + Arrays.toString(mac2));
-
-
-
 
     }
 
