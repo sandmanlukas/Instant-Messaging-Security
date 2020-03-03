@@ -1,12 +1,9 @@
-import org.apache.commons.lang3.tuple.MutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
 import org.whispersystems.curve25519.JCESha512Provider;
 import org.whispersystems.curve25519.java.curve_sigs;
 import org.whispersystems.libsignal.util.Pair;
 
-import javax.crypto.spec.IvParameterSpec;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 
@@ -20,7 +17,7 @@ public class Curve {
 
         Curve curveClass = new Curve();
 
-        preKeyBundle pk1 = curveClass.generatePreKeyBundle();
+       /* preKeyBundle pk1 = curveClass.generatePreKeyBundle();
         preKeyBundle pk2 = curveClass.generatePreKeyBundle();
 
         Session AliceSession = Initialization.startSession(pk1,"Alice", "Bob");
@@ -68,7 +65,7 @@ public class Curve {
         //System.out.println("Mac2: " + Arrays.toString(mac2));
 
 
-
+*/
 
     }
 

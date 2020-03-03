@@ -42,12 +42,54 @@ public class Client {
             @Override
             public void run() {
                 while (true) {
-                    // read the message to deliver.
+                    // read the message to deliver
                     String msg = scn.nextLine();
-                    StringTokenizer st = new StringTokenizer(msg, "#");
-                    String msgToSend = st.nextToken();
-                    String recipient = st.nextToken();
-                    client.sendMessage(recipient, msgToSend, objectOutput);
+                    StringTokenizer st = new StringTokenizer(msg, " ");
+                    String command = st.nextToken();
+                    String groupName;
+                    String msgToSend;
+                    Message m;
+                    switch(command.charAt(1)) {
+                        case 'm':
+                            String recipient = st.nextToken();
+                            msgToSend = msg.substring(command.length() + recipient.length() + 2);
+                            client.sendMessage(recipient, msgToSend, objectOutput);
+                            break;
+                        case 'c':
+                            groupName = st.nextToken();
+                            client.addGroup(groupName);
+                            client.addGroupMember(groupName, client.getUsername());
+                            System.out.println("Group " + "\"" + groupName + "\"" + " was created!");
+                            break;
+                        case 'i':
+                            String user = st.nextToken();
+                            groupName = st.nextToken();
+                            client.addGroupMember(groupName, user);
+                            int size = client.getGroupMembers(groupName).size();
+                            String[] members = new String[size];
+                            for(int i = 0; i < size; i++) {
+                                members[i] = client.getGroupMembers(groupName).get(i);
+                            }
+                            client.getGroupMembers(groupName).forEach((u) -> {
+                                if(!client.getUsername().equals(u)) {
+                                    Message message = new Message(groupName, u, "userInvite", members);
+                                    try {
+                                        objectOutput.writeObject(message);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                            break;
+                        case 'g':
+                            String group = st.nextToken();
+                            msgToSend = msg.substring(command.length() + group.length() + 2);
+                            client.sendGroupMessage(group, msgToSend, objectOutput);
+                            break;
+                        default:
+                            System.out.println("Unknown command!");
+                            break;
+                    }
 
                     /*//Message m = new Message(" ",recipient,"message",msgToSend);
                     //Message m = new Message(userName, recipient, "message", msgToSend);
@@ -80,6 +122,26 @@ public class Client {
                             case "usernameMsg":
                                 m = new Message(msg.getRec(), "Server", "usernameMsg", userName);
                                 objectOutput.writeObject(m);
+                                break;
+                            case "userInvite":
+                                String[] users = (String[]) msg.getMsg();
+                                String groupName = msg.getSnd();
+
+                                if (client.getGroupMembers(groupName) == null) {
+                                    client.addGroup(groupName);
+                                    for (int i = 0; i < users.length; i++) {
+                                        System.out.println(users[i]);
+                                        client.addGroupMember(groupName, users[i]);
+                                    }
+                                }
+                                else {
+                                    for(int i = 0; i < users.length; i++) {
+                                        System.out.println(users[i]);
+                                        if(!client.getGroupMembers(groupName).contains(users[i])) {
+                                            client.addGroupMember(groupName, users[i]);
+                                        }
+                                    }
+                                }
                                 break;
                             case "usernameRec":
                                 //sets up a message to transfer preKeyBundlePublic to server
@@ -125,7 +187,7 @@ public class Client {
                                     sendKeys[2 + i] = derivedKeys.right.get(i);
                                 }
                                 //makes the preKeyBundlePublic serializable by putting it in a 2D byte array
-                                preKeyBundlePublic ourBundle = client.getPreKeys().getPublicKeys();
+                                preKeyBundlePublic ourBundle = s.getOurBundle().getPublicKeys();
                                 byte[] ourPublicIdentityKey = ourBundle.getPublicIdentityKey();
                                 byte[] ourPublicPreKey = ourBundle.getPublicPreKey();
                                 byte[] ourSignedPublicPreKey = ourBundle.getSignedPublicPreKey();
@@ -151,7 +213,7 @@ public class Client {
                                 result[1] = ourKeys;
                                 result[2] = firstMsgResult;
 
-                                m = new Message(client.getUsername(), msg.getSnd(),"firstStep",result);
+                                m = new Message(client.getUsername(), msg.getSnd(),"firstStep", result);
                                 objectOutput.writeObject(m);
 
                                 break;
@@ -182,12 +244,14 @@ public class Client {
                                 preKeyBundlePublic theirsPreKeys = new preKeyBundlePublic(theirsPublicIdentityKey, theirsPublicPreKey, theirsSignedPublicPreKey, theirsOneTimePreKeys);
 
                                 //crates a session for the sender and adds it to our client
-                                Session session = Initialization.establishContact(theirsEphemeralPublic, theirsRatchetPublic, theirsPreKeys, client.getUsername(), msg.sender, client.getPreKeys());
+                                Session session = Initialization.establishContact(theirsEphemeralPublic, theirsRatchetPublic, theirsPreKeys, client.getUsername(), msg.getSnd(), client.getPreKeys());
                                 client.addSession(session);
 
                                 //decrypts the first received message and print it in the console
+                                System.out.println(session.getOurs());
+                                System.out.println(session.getTheirs());
                                 String fMsg = AES_encryption.decrypt(firstMsgRecieved[0], session.firstMsgKey, new IvParameterSpec(firstMsgRecieved[1]), session);
-                                System.out.println(msg.getSnd() + ": " + fMsg);
+                                System.out.println("[" + msg.getSnd() + "] " + fMsg);
 
                                 break;
                             case "encryptMsg":
@@ -198,8 +262,8 @@ public class Client {
                                 IvParameterSpec iv = new IvParameterSpec(receivedMsg[2]);
 
                                 //Decrypts the message and updates the session, then print it in the console
-                                String message = client.receiveMessage(theirPublicRatchetKey, encryptedMsg, iv, msg.sender);
-                                System.out.println(msg.getSnd() + ": " + message);
+                                String message = client.receiveMessage(theirPublicRatchetKey, encryptedMsg, iv, msg.getSnd());
+                                System.out.println("[" + msg.getSnd() + "] " + message);
                                 break;
                             case "noResponseEncryptMsg":
 
@@ -210,8 +274,7 @@ public class Client {
                                 //decrypt received message
                                 firstMsgRecieved = (byte[][]) msg.getMsg();
                                 fMsg = AES_encryption.decrypt(firstMsgRecieved[0], session.firstMsgKey, new IvParameterSpec(firstMsgRecieved[1]), session);
-                                System.out.println(msg.getSnd() + ": " + fMsg);
-
+                                System.out.println("[" + msg.getSnd() + "] " + fMsg);
                                 break;
                             default:
                                 break;

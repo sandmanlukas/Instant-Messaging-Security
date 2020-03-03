@@ -6,20 +6,16 @@ import org.whispersystems.libsignal.kdf.DerivedRootSecrets;
 import org.whispersystems.libsignal.kdf.HKDF;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Initialization {
     static final byte [] info = new byte [0];
     static final Curve25519 curve = Curve25519.getInstance(Curve25519.BEST);
     static final HKDF kdf = HKDF.createFor(3);
     static final Curve curveClass = new Curve();
-    private static testClient client;
 
     public static Session startSession(preKeyBundle preKeys, String ours, String theirs) {
         Session session = new Session(ours, theirs);
         session.setOurBundle(preKeys);
-        client = new testClient(ours, preKeys);
-        client.addSession(session);
         return session;
     }
 
