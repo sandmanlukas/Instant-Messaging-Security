@@ -4,10 +4,10 @@ import Controller.Controller;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -55,15 +55,28 @@ public class GUIMain extends Application {
         login.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                CharSequence userImput;
-                CharSequence passImput;
-                userImput = username.getCharacters();
-                passImput = password.getCharacters();
+                CharSequence userInput;
+                CharSequence passInput;
+                userInput = username.getCharacters();
+                passInput = password.getCharacters();
 
-                cont.login(userImput, passImput);
+                //sends login input to Controller
+                cont.login(userInput, passInput);
+
+                //TODO open new page if input successful
+                mainChattPage(primaryStage);
 
             }
         });
+
+    }
+
+    public void mainChattPage(Stage primaryStage){
+
+        GridPane chattGrid = new GridPane();
+
+        primaryStage.setScene((new Scene(chattGrid, 700, 500)));
+        primaryStage.show();
 
     }
 }
