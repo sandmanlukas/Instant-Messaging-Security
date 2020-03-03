@@ -4,13 +4,16 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class AES_encryption {
+    /*
+    private final byte [] senderIdentity;
+    private final byte [] receiverIdentity;
     private final SecretKeySpec   cipherKey;
     private final SecretKeySpec   macKey;
     private final IvParameterSpec iv;
-    private final byte [] senderIdentity;
-    private final byte [] receiverIdentity;
 
-    public AES_encryption(SecretKeySpec cipherKey, SecretKeySpec macKey, IvParameterSpec iv, byte [] senderIdentity,
+
+
+     public AES_encryption(SecretKeySpec cipherKey, SecretKeySpec macKey, IvParameterSpec iv, byte [] senderIdentity,
                           byte [] receiverIdentity) {
         this.cipherKey = cipherKey;
         this.macKey = macKey;
@@ -18,9 +21,14 @@ public class AES_encryption {
         this.senderIdentity = senderIdentity;
         this.receiverIdentity = receiverIdentity;
     }
+     */
 
 
-    public static Pair<byte[], IvParameterSpec> encrypt(String stringToEncrypt, byte [] secret, Session session){
+    /*
+      encrypts a plaintext message with AES encryption and also creates a MAC-key to be able to
+      verify the corrects user receives the message
+     */
+    public static Pair<byte[], IvParameterSpec> encrypt (String stringToEncrypt, byte [] secret, Session session){
         try {
             Curve curveClass = new Curve();
 
@@ -49,6 +57,10 @@ public class AES_encryption {
         return null;
     }
 
+    /*
+    Method to decrypt encrypted messages. First checks so that the MAC-keys of the two clients match and thus
+    confirming the correct client sent the message and then decrypts the AES-encrypted message.
+     */
     public static String decrypt(byte[] encrypt, byte[] secret, IvParameterSpec iv, Session session) {
         try {
             MAC.verifyMac(session.getMacKey(), session);
@@ -67,18 +79,4 @@ public class AES_encryption {
     }
 
 
-
-    public SecretKeySpec getCipherKey() {
-        return cipherKey;
-    }
-
-    public SecretKeySpec getMacKey() {
-        return macKey;
-    }
-
-    public IvParameterSpec getIv() { return iv; }
-
-    public byte [] getSenderIdentity(){return senderIdentity;}
-
-    public byte[] getReceiverIdentity() { return receiverIdentity; }
 }

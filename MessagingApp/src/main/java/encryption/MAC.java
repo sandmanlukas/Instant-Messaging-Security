@@ -20,7 +20,7 @@ public class MAC {
         session.setMacKey(getMacKey());
     }
 
-
+    // method to generate and equip a MAC-key to a session
     public static void getMac(byte [] secret,
                               byte [] receiverIdentityPublic,
                               byte [] senderIdentityPublic,
@@ -33,16 +33,13 @@ public class MAC {
             mac.update(receiverIdentityPublic);
             mac.update(senderIdentityPublic);
             byte [] fullMac = mac.doFinal(message);
-            //session.setMacKey(fullMac);
-
-
             session.setMacKey(ByteUtil.trim(fullMac, MAC_LENGTH));
 
         } catch (NoSuchAlgorithmException | java.security.InvalidKeyException e) {
             throw new AssertionError(e);
         }
     }
-
+    // method to verify that two MAC-keys are the same, returns exception if that's not the case
     public static void verifyMac(
             byte [] mac,
             Session session

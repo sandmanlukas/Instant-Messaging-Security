@@ -31,17 +31,17 @@ public class Curve {
         byte[] ephemeralKeyTheirs = serverBundle.getLeft();
         byte[] ratchetKeyTheirs = serverBundle.getMiddle();
 
-       BobSession = Initialization.establishContact(ephemeralKeyTheirs, ratchetKeyTheirs, AliceSession.getOurBundle().getPublicKeys(),BobSession.getOurs(), AliceSession.getOurs(),BobSession.getOurBundle());
+       //BobSession = Initialization.establishContact(ephemeralKeyTheirs, ratchetKeyTheirs, AliceSession.getOurBundle().getPublicKeys(),BobSession.getOurs(), AliceSession.getOurs(),BobSession.getOurBundle());
 
+       /*
         MutableTriple<byte[], byte[], IvParameterSpec> msg = Messages.sendMsg("hej", BobSession);
         String msgRe = Messages.receiveMsg(msg.left, msg.middle, msg.right, AliceSession);
 
-        //System.out.println(msgRe);
 
-        msg = Messages.sendMsg("hej2", BobSession);
+                msg = Messages.sendMsg("hej2", BobSession);
         msgRe = Messages.receiveMsg(msg.left, msg.middle, msg.right, AliceSession);
 
-        //System.out.println(msgRe);
+        System.out.println(msgRe);
 
         msg = Messages.sendMsg("hej3", AliceSession);
         msgRe = Messages.receiveMsg(msg.left, msg.middle, msg.right, BobSession);
@@ -66,7 +66,6 @@ public class Curve {
 
 
 */
-
     }
 
     /**

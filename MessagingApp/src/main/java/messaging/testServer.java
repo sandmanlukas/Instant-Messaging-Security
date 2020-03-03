@@ -3,7 +3,7 @@ import java.util.HashMap;
 public class testServer {
 
     private int activeUsers;
-    public HashMap<String, preKeyBundlePublic> clients;
+    public final HashMap<String, preKeyBundlePublic> clients;
 
     public testServer() {
         activeUsers = 0;

@@ -5,8 +5,8 @@ import java.net.UnknownHostException;
 
 public class ChatClient {
 
-    private int port;
-    private String host;
+    private final int port;
+    private final String host;
     private String userName;
 
     public ChatClient(String host, int port) {
@@ -14,7 +14,7 @@ public class ChatClient {
         this.port = port;
     }
 
-    public void execute() throws IOException {
+    public void execute() {
         try {
             Socket socket = new Socket(host, port);
             System.out.println("Connected to the server successfully");
@@ -35,7 +35,7 @@ public class ChatClient {
         return this.userName;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         if (args.length < 2)
             return;
         String host = args[0];
