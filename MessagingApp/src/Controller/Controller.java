@@ -7,7 +7,7 @@ public class Controller {
 
     }
 
-
+        //might be boolean to see if inlog was successful
     public void login(CharSequence username, CharSequence password){
 
         //TODO call method in model/maine to log in

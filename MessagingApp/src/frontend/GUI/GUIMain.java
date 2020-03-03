@@ -7,8 +7,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 
@@ -64,18 +63,40 @@ public class GUIMain extends Application {
                 cont.login(userInput, passInput);
 
                 //TODO open new page if input successful
-                mainChattPage(primaryStage);
+                mainChatPage(primaryStage);
 
             }
         });
 
     }
 
-    public void mainChattPage(Stage primaryStage){
+    //The main page when logged in, where you can chat
+    //Panes colored only to make everything visible
+    public void mainChatPage(Stage primaryStage){
 
+        //list of active chats, or where to create new conversations
         GridPane chattGrid = new GridPane();
+        chattGrid.setScaleX(200);
+        chattGrid.setStyle("-fx-border-color: blue;");
 
-        primaryStage.setScene((new Scene(chattGrid, 700, 500)));
+        //shows conversations one at the time
+        BorderPane conversationGrid = new BorderPane();
+        conversationGrid.setScaleX(500);
+        conversationGrid.setStyle("-fx-border-color: #A9A9A9;");
+
+
+        //trying to add text field to write messages at the bottom of the left pane.....
+        /*
+        TextField writeMessage = new TextField();
+        writeMessage.setMaxSize(500,10);
+        writeMessage.setText("Write message here");
+        conversationGrid.setBottom(writeMessage);
+        */
+        BorderPane border = new BorderPane();
+        border.setRight(chattGrid);
+        border.setLeft(conversationGrid);
+
+        primaryStage.setScene((new Scene(border, 700, 500)));
         primaryStage.show();
 
     }
