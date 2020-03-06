@@ -1,4 +1,5 @@
 import java.io.*;
+import java.sql.SQLException;
 import java.util.*;
 import java.net.*;
 
@@ -12,12 +13,14 @@ public class Server {
     // counter for clients 
     static int i = 0;
 
+    public Server() throws SQLException, ClassNotFoundException {
+    }
 
-  
-    public static void main(String[] args) throws IOException  
+
+    public static void main(String[] args) throws IOException
     { 
         // server is listening on port 1234 
-        ServerSocket ss = new ServerSocket(1234); 
+        ServerSocket ss = new ServerSocket(8008);
           
         Socket s;
 
@@ -73,6 +76,7 @@ public class Server {
 // ClientHandler class
 class ClientHandler implements Runnable {
     Scanner scn = new Scanner(System.in);
+    PortalConnection conn = new PortalConnection();
     private String name;
     final ObjectOutputStream dos;
     final ObjectInputStream dis;
@@ -80,7 +84,7 @@ class ClientHandler implements Runnable {
     boolean isloggedin;
 
     // constructor
-    public ClientHandler(Socket s, String name, ObjectInputStream dis, ObjectOutputStream dos) {
+    public ClientHandler(Socket s, String name, ObjectInputStream dis, ObjectOutputStream dos) throws SQLException, ClassNotFoundException {
         this.dis = dis;
         this.dos = dos;
         this.name = name;
@@ -125,6 +129,29 @@ class ClientHandler implements Runnable {
                             }
                             break;
 
+                        case "newUser":
+                            for (ClientHandler mc : Server.ar) {
+                                if (mc.name.equals(msg.getSnd())) {
+                                    String hash = msg.getMsg().toString();
+                                    String userName = msg.getSnd();
+                                    conn.newUser(userName, hash);
+                                    System.out.println("newUser!!!");
+                                    break;
+                                }
+                            }
+                            break;
+                        case "login":
+                            for (ClientHandler mc : Server.ar) {
+                                if (mc.name.equals(msg.getSnd())) {
+                                    byte[] hash = (byte[]) msg.getMsg();
+                                    String hashString = hash.toString();
+                                    boolean result = conn.correctPassword(msg.getSnd(), hashString);
+                                    Message m = new Message("Server", mc.name, "loginAttempt", result);
+                                    mc.dos.writeObject(m);
+                                    break;
+                                }
+                            }
+                            break;
                         case "initMsg":
                             for (ClientHandler mc : Server.ar) {
                                 if (mc.name.equals(msg.getSnd())) {

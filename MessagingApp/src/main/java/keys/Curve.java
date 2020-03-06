@@ -80,10 +80,11 @@ public class Curve {
     }
 
     public Pair<ArrayList<byte[]>, ArrayList<byte[]>> generateEphemeralKeys() {
+        Curve25519KeyPair ephemeralKeys;
         ArrayList<byte[]> ephemeralPrivateKeys = new ArrayList<>();
         ArrayList<byte[]> ephemeralPublicKeys = new ArrayList<>();
         for (int i = 0; i < NUMBER_OF_EPHEMERAL_KEYS; i++) {
-            Curve25519KeyPair ephemeralKeys = curve.generateKeyPair();
+            ephemeralKeys = curve.generateKeyPair();
             ephemeralPrivateKeys.add(ephemeralKeys.getPrivateKey());
             ephemeralPublicKeys.add(ephemeralKeys.getPublicKey());
         }

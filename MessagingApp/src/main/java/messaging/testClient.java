@@ -101,7 +101,7 @@ public class testClient {
 
                 //encrypts the message using the current keys for the session
                 byte[] initMsgKey = s.firstMsgKey;
-                Pair<byte[], IvParameterSpec> firstMsg = AES_encryption.encrypt(initMsg, initMsgKey, s);
+                Pair<byte[], IvParameterSpec> firstMsg = AES_encryption.encrypt(getInitMsg(), initMsgKey, s);
                 byte[][] firstMsgResult = new byte[2][];
                 assert firstMsg != null;
                 firstMsgResult[0] = firstMsg.first();

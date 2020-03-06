@@ -8,11 +8,12 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
 public class Client {
-    final static int ServerPort = 1234;
+    final static int ServerPort = 8008;
     public static testClient client;
 
     public static void main(String args[]) throws IOException, ClassNotFoundException {
@@ -32,10 +33,16 @@ public class Client {
         preKeyBundle preKeys = curveClass.generatePreKeyBundle();
 
         client = new testClient(userName, preKeys);
+        System.out.println("Outside before: "+ Arrays.toString(client.getPreKeys().getPublicKeys().getPublicOneTimePreKey(0)));
+        System.out.println("Outside before: "+ Arrays.toString(client.getPreKeys().getPublicKeys().getPublicOneTimePreKey(0)));
 
         // obtaining input and out streams
         ObjectOutputStream objectOutput = new ObjectOutputStream(s.getOutputStream());
         ObjectInputStream objectInput = new ObjectInputStream(s.getInputStream());
+
+        byte[] hash = {1,2,3};
+        Message m = new Message("Henrik", "Server", "newUser", hash);
+        objectOutput.writeObject(m);
 
         // sendMessage thread
         Thread sendMessage = new Thread(new Runnable() {
@@ -129,9 +136,9 @@ public class Client {
 
                                 if (client.getGroupMembers(groupName) == null) {
                                     client.addGroup(groupName);
-                                    for (int i = 0; i < users.length; i++) {
-                                        System.out.println(users[i]);
-                                        client.addGroupMember(groupName, users[i]);
+                                    for (int j = 0; j < users.length; j++) {
+                                        System.out.println(users[j]);
+                                        client.addGroupMember(groupName, users[j]);
                                     }
                                 }
                                 else {
@@ -167,8 +174,8 @@ public class Client {
                                 //their preKeyBundlePublic has been received and is formated
                                 byte[][] serverKeys = (byte[][]) msg.getMsg();
                                 ArrayList<byte[]> arrayKeys = new ArrayList<>();
-                                for(int i = 3; i < serverKeys.length; i++) {
-                                    arrayKeys.add(serverKeys[i]);
+                                for(int k = 3; k < serverKeys.length; k++) {
+                                    arrayKeys.add(serverKeys[k]);
                                 }
                                 preKeyBundlePublic preKeys = new preKeyBundlePublic(serverKeys[0], serverKeys[1], serverKeys[2], arrayKeys);
 
@@ -180,7 +187,7 @@ public class Client {
                                 MutableTriple<byte[], byte[], ArrayList<byte[]>> derivedKeys = Initialization.serverBundleResponse(s, preKeys);
 
                                 //makes the generated keys serializable by putting them in a 2D byte array
-                                byte[][] sendKeys = new byte[2 + preKeys.getPublicOneTimePreKeys().size()][];
+                                byte[][] sendKeys = new byte[2 + derivedKeys.right.size()][];
                                 sendKeys[0] = derivedKeys.left;
                                 sendKeys[1] = derivedKeys.middle;
                                 for(int i = 0; i < derivedKeys.right.size(); i++) {
@@ -195,8 +202,8 @@ public class Client {
                                 ourKeys[0] = ourPublicIdentityKey;
                                 ourKeys[1] = ourPublicPreKey;
                                 ourKeys[2] = ourSignedPublicPreKey;
-                                for(int i = 0; i < ourBundle.getPublicOneTimePreKeys().size(); i++) {
-                                    ourKeys[3 + i] = ourBundle.getPublicOneTimePreKey(i);
+                                for(int j = 0; j < ourBundle.getPublicOneTimePreKeys().size(); j++) {
+                                    ourKeys[3 + j] = ourBundle.getPublicOneTimePreKey(j);
                                 }
 
                                 //encrypts the first message send by us and make it serializable
@@ -247,9 +254,8 @@ public class Client {
                                 Session session = Initialization.establishContact(theirsEphemeralPublic, theirsRatchetPublic, theirsPreKeys, client.getUsername(), msg.getSnd(), client.getPreKeys());
                                 client.addSession(session);
 
+
                                 //decrypts the first received message and print it in the console
-                                System.out.println(session.getOurs());
-                                System.out.println(session.getTheirs());
                                 String fMsg = AES_encryption.decrypt(firstMsgRecieved[0], session.firstMsgKey, new IvParameterSpec(firstMsgRecieved[1]), session);
                                 System.out.println("[" + msg.getSnd() + "] " + fMsg);
 
