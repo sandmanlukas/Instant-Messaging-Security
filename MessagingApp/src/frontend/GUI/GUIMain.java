@@ -7,6 +7,8 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -104,6 +106,13 @@ public class GUIMain extends Application {
             Text sent = new Text("> " + writeMessage.getText());
             textDispVBox.getChildren().add(sent);
             writeMessage.clear();
+        });
+        writeMessage.setOnKeyPressed(event -> {
+            if(event.getCode() == KeyCode.ENTER){
+                Text sent = new Text("> " + writeMessage.getText());
+                textDispVBox.getChildren().add(sent);
+                writeMessage.clear();
+            }
         });
         lowerHBox.setHgrow(writeMessage, Priority.ALWAYS);//Added this line
         lowerHBox.setHgrow(sendButton, Priority.ALWAYS);//Added this line
