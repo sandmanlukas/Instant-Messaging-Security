@@ -1,4 +1,3 @@
-import org.apache.commons.lang3.tuple.Triple;
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
 import org.whispersystems.curve25519.JCESha512Provider;
@@ -19,7 +18,7 @@ public class Curve {
 
         Curve curveClass = new Curve();
 
-        preKeyBundle pk1 = curveClass.generatePreKeyBundle();
+       /* preKeyBundle pk1 = curveClass.generatePreKeyBundle();
         preKeyBundle pk2 = curveClass.generatePreKeyBundle();
 
         Session AliceSession = Initialization.startSession(pk1,"Alice", "Bob");
@@ -52,8 +51,22 @@ public class Curve {
 
         msg = Messages.sendMsg("test", BobSession);
         msgRe = Messages.receiveMsg(msg.left,msg.middle, msg.right, AliceSession);
-         */
 
+        byte [] sender = AliceSession.getOurBundle().getPublicKeys().getPublicIdentityKey();
+        byte [] receiver = BobSession.ratchetKeyTheirPublic;
+        byte [] sendSecret = (byte[]) Messages.generateSecretSend(AliceSession).first();
+        //System.out.println("SecretSecret: " + Arrays.toString(sendSecret));
+
+        byte [] receiveSecret = (byte[]) Messages.generateSecretSend(AliceSession).first();
+
+       //byte [] mac1 = AES_encryption.getMac(sendSecret, receiver, sender);
+       //byte [] mac2 = AES_encryption.getMac(sendSecret, sender, receiver);
+
+        //System.out.println("Mac1: " + Arrays.toString(mac1));
+        //System.out.println("Mac2: " + Arrays.toString(mac2));
+
+
+*/
     }
 
     /**

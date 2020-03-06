@@ -17,8 +17,6 @@ public class Initialization {
     public static Session startSession(preKeyBundle preKeys, String ours, String theirs) {
         Session session = new Session(ours, theirs);
         session.setOurBundle(preKeys);
-        testClient client = new testClient(ours, preKeys);
-        client.addSession(session);
         return session;
     }
 

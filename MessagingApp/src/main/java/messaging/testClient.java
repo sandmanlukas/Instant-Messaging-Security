@@ -3,6 +3,7 @@ import org.whispersystems.libsignal.util.Pair;
 
 import javax.crypto.spec.IvParameterSpec;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class testClient {
@@ -11,47 +12,70 @@ public class testClient {
 
     private final String username;
     private final preKeyBundle preKeys;
-    private final HashMap<String, Session> map;
-    private String initMsg;
+    private final HashMap<String, Session> sessionMap;
+    String initMsg;
+    private final HashMap<String, ArrayList<String>> groupMap;
 
     testClient(String username, preKeyBundle preKeys) {
         this.username = username;
         this.preKeys = preKeys;
-        map = new HashMap<>();
+        sessionMap = new HashMap<>();
+        groupMap = new HashMap<>();
     }
 
-    public String getInitMsg() { return initMsg; }
+    public String getInitMsg() {
+        return initMsg;
+    }
 
-    public String getUsername() { return username; }
+    public String getUsername() {
+        return username;
+    }
 
     public preKeyBundle getPreKeys() {
         return preKeys;
     }
 
     public void addSession(Session session) {
-        map.put(session.getTheirs(), session);
+        sessionMap.put(session.getTheirs(), session);
     }
 
-    public Session getSession(String theirs) { return map.get(theirs); }
+    public Session getSession(String theirs) {
+        return sessionMap.get(theirs);
+    }
 
-    /*public static void initMessage(String sender, byte[][] preKeys, ObjectOutputStream oO) {
-        Message m = new Message(sender, "", "initMsg", preKeys);
-        try {
-            // write on the output stream
-            oO.writeObject(m);
-        }
-        catch (Exception e){
-            e.printStackTrace();
+    public void addGroup(String groupName) {
+        groupMap.put(groupName, new ArrayList<>());
+    }
 
-        }
-    }*/
+    public void addGroupMember(String groupName, String memberName) {
+        groupMap.get(groupName).add(memberName);
+    }
+
+    public void removeGroupMember(String groupName, String memberName) {
+        groupMap.get(groupName).remove(groupName);
+    }
+
+    public ArrayList<String> getGroupMembers(String groupName) {
+        return groupMap.get(groupName);
+    }
+
+    public void sendGroupMessage(String groupName, String msg, ObjectOutputStream objectOutput) {
+        ArrayList<String> members = getGroupMembers(groupName);
+        members.forEach((m) -> {
+            if(!m.equals(getUsername())) {
+                System.out.println("username: " + getUsername());
+                sendMessage(m, "[" + groupName + "] " + msg, objectOutput);
+                System.out.println("m: " + m);
+            }
+        });
+    }
 
     public void sendMessage(String recipient, String msg, ObjectOutputStream objectOutput) {
         Session s = getSession(recipient);
+        initMsg = msg;
         //Checks if their is a previously initialized session with the recipient
         if (s == null) {
             //Saves the message for when a message key is derived
-            initMsg = msg;
 
             //Initialize a session with the recipient
             s = Initialization.startSession(getPreKeys(), getUsername(), recipient);
