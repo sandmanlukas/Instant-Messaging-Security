@@ -6,6 +6,7 @@ import org.whispersystems.libsignal.util.Pair;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Curve {
 
@@ -26,7 +27,7 @@ public class Curve {
 
 
 
-        Triple<byte[], byte[], ArrayList<byte[]>> serverBundle = Initialization.serverBundleResponse(AliceSession, BobSession.getOurBundle().getPublicKeys());
+        Triple<byte[], byte[], CopyOnWriteArrayList<byte[]>> serverBundle = Initialization.serverBundleResponse(AliceSession, BobSession.getOurBundle().getPublicKeys());
 
         byte[] ephemeralKeyTheirs = serverBundle.getLeft();
         byte[] ratchetKeyTheirs = serverBundle.getMiddle();
@@ -79,16 +80,15 @@ public class Curve {
         return result;
     }
 
-    public Pair<ArrayList<byte[]>, ArrayList<byte[]>> generateEphemeralKeys() {
-        Curve25519KeyPair ephemeralKeys;
+    public Pair<ArrayList<byte[]>, CopyOnWriteArrayList<byte[]>> generateEphemeralKeys() {
         ArrayList<byte[]> ephemeralPrivateKeys = new ArrayList<>();
-        ArrayList<byte[]> ephemeralPublicKeys = new ArrayList<>();
+        CopyOnWriteArrayList<byte[]> ephemeralPublicKeys = new CopyOnWriteArrayList<>();
         for (int i = 0; i < NUMBER_OF_EPHEMERAL_KEYS; i++) {
-            ephemeralKeys = curve.generateKeyPair();
+            Curve25519KeyPair ephemeralKeys = curve.generateKeyPair();
             ephemeralPrivateKeys.add(ephemeralKeys.getPrivateKey());
             ephemeralPublicKeys.add(ephemeralKeys.getPublicKey());
         }
-        return new Pair<>(ephemeralPrivateKeys, ephemeralPublicKeys);
+        return new Pair(ephemeralPrivateKeys, ephemeralPublicKeys);
     }
 
     /**
@@ -104,7 +104,7 @@ public class Curve {
                 signedPublicPreKey, identityKeyPair.getPrivateKey(),
                 preKeyPair.getPublicKey(), preKeyPair.getPublicKey().length, getRandom(64));
 
-        Pair<ArrayList<byte[]>, ArrayList<byte[]>> ephemeralPair = generateEphemeralKeys();
+        Pair<ArrayList<byte[]>, CopyOnWriteArrayList<byte[]>> ephemeralPair = generateEphemeralKeys();
 
         preKeyBundlePrivate privateKeys = new preKeyBundlePrivate(identityKeyPair.getPrivateKey(),
                 preKeyPair.getPrivateKey(), ephemeralPair.first());
