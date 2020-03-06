@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 import java.net.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 // Server class 
 public class Server {
@@ -131,7 +132,7 @@ class ClientHandler implements Runnable {
 
                                     //retrieves the preKeyBundlePublic and formats it
                                     byte[][] keys = (byte[][]) msg.getMsg();
-                                    ArrayList<byte[]> arrayKeys = new ArrayList<>();
+                                    CopyOnWriteArrayList<byte[]> arrayKeys = new CopyOnWriteArrayList<>();
                                     for (int i = 3; i < keys.length; i++) {
                                         arrayKeys.add(keys[i]);
                                     }

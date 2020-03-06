@@ -8,8 +8,10 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.StringTokenizer;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Client {
     final static int ServerPort = 1234;
@@ -77,6 +79,8 @@ public class Client {
                             objectOutput.writeObject(m);
                             break;
                         case "usernameRec":
+                            System.out.println("one time prekeys: " + Arrays.toString(preKeys.getPublicKeys().getPublicOneTimePreKey(0)));
+                            System.out.println("one time prekeys: " + Arrays.toString(preKeys.getPublicKeys().getPublicOneTimePreKey(0)));
                             //sets up a message to transfer preKeyBundlePublic to server
                             byte[] publicIdentityKey = preKeys.getPublicKeys().getPublicIdentityKey();
                             byte[] publicPreKey = preKeys.getPublicKeys().getPublicPreKey();
@@ -99,7 +103,7 @@ public class Client {
                         case "publicBundleRequestRec":
                             //their preKeyBundlePublic has been received and is formatted
                             byte[][] serverKeys = (byte[][]) msg.getMsg();
-                            ArrayList<byte[]> arrayKeys = new ArrayList<>();
+                            CopyOnWriteArrayList<byte[]> arrayKeys = new CopyOnWriteArrayList<>();
                             for(int i = 3; i < serverKeys.length; i++) {
                                 arrayKeys.add(serverKeys[i]);
                             }
@@ -110,7 +114,7 @@ public class Client {
                             s1.setTheirBundle(preKeys1);
 
                             //performs an initialization where the generated keys are equipped to the the session
-                            MutableTriple<byte[], byte[], ArrayList<byte[]>> derivedKeys = Initialization.serverBundleResponse(s1, preKeys1);
+                            MutableTriple<byte[], byte[], CopyOnWriteArrayList<byte[]>> derivedKeys = Initialization.serverBundleResponse(s1, preKeys1);
 
                             //makes the generated keys serializable by putting them in a 2D byte array
                             byte[][] sendKeys = new byte[2 + preKeys1.getPublicOneTimePreKeys().size()][];
@@ -171,7 +175,7 @@ public class Client {
                             byte[] theirsPublicIdentityKey = theirsBundle[0];
                             byte[] theirsPublicPreKey = theirsBundle[1];
                             byte[] theirsSignedPublicPreKey = theirsBundle[2];
-                            ArrayList<byte[]> theirsOneTimePreKeys = new ArrayList<>();
+                            CopyOnWriteArrayList<byte[]> theirsOneTimePreKeys = new CopyOnWriteArrayList<>();
                             for(int j = 3; j < theirsBundle.length; j++) {
                                 theirsOneTimePreKeys.add(theirsBundle[j]);
                             }
