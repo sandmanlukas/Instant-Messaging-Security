@@ -6,3 +6,4 @@ CREATE TABLE passwords (
 CREATE VIEW passwordView AS (
   SELECT * FROM passwords
 );
+
