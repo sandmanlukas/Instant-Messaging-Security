@@ -7,6 +7,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -50,11 +53,17 @@ public class Client {
                     String groupName;
                     String msgToSend;
                     Message m;
+                    MessageDigest digest = null;
+                    try {
+                        digest = MessageDigest.getInstance("SHA-256");
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
                     switch(command.charAt(1)) {
                         case 'u':
                             String user = st.nextToken();
                             String psw = st.nextToken();
-                            m = new Message(user, "server", "newUser", psw);
+                            m = new Message(user, "server", "newUser", digest.digest(psw.getBytes(StandardCharsets.UTF_8)));
                             try {
                                 objectOutput.writeObject(m);
                             } catch (IOException e) {
@@ -101,7 +110,7 @@ public class Client {
                         case 'L':
                             String username = st.nextToken();
                             String password = st.nextToken();
-                            m = new Message(username, "Server", "login", password);
+                            m = new Message(username, "Server", "login", digest.digest(password.getBytes(StandardCharsets.UTF_8)));
                             try {
                                 objectOutput.writeObject(m);
                             } catch (IOException e) {

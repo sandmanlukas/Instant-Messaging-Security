@@ -133,7 +133,7 @@ class ClientHandler implements Runnable {
                         case "newUser":
                             for (ClientHandler mc : Server.ar) {
                                 if (mc.name.equals(msg.getSnd())) {
-                                    String hash = msg.getMsg().toString();
+                                    String hash = Arrays.toString((byte[]) msg.getMsg());
                                     String userName = msg.getSnd();
                                     conn.newUser(userName, hash);
                                     System.out.println("newUser!!!");
@@ -144,7 +144,7 @@ class ClientHandler implements Runnable {
                         case "login":
                             for (ClientHandler mc : Server.ar) {
                                 if (mc.name.equals(msg.getSnd())) {
-                                    String hash = (String) msg.getMsg();
+                                    String hash =  Arrays.toString((byte[]) msg.getMsg());
                                     boolean result = conn.correctPassword(msg.getSnd(), hash);
                                     Message m = new Message("Server", mc.name, "loginAttempt", result);
                                     mc.dos.writeObject(m);
