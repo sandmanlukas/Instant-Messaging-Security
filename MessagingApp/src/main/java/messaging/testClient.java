@@ -63,9 +63,7 @@ public class testClient {
         ArrayList<String> members = getGroupMembers(groupName);
         members.forEach((m) -> {
             if(!m.equals(getUsername())) {
-                System.out.println("username: " + getUsername());
                 sendMessage(m, "[" + groupName + "] " + msg, objectOutput);
-                System.out.println("m: " + m);
             }
         });
     }

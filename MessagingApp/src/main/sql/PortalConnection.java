@@ -23,15 +23,13 @@ public class PortalConnection {
 
     public void newUser(String userName, String hash) {
         try (PreparedStatement ps = conn.prepareStatement (
-                "INSERT INTO passwords VALUES (?,?)");) {
+                "INSERT INTO passwordView VALUES (?,?)");) {
 
             ps.setString(1, userName);
             ps.setString(2, hash);
             ps.executeUpdate();
-            System.out.println("success!!");
         }
         catch (SQLException e) {
-            System.out.println("fail!");
             System.out.println(e);
         }
     }

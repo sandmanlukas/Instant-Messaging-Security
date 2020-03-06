@@ -8,7 +8,6 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -34,16 +33,10 @@ public class Client {
         preKeyBundle preKeys = curveClass.generatePreKeyBundle();
 
         client = new testClient(userName, preKeys);
-        System.out.println("Outside before: "+ Arrays.toString(client.getPreKeys().getPublicKeys().getPublicOneTimePreKey(0)));
-        System.out.println("Outside before: "+ Arrays.toString(client.getPreKeys().getPublicKeys().getPublicOneTimePreKey(0)));
 
         // obtaining input and out streams
         ObjectOutputStream objectOutput = new ObjectOutputStream(s.getOutputStream());
         ObjectInputStream objectInput = new ObjectInputStream(s.getInputStream());
-
-        byte[] hash = {1,2,3};
-        Message m = new Message("Henrik", "Server", "newUser", hash);
-        objectOutput.writeObject(m);
 
         // sendMessage thread
         Thread sendMessage = new Thread(new Runnable() {
@@ -58,6 +51,17 @@ public class Client {
                     String msgToSend;
                     Message m;
                     switch(command.charAt(1)) {
+                        case 'u':
+                            String user = st.nextToken();
+                            String psw = st.nextToken();
+                            m = new Message(user, "server", "newUser", psw);
+                            try {
+                                objectOutput.writeObject(m);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            System.out.println("userinfo sent");
+                            break;
                         case 'm':
                             String recipient = st.nextToken();
                             msgToSend = msg.substring(command.length() + recipient.length() + 2);
@@ -70,7 +74,7 @@ public class Client {
                             System.out.println("Group " + "\"" + groupName + "\"" + " was created!");
                             break;
                         case 'i':
-                            String user = st.nextToken();
+                            user = st.nextToken();
                             groupName = st.nextToken();
                             client.addGroupMember(groupName, user);
                             int size = client.getGroupMembers(groupName).size();
@@ -93,6 +97,16 @@ public class Client {
                             String group = st.nextToken();
                             msgToSend = msg.substring(command.length() + group.length() + 2);
                             client.sendGroupMessage(group, msgToSend, objectOutput);
+                            break;
+                        case 'L':
+                            String username = st.nextToken();
+                            String password = st.nextToken();
+                            m = new Message(username, "Server", "login", password);
+                            try {
+                                objectOutput.writeObject(m);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                             break;
                         default:
                             System.out.println("Unknown command!");
@@ -138,13 +152,11 @@ public class Client {
                                 if (client.getGroupMembers(groupName) == null) {
                                     client.addGroup(groupName);
                                     for (int j = 0; j < users.length; j++) {
-                                        System.out.println(users[j]);
                                         client.addGroupMember(groupName, users[j]);
                                     }
                                 }
                                 else {
                                     for(int i = 0; i < users.length; i++) {
-                                        System.out.println(users[i]);
                                         if(!client.getGroupMembers(groupName).contains(users[i])) {
                                             client.addGroupMember(groupName, users[i]);
                                         }
@@ -167,6 +179,9 @@ public class Client {
                                 m = new Message(userName, "Server", "initMsg", keys);
                                 objectOutput.writeObject(m);
 
+                                break;
+                            case "loginAttempt":
+                                System.out.println(msg.getMsg());
                                 break;
                             case "initRec":
                                 //Affirms that the server has received preKeyBundlePublic

@@ -144,9 +144,8 @@ class ClientHandler implements Runnable {
                         case "login":
                             for (ClientHandler mc : Server.ar) {
                                 if (mc.name.equals(msg.getSnd())) {
-                                    byte[] hash = (byte[]) msg.getMsg();
-                                    String hashString = hash.toString();
-                                    boolean result = conn.correctPassword(msg.getSnd(), hashString);
+                                    String hash = (String) msg.getMsg();
+                                    boolean result = conn.correctPassword(msg.getSnd(), hash);
                                     Message m = new Message("Server", mc.name, "loginAttempt", result);
                                     mc.dos.writeObject(m);
                                     break;
