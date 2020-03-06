@@ -107,7 +107,7 @@ public class Client {
                             msgToSend = msg.substring(command.length() + group.length() + 2);
                             client.sendGroupMessage(group, msgToSend, objectOutput);
                             break;
-                        case 'L':
+                        case 'l':
                             String username = st.nextToken();
                             String password = st.nextToken();
                             m = new Message(username, "Server", "login", digest.digest(password.getBytes(StandardCharsets.UTF_8)));
@@ -117,23 +117,30 @@ public class Client {
                                 e.printStackTrace();
                             }
                             break;
+                        case 'o':
+                            user = st.nextToken();
+                            m = new Message(client.getUsername(), "Server", "online", user);
+                            try {
+                                objectOutput.writeObject(m);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            break;
+                        case 'h':
+                            String output = "";
+                            output += "\\m username message  -- Message another user \n";
+                            output += "\\u username password -- Register as a new user \n";
+                            output += "\\l username password -- Login as a new user \n";
+                            output += "\\c groupname         -- Create a new group \n";
+                            output += "\\g groupname message -- Message a group \n";
+                            output += "\\o username          -- Check if another user is online \n";
+                            output += "\\u username password -- Register as a new user\n ";
+                            System.out.println(output);
+                            break;
                         default:
                             System.out.println("Unknown command!");
                             break;
                     }
-
-                    /*//Message m = new Message(" ",recipient,"message",msgToSend);
-                    //Message m = new Message(userName, recipient, "message", msgToSend);
-
-                    try {
-                        // write on the output stream
-                        //objectOutput.writeObject(m)
-                    }
-                    catch (Exception e) {
-
-                        e.printStackTrace();
-
-                    }*/
                 }
             }
         });
@@ -194,6 +201,9 @@ public class Client {
                                 break;
                             case "initRec":
                                 //Affirms that the server has received preKeyBundlePublic
+                                break;
+                            case "online":
+                                System.out.println(msg.getMsg());
                                 break;
                             case "publicBundleRequestRec":
                                 //their preKeyBundlePublic has been received and is formated

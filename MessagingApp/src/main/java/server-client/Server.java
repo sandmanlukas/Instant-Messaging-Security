@@ -115,12 +115,10 @@ class ClientHandler implements Runnable {
                 try {
                     // receive the object
                     Message msg = (Message) dis.readObject();
-
                     switch (msg.getType()) {
                         case "usernameMsg":
                             for (ClientHandler mc : Server.ar) {
                                 if (mc.name.equals(msg.getSnd())) {
-
                                     //Sets the users name according to their choice, sends a message to verify the change
                                     mc.setName((String) msg.getMsg());
                                     Message m = new Message("Server", mc.name, "usernameRec", "");
@@ -136,7 +134,27 @@ class ClientHandler implements Runnable {
                                     String hash = Arrays.toString((byte[]) msg.getMsg());
                                     String userName = msg.getSnd();
                                     conn.newUser(userName, hash);
-                                    System.out.println("newUser!!!");
+                                    break;
+                                }
+                            }
+                            break;
+                        case "online":
+                            Boolean temp = false;
+                            System.out.print("hejehej");
+                            for (ClientHandler mc : Server.ar) {
+                                if(mc.name.equals(msg.getSnd())) {
+                                    for (ClientHandler mc2 : Server.ar) {
+                                        if (mc2.name.equals(msg.getMsg())) {
+                                            Message m = new Message("server", msg.getSnd(), "online", true);
+                                            mc.dos.writeObject(m);
+                                            temp = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!temp) {
+                                        Message m = new Message("server", msg.getSnd(), "online", false);
+                                        mc.dos.writeObject(m);
+                                    }
                                     break;
                                 }
                             }
