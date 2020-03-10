@@ -1,4 +1,3 @@
-import org.apache.commons.lang3.tuple.Triple;
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
 import org.whispersystems.curve25519.JCESha512Provider;
@@ -7,6 +6,7 @@ import org.whispersystems.libsignal.util.Pair;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Curve {
 
@@ -18,7 +18,7 @@ public class Curve {
 
         Curve curveClass = new Curve();
 
-        preKeyBundle pk1 = curveClass.generatePreKeyBundle();
+       /* preKeyBundle pk1 = curveClass.generatePreKeyBundle();
         preKeyBundle pk2 = curveClass.generatePreKeyBundle();
 
         Session AliceSession = Initialization.startSession(pk1,"Alice", "Bob");
@@ -27,7 +27,7 @@ public class Curve {
 
 
 
-        Triple<byte[], byte[], ArrayList<byte[]>> serverBundle = Initialization.serverBundleResponse(AliceSession, BobSession.getOurBundle().getPublicKeys());
+        Triple<byte[], byte[], CopyOnWriteArrayList<byte[]>> serverBundle = Initialization.serverBundleResponse(AliceSession, BobSession.getOurBundle().getPublicKeys());
 
         byte[] ephemeralKeyTheirs = serverBundle.getLeft();
         byte[] ratchetKeyTheirs = serverBundle.getMiddle();
@@ -51,8 +51,22 @@ public class Curve {
 
         msg = Messages.sendMsg("test", BobSession);
         msgRe = Messages.receiveMsg(msg.left,msg.middle, msg.right, AliceSession);
-         */
 
+        byte [] sender = AliceSession.getOurBundle().getPublicKeys().getPublicIdentityKey();
+        byte [] receiver = BobSession.ratchetKeyTheirPublic;
+        byte [] sendSecret = (byte[]) Messages.generateSecretSend(AliceSession).first();
+        //System.out.println("SecretSecret: " + Arrays.toString(sendSecret));
+
+        byte [] receiveSecret = (byte[]) Messages.generateSecretSend(AliceSession).first();
+
+       //byte [] mac1 = AES_encryption.getMac(sendSecret, receiver, sender);
+       //byte [] mac2 = AES_encryption.getMac(sendSecret, sender, receiver);
+
+        //System.out.println("Mac1: " + Arrays.toString(mac1));
+        //System.out.println("Mac2: " + Arrays.toString(mac2));
+
+
+*/
     }
 
     /**
@@ -66,15 +80,15 @@ public class Curve {
         return result;
     }
 
-    public Pair<ArrayList<byte[]>, ArrayList<byte[]>> generateEphemeralKeys() {
+    public Pair<ArrayList<byte[]>, CopyOnWriteArrayList<byte[]>> generateEphemeralKeys() {
         ArrayList<byte[]> ephemeralPrivateKeys = new ArrayList<>();
-        ArrayList<byte[]> ephemeralPublicKeys = new ArrayList<>();
+        CopyOnWriteArrayList<byte[]> ephemeralPublicKeys = new CopyOnWriteArrayList<>();
         for (int i = 0; i < NUMBER_OF_EPHEMERAL_KEYS; i++) {
             Curve25519KeyPair ephemeralKeys = curve.generateKeyPair();
             ephemeralPrivateKeys.add(ephemeralKeys.getPrivateKey());
             ephemeralPublicKeys.add(ephemeralKeys.getPublicKey());
         }
-        return new Pair<>(ephemeralPrivateKeys, ephemeralPublicKeys);
+        return new Pair(ephemeralPrivateKeys, ephemeralPublicKeys);
     }
 
     /**
@@ -90,7 +104,7 @@ public class Curve {
                 signedPublicPreKey, identityKeyPair.getPrivateKey(),
                 preKeyPair.getPublicKey(), preKeyPair.getPublicKey().length, getRandom(64));
 
-        Pair<ArrayList<byte[]>, ArrayList<byte[]>> ephemeralPair = generateEphemeralKeys();
+        Pair<ArrayList<byte[]>, CopyOnWriteArrayList<byte[]>> ephemeralPair = generateEphemeralKeys();
 
         preKeyBundlePrivate privateKeys = new preKeyBundlePrivate(identityKeyPair.getPrivateKey(),
                 preKeyPair.getPrivateKey(), ephemeralPair.first());

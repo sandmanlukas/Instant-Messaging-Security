@@ -1,6 +1,8 @@
 import java.io.*;
+import java.sql.SQLException;
 import java.util.*;
 import java.net.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 // Server class 
 public class Server {
@@ -12,12 +14,14 @@ public class Server {
     // counter for clients 
     static int i = 0;
 
+    public Server() throws SQLException, ClassNotFoundException {
+    }
 
-  
-    public static void main(String[] args) throws IOException  
+
+    public static void main(String[] args) throws IOException
     { 
         // server is listening on port 1234 
-        ServerSocket ss = new ServerSocket(1234); 
+        ServerSocket ss = new ServerSocket(8008);
           
         Socket s;
 
@@ -73,6 +77,7 @@ public class Server {
 // ClientHandler class
 class ClientHandler implements Runnable {
     Scanner scn = new Scanner(System.in);
+    PortalConnection conn = new PortalConnection();
     private String name;
     final ObjectOutputStream dos;
     final ObjectInputStream dis;
@@ -80,7 +85,7 @@ class ClientHandler implements Runnable {
     boolean isloggedin;
 
     // constructor
-    public ClientHandler(Socket s, String name, ObjectInputStream dis, ObjectOutputStream dos) {
+    public ClientHandler(Socket s, String name, ObjectInputStream dis, ObjectOutputStream dos) throws SQLException, ClassNotFoundException {
         this.dis = dis;
         this.dos = dos;
         this.name = name;
@@ -110,12 +115,10 @@ class ClientHandler implements Runnable {
                 try {
                     // receive the object
                     Message msg = (Message) dis.readObject();
-
                     switch (msg.getType()) {
                         case "usernameMsg":
                             for (ClientHandler mc : Server.ar) {
                                 if (mc.name.equals(msg.getSnd())) {
-
                                     //Sets the users name according to their choice, sends a message to verify the change
                                     mc.setName((String) msg.getMsg());
                                     Message m = new Message("Server", mc.name, "usernameRec", "");
@@ -125,13 +128,55 @@ class ClientHandler implements Runnable {
                             }
                             break;
 
+                        case "newUser":
+                            for (ClientHandler mc : Server.ar) {
+                                if (mc.name.equals(msg.getSnd())) {
+                                    String hash = Arrays.toString((byte[]) msg.getMsg());
+                                    String userName = msg.getSnd();
+                                    conn.newUser(userName, hash);
+                                    break;
+                                }
+                            }
+                            break;
+                        case "online":
+                            Boolean temp = false;
+                            System.out.print("hejehej");
+                            for (ClientHandler mc : Server.ar) {
+                                if(mc.name.equals(msg.getSnd())) {
+                                    for (ClientHandler mc2 : Server.ar) {
+                                        if (mc2.name.equals(msg.getMsg())) {
+                                            Message m = new Message("server", msg.getSnd(), "online", true);
+                                            mc.dos.writeObject(m);
+                                            temp = true;
+                                            break;
+                                        }
+                                    }
+                                    if (!temp) {
+                                        Message m = new Message("server", msg.getSnd(), "online", false);
+                                        mc.dos.writeObject(m);
+                                    }
+                                    break;
+                                }
+                            }
+                            break;
+                        case "login":
+                            for (ClientHandler mc : Server.ar) {
+                                if (mc.name.equals(msg.getSnd())) {
+                                    String hash =  Arrays.toString((byte[]) msg.getMsg());
+                                    boolean result = conn.correctPassword(msg.getSnd(), hash);
+                                    Message m = new Message("Server", mc.name, "loginAttempt", result);
+                                    mc.dos.writeObject(m);
+                                    break;
+                                }
+                            }
+                            break;
                         case "initMsg":
                             for (ClientHandler mc : Server.ar) {
                                 if (mc.name.equals(msg.getSnd())) {
 
                                     //retrieves the preKeyBundlePublic and formats it
                                     byte[][] keys = (byte[][]) msg.getMsg();
-                                    ArrayList<byte[]> arrayKeys = new ArrayList<>();
+                                    CopyOnWriteArrayList<byte[]> arrayKeys = new CopyOnWriteArrayList<>();
                                     for (int i = 3; i < keys.length; i++) {
                                         arrayKeys.add(keys[i]);
                                     }

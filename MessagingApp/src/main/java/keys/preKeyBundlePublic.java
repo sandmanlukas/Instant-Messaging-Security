@@ -1,14 +1,15 @@
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class preKeyBundlePublic {
 	
 	private final byte[] publicIdentityKey;
 	private final byte[] publicPreKey;
 	private final byte[] signedPublicPreKey;
-	private final ArrayList<byte[]> publicOneTimePreKeys;
+	private final CopyOnWriteArrayList<byte[]> publicOneTimePreKeys;
 
 	
-	public preKeyBundlePublic(byte[] publicIdentityKey, byte[] publicPreKey, byte[] signedPublicPreKey, ArrayList<byte[]> publicOneTimePreKeys) {
+	public preKeyBundlePublic(byte[] publicIdentityKey, byte[] publicPreKey, byte[] signedPublicPreKey, CopyOnWriteArrayList<byte[]> publicOneTimePreKeys) {
 		this.publicIdentityKey = publicIdentityKey;
 		this.publicPreKey = publicPreKey;
 		this.signedPublicPreKey = signedPublicPreKey;
@@ -27,12 +28,12 @@ public class preKeyBundlePublic {
 		return signedPublicPreKey;
 	}
 	
-	public ArrayList<byte[]> getPublicOneTimePreKeys() {
+	public CopyOnWriteArrayList<byte[]> getPublicOneTimePreKeys() {
 		return publicOneTimePreKeys;
 	}
 	
 	public byte[] getPublicOneTimePreKey(int index) {
-		return publicOneTimePreKeys.remove(index);
+		return publicOneTimePreKeys.get(index);
 	}
 	
 	public void removePublicOneTimePreKey(int index) {

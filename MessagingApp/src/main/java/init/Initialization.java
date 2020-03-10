@@ -6,6 +6,7 @@ import org.whispersystems.libsignal.kdf.DerivedRootSecrets;
 import org.whispersystems.libsignal.kdf.HKDF;
 
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Initialization {
     static final byte [] info = new byte [0];
@@ -16,12 +17,10 @@ public class Initialization {
     public static Session startSession(preKeyBundle preKeys, String ours, String theirs) {
         Session session = new Session(ours, theirs);
         session.setOurBundle(preKeys);
-        testClient client = new testClient(ours, preKeys);
-        client.addSession(session);
         return session;
     }
 
-    public static MutableTriple<byte [], byte [], ArrayList<byte []>> serverBundleResponse(Session session, preKeyBundlePublic theirs) {
+    public static MutableTriple<byte [], byte [], CopyOnWriteArrayList<byte []>> serverBundleResponse(Session session, preKeyBundlePublic theirs) {
 
         //Generate keys for init
         Curve25519KeyPair ephemeralKeyPair = curve.generateKeyPair();
