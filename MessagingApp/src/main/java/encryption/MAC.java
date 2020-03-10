@@ -49,8 +49,7 @@ public class MAC {
         byte [][] parts = ByteUtil.split(mac, mac.length-MAC_LENGTH, MAC_LENGTH);
         byte [] ourMac = session.getMacKey();
         byte [] theirMac = parts[1];
-        System.out.println("Mac: " + Arrays.toString(ourMac));
-        System.out.println("TheirMac: " + Arrays.toString(theirMac));
+
 
 
 
