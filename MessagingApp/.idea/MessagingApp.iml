@@ -8,14 +8,14 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/sql" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/frontend/GUI" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/Controller" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/encryption" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/init" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/keys" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/messaging" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/server-client" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/server-client/groupChat" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/frontend/GUI" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/Controller" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -58,5 +58,6 @@
     <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:win:13" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-base:13" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-base:win:13" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
   </component>
 </module>

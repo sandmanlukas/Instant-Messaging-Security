@@ -7,10 +7,9 @@ import java.time.Instant;
 
 
 public class Argon2Encryption {
-    static Argon2 argon2;
+    static Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
 
     public static String getArgon(String password){
-        argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
         return argon2.hash(6,1024*256,4, password);
     }
 

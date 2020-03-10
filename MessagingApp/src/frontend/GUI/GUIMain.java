@@ -13,6 +13,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 
 public class GUIMain extends Application {
@@ -22,7 +23,7 @@ public class GUIMain extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws SQLException, ClassNotFoundException {
 
         Controller cont = new Controller();
 
@@ -56,22 +57,31 @@ public class GUIMain extends Application {
         primaryStage.show();
 
         login.setOnAction(event -> {
-            CharSequence userInput;
-            CharSequence passInput;
-            userInput = username.getCharacters();
-            passInput = password.getCharacters();
+            String userInput;
+            String passInput;
+
+            userInput = username.getText();
+            passInput = password.getText();
 
             //sends login input to Controller
-            cont.login(userInput, passInput);
 
-            //TODO open new page if input successful
+
             try {
-                mainChatPage(primaryStage, userInput.toString());
-            } catch (IOException e) {
+                if (cont.login(userInput, passInput)) {
+                    try {
+                        mainChatPage(primaryStage, userInput);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }else {
+                    //TODO: open a popup if login fails.
+                    System.out.println("Login failed, try again.");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
-
-
         });
 
     }
