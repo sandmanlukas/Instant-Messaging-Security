@@ -1,6 +1,5 @@
-
-//import main.*;
 import Controller.Controller;
+//import main.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
