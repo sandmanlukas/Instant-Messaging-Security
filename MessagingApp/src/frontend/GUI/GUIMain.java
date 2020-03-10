@@ -13,7 +13,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 
 
 public class GUIMain extends Application {
@@ -154,12 +153,12 @@ public class GUIMain extends Application {
                         @Override
                         public void run() {
 
-                            if (client.newRecieve) {
-                                System.out.println("Jag har fått ett meddelande " + client.recieved);
-                                Text t = new Text(client.recieved);
+                            if (client.newReceive) {
+                                System.out.println("Jag har fått ett meddelande " + client.received);
+                                Text t = new Text(client.received);
                                 recDispVBox.getChildren().add(t);
                                 textDispVBox.getChildren().add(new Text("")); //Add empty row on other side
-                                client.newRecieve = false;
+                                client.newReceive = false;
 
                             }
 

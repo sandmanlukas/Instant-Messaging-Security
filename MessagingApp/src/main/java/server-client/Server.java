@@ -21,7 +21,7 @@ public class Server {
     public static void main(String[] args) throws IOException
     { 
         // server is listening on port 1234 
-        ServerSocket ss = new ServerSocket(8008);
+        ServerSocket ss = new ServerSocket(1234);
           
         Socket s;
 
@@ -77,7 +77,7 @@ public class Server {
 // ClientHandler class
 class ClientHandler implements Runnable {
     Scanner scn = new Scanner(System.in);
-    PortalConnection conn = new PortalConnection();
+    //PortalConnection conn = new PortalConnection();
     private String name;
     final ObjectOutputStream dos;
     final ObjectInputStream dis;
@@ -133,7 +133,7 @@ class ClientHandler implements Runnable {
                                 if (mc.name.equals(msg.getSnd())) {
                                     String hash = Arrays.toString((byte[]) msg.getMsg());
                                     String userName = msg.getSnd();
-                                    conn.newUser(userName, hash);
+                                    //conn.newUser(userName, hash);
                                     break;
                                 }
                             }
@@ -163,9 +163,9 @@ class ClientHandler implements Runnable {
                             for (ClientHandler mc : Server.ar) {
                                 if (mc.name.equals(msg.getSnd())) {
                                     String hash =  Arrays.toString((byte[]) msg.getMsg());
-                                    boolean result = conn.correctPassword(msg.getSnd(), hash);
-                                    Message m = new Message("Server", mc.name, "loginAttempt", result);
-                                    mc.dos.writeObject(m);
+                                    //boolean result = conn.correctPassword(msg.getSnd(), hash);
+                                   // Message m = new Message("Server", mc.name, "loginAttempt", result);
+                                   // mc.dos.writeObject(m);
                                     break;
                                 }
                             }
