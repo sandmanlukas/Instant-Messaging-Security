@@ -6,13 +6,13 @@ import org.whispersystems.libsignal.kdf.DerivedRootSecrets;
 import org.whispersystems.libsignal.kdf.HKDF;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Initialization {
     static final byte [] info = new byte [0];
     static final Curve25519 curve = Curve25519.getInstance(Curve25519.BEST);
     static final HKDF kdf = HKDF.createFor(3);
-    static final Curve curveClass = new Curve();
 
     public static Session startSession(preKeyBundle preKeys, String ours, String theirs) {
         Session session = new Session(ours, theirs);
@@ -20,7 +20,7 @@ public class Initialization {
         return session;
     }
 
-    public static MutableTriple<byte [], byte [], CopyOnWriteArrayList<byte []>> serverBundleResponse(Session session, preKeyBundlePublic theirs) {
+    public static MutableTriple<byte [], byte [], ArrayList<byte []>> serverBundleResponse(Session session, preKeyBundlePublic theirs) {
 
         //Generate keys for init
         Curve25519KeyPair ephemeralKeyPair = curve.generateKeyPair();
@@ -38,7 +38,6 @@ public class Initialization {
         byte[] secret = kdf.deriveSecrets(result, info, 64);
         DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secret);
         byte[] root1 = rootSecrets.getRootKey();
-        byte[] chainTest = rootSecrets.getChainKey();
 
         //perform calculations and concatenate them
         byte[] p5 = curve.calculateAgreement(theirs.getPublicPreKey(), ratchetKeyPair.getPrivateKey());
@@ -56,10 +55,15 @@ public class Initialization {
         byte[] message = rootSecrets3.getRootKey();
         byte[] realChain = rootSecrets3.getChainKey();
 
+        System.out.println("one time public: " + Arrays.toString(theirs.getPublicOneTimePreKey(0)));
+
         // Remove public ephemeralKey that was used.
         theirs.removePublicOneTimePreKey(0);
         byte[] ephemeralPublic = ephemeralKeyPair.getPublicKey();
         byte[] ratchetPublic = ratchetKeyPair.getPublicKey();
+
+        System.out.println("one time public: " + Arrays.toString(theirs.getPublicOneTimePreKey(0)));
+
 
         //create a mac key and set it to session
         MAC.getMac(secret3,
@@ -82,10 +86,10 @@ public class Initialization {
                                         String ours, String theirs, preKeyBundle ourBundle){
         Session session = new Session(ours, theirs, ourBundle, bundleTheirs);
         //calculateAgreements and concatenate them
-        byte [] p1 = curve.calculateAgreement(bundleTheirs.getPublicIdentityKey(), session.getOurBundle().getPrivateKeys().getPrivatePreKey());
-        byte [] p2 = curve.calculateAgreement(ephemeralTheirs, session.getOurBundle().getPrivateKeys().getPrivateIdentityKey());
-        byte [] p3 = curve.calculateAgreement(ephemeralTheirs, session.getOurBundle().getPrivateKeys().getPrivatePreKey());
-        byte [] p4 = curve.calculateAgreement(ephemeralTheirs, session.getOurBundle().getPrivateKeys().getPrivateOneTimePreKey(0));
+        byte [] p1 = curve.calculateAgreement(bundleTheirs.getPublicIdentityKey(), ourBundle.getPrivateKeys().getPrivatePreKey());
+        byte [] p2 = curve.calculateAgreement(ephemeralTheirs, ourBundle.getPrivateKeys().getPrivateIdentityKey());
+        byte [] p3 = curve.calculateAgreement(ephemeralTheirs, ourBundle.getPrivateKeys().getPrivatePreKey());
+        byte [] p4 = curve.calculateAgreement(ephemeralTheirs, ourBundle.getPrivateKeys().getPrivateOneTimePreKey(0));
         byte [] result = Bytes.concat(p1, p2, p3, p4);
 
         //perform first HKDF
@@ -93,7 +97,6 @@ public class Initialization {
 
         DerivedRootSecrets rootSecrets = new DerivedRootSecrets(secret);
         byte [] root1 = rootSecrets.getRootKey();
-        byte [] chainTest = rootSecrets.getChainKey();
 
         //calculateAgreement and concatenate them
         byte [] p5 = curve.calculateAgreement(ratchetTheirs, session.getOurBundle().getPrivateKeys().getPrivatePreKey());
@@ -117,6 +120,14 @@ public class Initialization {
                 session.getOurBundle().getPublicKeys().getPublicIdentityKey(),
                 message,
                 session);
+
+        // remove key that was used
+        System.out.println("one time private: " + Arrays.toString(ourBundle.getPrivateKeys().getPrivateOneTimePreKey(0)));
+        //System.out.println("one time public: " + Arrays.toString(session.getOurBundle().getPublicKeys().getPublicOneTimePreKey(0)));
+        ourBundle.getPrivateKeys().removePrivateOneTimePreKey(0);
+        System.out.println("one time private: " + Arrays.toString(ourBundle.getPrivateKeys().getPrivateOneTimePreKey(0)));
+
+
 
         //equip to session
         session.setTheirBundle(bundleTheirs);

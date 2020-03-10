@@ -1,4 +1,4 @@
-package Controller;
+//package Controller;
 
 public class Controller {
 
@@ -10,7 +10,8 @@ public class Controller {
         //might be boolean to see if inlog was successful
     public void login(CharSequence username, CharSequence password){
 
-        //TODO call method in model/maine to log in
+
+        //TODO call method in model/main to log in
         System.out.println(username + " " + password);
 
     }

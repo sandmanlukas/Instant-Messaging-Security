@@ -102,10 +102,6 @@ class ClientHandler implements Runnable {
     public void run() {
 
 
-
-        // String received;
-        //while (true) {
-
             do {
 
 
@@ -173,7 +169,7 @@ class ClientHandler implements Runnable {
 
                                     //retrieves the preKeyBundlePublic and formats it
                                     byte[][] keys = (byte[][]) msg.getMsg();
-                                    CopyOnWriteArrayList<byte[]> arrayKeys = new CopyOnWriteArrayList<>();
+                                    ArrayList<byte[]> arrayKeys = new ArrayList<>();
                                     for (int i = 3; i < keys.length; i++) {
                                         arrayKeys.add(keys[i]);
                                     }

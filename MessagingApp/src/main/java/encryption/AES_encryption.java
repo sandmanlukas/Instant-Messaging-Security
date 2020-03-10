@@ -4,25 +4,6 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class AES_encryption {
-    /*
-    private final byte [] senderIdentity;
-    private final byte [] receiverIdentity;
-    private final SecretKeySpec   cipherKey;
-    private final SecretKeySpec   macKey;
-    private final IvParameterSpec iv;
-
-
-
-     public AES_encryption(SecretKeySpec cipherKey, SecretKeySpec macKey, IvParameterSpec iv, byte [] senderIdentity,
-                          byte [] receiverIdentity) {
-        this.cipherKey = cipherKey;
-        this.macKey = macKey;
-        this.iv = iv;
-        this.senderIdentity = senderIdentity;
-        this.receiverIdentity = receiverIdentity;
-    }
-     */
-
 
     /*
       encrypts a plaintext message with AES encryption and also creates a MAC-key to be able to

@@ -1,4 +1,4 @@
-import Controller.Controller;
+//import Controller;
 //import main.*;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -55,26 +55,23 @@ public class GUIMain extends Application {
         primaryStage.setScene((new Scene(startPane, 700, 500)));
         primaryStage.show();
 
-        login.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                CharSequence userInput;
-                CharSequence passInput;
-                userInput = username.getCharacters();
-                passInput = password.getCharacters();
+        login.setOnAction(event -> {
+            CharSequence userInput;
+            CharSequence passInput;
+            userInput = username.getCharacters();
+            passInput = password.getCharacters();
 
-                //sends login input to Controller
-                cont.login(userInput, passInput);
+            //sends login input to Controller
+            cont.login(userInput, passInput);
 
-                //TODO open new page if input successful
-                try {
-                    mainChatPage(primaryStage, userInput.toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
+            //TODO open new page if input successful
+            try {
+                mainChatPage(primaryStage, userInput.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+
+
         });
 
     }
@@ -87,9 +84,9 @@ public class GUIMain extends Application {
         client.run();
         System.out.println(client.username);
         //list of active chats, or where to create new conversations
-        GridPane chattGrid = new GridPane();
-        chattGrid.setScaleX(200);
-        chattGrid.setStyle("-fx-border-color: blue;");
+        GridPane chatGrid = new GridPane();
+        chatGrid.setScaleX(200);
+        chatGrid.setStyle("-fx-border-color: blue;");
 
         //shows conversations one at the time
         BorderPane conversationGrid = new BorderPane();
@@ -135,7 +132,7 @@ public class GUIMain extends Application {
         recDispVBox.setAlignment(Pos.TOP_CENTER);
 
         BorderPane border = new BorderPane();
-        border.setRight(chattGrid);
+        border.setRight(chatGrid);
 
         border.setBottom(lowerHBox);
         border.setLeft(textDispVBox);
@@ -146,34 +143,28 @@ public class GUIMain extends Application {
         //border.setCenter(sendButton);
         recDispVBox.getChildren().add(recTest);
 
-        Thread recMsg = new Thread(new Runnable() {
-                @Override
-                public void run(){
-                    Runnable updater = new Runnable() {
-                        @Override
-                        public void run() {
+        Thread recMsg = new Thread(() -> {
+            Runnable updater = () -> {
 
-                            if (client.newReceive) {
-                                System.out.println("Jag har fått ett meddelande " + client.received);
-                                Text t = new Text(client.received);
-                                recDispVBox.getChildren().add(t);
-                                textDispVBox.getChildren().add(new Text("")); //Add empty row on other side
-                                client.newReceive = false;
+                if (client.newReceive) {
+                    System.out.println("Jag har fått ett meddelande " + client.received);
+                    Text t = new Text(client.received);
+                    recDispVBox.getChildren().add(t);
+                    textDispVBox.getChildren().add(new Text("")); //Add empty row on other side
+                    client.newReceive = false;
 
-                            }
+                }
 
-                        }
-                    };
+            };
 
-                    while(true){
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        Platform.runLater(updater);
-                    }
-                };
+            while(true){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Platform.runLater(updater);
+            }
         });
         recMsg.setDaemon(true);
         recMsg.start();
