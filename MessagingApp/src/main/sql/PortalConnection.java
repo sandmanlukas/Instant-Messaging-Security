@@ -26,7 +26,7 @@ public class PortalConnection {
                 "INSERT INTO passwordView VALUES (?,?)")) {
 
             ps.setString(1, userName);
-            ps.setString(2, Argon2Encryption.getArgon(password));
+           // ps.setString(2, Argon2Encryption.getArgon(password));
             ps.executeUpdate();
         }
         catch (SQLException e) {
@@ -42,9 +42,9 @@ public class PortalConnection {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 String pswHash = rs.getString("hash");
-                boolean success = Argon2Encryption.verifyArgon(pswHash, password);
-                System.out.println(success ? "Success!" : "Failure!");
-                return success;
+               // boolean success = Argon2Encryption.verifyArgon(pswHash, password);
+                //System.out.println(success ? "Success!" : "Failure!");
+                //return success;
             } else {
                 return false;
             }
