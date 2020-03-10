@@ -1,3 +1,4 @@
+
 import org.whispersystems.curve25519.Curve25519;
 import org.whispersystems.curve25519.Curve25519KeyPair;
 import org.whispersystems.curve25519.JCESha512Provider;
@@ -6,7 +7,6 @@ import org.whispersystems.libsignal.util.Pair;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Curve {
 
@@ -33,7 +33,7 @@ public class Curve {
             ephemeralPrivateKeys.add(ephemeralKeys.getPrivateKey());
             ephemeralPublicKeys.add(ephemeralKeys.getPublicKey());
         }
-        return new Pair<ArrayList<byte []>, ArrayList<byte []>>(ephemeralPrivateKeys, ephemeralPublicKeys);
+        return new Pair<>(ephemeralPrivateKeys, ephemeralPublicKeys);
     }
 
     /**

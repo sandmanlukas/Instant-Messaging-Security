@@ -1,3 +1,4 @@
+
 import org.whispersystems.libsignal.InvalidMessageException;
 import org.whispersystems.libsignal.util.ByteUtil;
 
@@ -5,7 +6,6 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
 public class MAC {
     private byte [] macKey;

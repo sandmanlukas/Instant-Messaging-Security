@@ -1,3 +1,4 @@
+
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 
@@ -7,7 +8,7 @@ import java.time.Instant;
 
 
 public class Argon2Encryption {
-    static Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+    static final Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
 
     public static String getArgon(String password){
         return argon2.hash(6,1024*256,4, password);

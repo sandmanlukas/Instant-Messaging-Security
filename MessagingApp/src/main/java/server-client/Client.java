@@ -1,6 +1,5 @@
 import org.apache.commons.lang3.tuple.MutableTriple;
 import org.whispersystems.libsignal.util.Pair;
-
 import javax.crypto.spec.IvParameterSpec;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -12,14 +11,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Scanner;
 import java.util.StringTokenizer;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Client {
     final static int ServerPort = 1234;
     public static testClient client;
-    public String username;
+    public final String username;
     public String toSend;
     boolean newSend;
     public String received;
@@ -167,7 +164,6 @@ public class Client {
                             output += "\\c groupname         -- Create a new group \n";
                             output += "\\g groupname message -- Message a group \n";
                             output += "\\o username          -- Check if another user is online \n";
-                            output += "\\u username password -- Register as a new user\n ";
                             Client.this.received = output; //Write message to object
                             newReceive = true; //set flag
                             break;
@@ -229,13 +225,11 @@ public class Client {
 
                             break;
                         case "loginAttempt":
+                        case "online":
                             System.out.println(msg.getMsg());
                             break;
                         case "initRec":
                             //Affirms that the server has received preKeyBundlePublic
-                            break;
-                        case "online":
-                            System.out.println(msg.getMsg());
                             break;
                         case "publicBundleRequestRec":
                             //their preKeyBundlePublic has been received and is formatted

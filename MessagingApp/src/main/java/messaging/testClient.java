@@ -1,3 +1,4 @@
+
 import org.apache.commons.lang3.tuple.MutableTriple;
 import org.whispersystems.libsignal.util.Pair;
 
@@ -16,7 +17,7 @@ public class testClient {
     String initMsg;
     private final HashMap<String, ArrayList<String>> groupMap;
 
-    testClient(String username, preKeyBundle preKeys) {
+    public testClient(String username, preKeyBundle preKeys) {
         this.username = username;
         this.preKeys = preKeys;
         sessionMap = new HashMap<>();

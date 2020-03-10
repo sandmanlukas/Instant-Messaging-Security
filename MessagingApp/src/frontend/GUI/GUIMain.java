@@ -1,13 +1,13 @@
-//import Controller;
-//import main.*;
+
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -17,6 +17,11 @@ import java.sql.SQLException;
 
 
 public class GUIMain extends Application {
+    private TextField username;
+    private PasswordField password;
+    private Controller cont;
+    private final Stage primaryStage = new Stage();
+    private Stage chatStage;
 
     public static void main(String[] args) {
         launch(args);
@@ -25,22 +30,22 @@ public class GUIMain extends Application {
     @Override
     public void start(Stage primaryStage) throws SQLException, ClassNotFoundException {
 
-        Controller cont = new Controller();
+        cont = new Controller();
 
         primaryStage.setTitle("Main page");
 
         StackPane startPane = new StackPane();
 
-        TextField username = new TextField();
-        TextField password = new TextField();
+        username = new TextField();
+        password = new PasswordField();
 
         username.setMaxSize(100,10);
-        username.setText("username");
+        username.setPromptText("username");
         username.setTranslateX(0.0);
         username.setTranslateY(0.0);
 
         password.setMaxSize(100,10);
-        password.setText("password");
+        password.setPromptText("password");
         password.setTranslateX(0.0);
         password.setTranslateY(25.0);
 
@@ -56,34 +61,44 @@ public class GUIMain extends Application {
         primaryStage.setScene((new Scene(startPane, 700, 500)));
         primaryStage.show();
 
-        login.setOnAction(event -> {
-            String userInput;
-            String passInput;
 
-            userInput = username.getText();
-            passInput = password.getText();
+        password.setOnKeyPressed((keyEvent -> {if(keyEvent.getCode() == KeyCode.ENTER){
+            tryLogin();
+        }
+        }));
 
-            //sends login input to Controller
+        login.setOnAction(event -> tryLogin());
+
+    }
+    public void failLogin(){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Wrong Password");
+        alert.setHeaderText("Wrong password.");
+        alert.setContentText("You entered the wrong password. Try again.");
+        alert.showAndWait();
+    }
+
+    public void tryLogin(){
+        String userInput;
+        String passInput;
+
+        userInput = username.getText();
+        passInput = password.getText();
+
+        //sends login input to Controller
 
 
+        if (cont.login(userInput, passInput)) {
             try {
-                if (cont.login(userInput, passInput)) {
-                    try {
-                        mainChatPage(primaryStage, userInput);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }else {
-                    //TODO: open a popup if login fails.
-                    System.out.println("Login failed, try again.");
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
+                primaryStage.close();
+                mainChatPage(primaryStage, userInput);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-        });
-
+        }else {
+            failLogin();
+            System.out.println("Login failed, try again.");
+        }
     }
 
     //The main page when logged in, where you can chat
@@ -132,8 +147,8 @@ public class GUIMain extends Application {
         Text recTest = new Text( "Testing "+"<");
 
 
-        lowerHBox.setHgrow(writeMessage, Priority.ALWAYS);//Added this line
-        lowerHBox.setHgrow(sendButton, Priority.ALWAYS);//Added this line
+        HBox.setHgrow(writeMessage, Priority.ALWAYS);//Added this line
+        HBox.setHgrow(sendButton, Priority.ALWAYS);//Added this line
         lowerHBox.getChildren().addAll(writeMessage,sendButton);
         //conversationGrid.getChildren().add(textDispVBox);
         //HBox.setHgrow(textDispVBox, Priority.ALWAYS);
@@ -212,9 +227,9 @@ public class GUIMain extends Application {
 
     /*public void mainChatPage(Stage primaryStage){
     //list of active chats, or where to create new conversations
-    GridPane chattGrid = new GridPane();
-        chattGrid.setScaleX(200);
-                chattGrid.setStyle("-fx-border-color: blue;");
+    GridPane chatGrid = new GridPane();
+        chatGrid.setScaleX(200);
+                chatGrid.setStyle("-fx-border-color: blue;");
 
                 //shows conversations one at the time
                 BorderPane conversationGrid = new BorderPane();
@@ -230,7 +245,7 @@ public class GUIMain extends Application {
         conversationGrid.setBottom(writeMessage);
         */
                /* BorderPane border = new BorderPane();
-                border.setRight(chattGrid);
+                border.setRight(chatGrid);
                 border.setLeft(conversationGrid);
 
                 primaryStage.setScene((new Scene(border, 700, 500)));

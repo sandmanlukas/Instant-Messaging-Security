@@ -8,7 +8,6 @@ import org.whispersystems.libsignal.kdf.HKDF;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Initialization {
     static final byte [] info = new byte [0];

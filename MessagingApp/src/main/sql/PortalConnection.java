@@ -28,9 +28,7 @@ public class PortalConnection {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()){
-                boolean exists = rs.getBoolean(1);
-               // System.out.println("boolean: " + exists);
-                return exists;
+                return rs.getBoolean(1);
             }
         } catch (SQLException e) {
             e.printStackTrace();

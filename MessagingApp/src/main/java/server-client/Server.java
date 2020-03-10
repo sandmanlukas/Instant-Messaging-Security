@@ -1,8 +1,7 @@
+
 import java.io.*;
-import java.sql.SQLException;
 import java.util.*;
 import java.net.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 // Server class 
 public class Server {
@@ -82,7 +81,7 @@ class ClientHandler implements Runnable {
     boolean isloggedin;
 
     // constructor
-    public ClientHandler(Socket s, String name, ObjectInputStream dis, ObjectOutputStream dos) throws SQLException, ClassNotFoundException {
+    public ClientHandler(Socket s, String name, ObjectInputStream dis, ObjectOutputStream dos) {
         this.dis = dis;
         this.dos = dos;
         this.name = name;

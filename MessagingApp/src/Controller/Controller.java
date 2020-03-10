@@ -3,7 +3,7 @@
 import java.sql.SQLException;
 
 public class Controller {
-    PortalConnection c = new PortalConnection();
+    final PortalConnection c = new PortalConnection();
 
     public Controller() throws SQLException, ClassNotFoundException {
 
@@ -11,8 +11,7 @@ public class Controller {
 
     }
 
-        //might be boolean to see if inlog was successful
-    public boolean login(String username, String password) throws SQLException, ClassNotFoundException {
+    public boolean login(String username, String password) {
 
         if (c.userExists(username)){
             System.out.println("User already exists, tries to log in.");
