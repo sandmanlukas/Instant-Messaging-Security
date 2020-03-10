@@ -14,10 +14,6 @@ public class Server {
     // counter for clients 
     static int i = 0;
 
-    public Server() throws SQLException, ClassNotFoundException {
-    }
-
-
     public static void main(String[] args) throws IOException
     { 
         // server is listening on port 1234 
@@ -77,7 +73,7 @@ public class Server {
 // ClientHandler class
 class ClientHandler implements Runnable {
     Scanner scn = new Scanner(System.in);
-    PortalConnection conn = new PortalConnection();
+    final PortalConnection conn = new PortalConnection();
     private String name;
     final ObjectOutputStream dos;
     final ObjectInputStream dis;
@@ -139,7 +135,7 @@ class ClientHandler implements Runnable {
                             }
                             break;
                         case "online":
-                            Boolean temp = false;
+                            boolean temp = false;
                             System.out.print("hejehej");
                             for (ClientHandler mc : Server.ar) {
                                 if(mc.name.equals(msg.getSnd())) {

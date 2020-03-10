@@ -1,4 +1,3 @@
-
 CREATE FUNCTION newUser()
   RETURNS trigger AS $$
 BEGIN

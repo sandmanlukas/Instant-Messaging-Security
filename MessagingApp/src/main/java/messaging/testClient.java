@@ -52,7 +52,7 @@ public class testClient {
     }
 
     public void removeGroupMember(String groupName, String memberName) {
-        groupMap.get(groupName).remove(groupName);
+        groupMap.get(groupName).remove(memberName);
     }
 
     public ArrayList<String> getGroupMembers(String groupName) {
@@ -95,7 +95,7 @@ public class testClient {
 
             if (s.getRatchetKeyTheirPublic() == null) {
                 //updates message- and chain key
-                s = Initialization.noResponseKeyUpdate(s);
+                //s = Initialization.noResponseKeyUpdate(s);
 
                 //encrypts the message using the current keys for the session
                 byte[] initMsgKey = s.firstMsgKey;
