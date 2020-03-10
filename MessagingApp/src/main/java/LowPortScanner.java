@@ -15,7 +15,7 @@ public class LowPortScanner {
                 Socket s = new Socket(host, i);
                 System.out.println("There is a server on port: " + i + " of " + host);
             } catch (UnknownHostException ex) {
-                System.err.println(ex);
+                ex.printStackTrace();
                 break;
             } catch (IOException ex) {
                 // Must not be a server on this port

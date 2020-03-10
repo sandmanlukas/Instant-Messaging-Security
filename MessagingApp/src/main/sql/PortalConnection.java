@@ -21,6 +21,25 @@ public class PortalConnection {
         conn = DriverManager.getConnection(db, props);
     }
 
+    public boolean userExists (String username){
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT EXISTS(SELECT username FROM passwordview WHERE username=?)")) {
+            ps.setString(1,username);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()){
+                boolean exists = rs.getBoolean(1);
+               // System.out.println("boolean: " + exists);
+                return exists;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Failure! in userExists");
+
+        return false;
+    }
+
     public void newUser(String userName, String password) {
         try (PreparedStatement ps = conn.prepareStatement (
                 "INSERT INTO passwordView VALUES (?,?)")) {
@@ -42,9 +61,10 @@ public class PortalConnection {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 String pswHash = rs.getString("hash");
-                boolean success = Argon2Encryption.verifyArgon(pswHash, password);
-                System.out.println(success ? "Success!" : "Failure!");
-                return success;
+                //System.out.println(success ? "Success!" : "Failure!");
+                System.out.println(pswHash);
+                System.out.println(password);
+                return Argon2Encryption.verifyArgon(pswHash, password);
             } else {
                 return false;
             }
@@ -64,8 +84,12 @@ public class PortalConnection {
             c.newUser("john", "qwerty123");
             c.newUser("hampus", "test123");
 
+
             c.correctPassword("lukas", "test123");
             c.correctPassword("henrik", "hej2315");
+
+            c.userExists("lukas");
+            c.userExists("viktor");
 
         }catch (SQLException | ClassNotFoundException e){
             e.printStackTrace();

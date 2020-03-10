@@ -7,11 +7,14 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/sql" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/main/java/server-client" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/frontend/GUI" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/Controller" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/encryption" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/init" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/keys" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/messaging" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java/server-client" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/server-client/groupChat" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
@@ -27,6 +30,15 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="net.java.dev.jna:jna:5.5.0" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/src/main/sql/postgresql-42.2.10.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" name="Maven: org.whispersystems:curve25519-java:0.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.whispersystems:signal-protocol-java:2.8.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-javalite:3.10.0" level="project" />
@@ -46,5 +58,6 @@
     <orderEntry type="library" name="Maven: org.openjfx:javafx-graphics:win:13" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-base:13" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-base:win:13" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
   </component>
 </module>

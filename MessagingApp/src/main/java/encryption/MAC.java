@@ -12,13 +12,6 @@ public class MAC {
     private static final int MAC_LENGTH = 8;
 
 
-    public MAC(byte[] macKey) {
-        this.macKey = macKey;
-    }
-
-    public MAC (Session session){
-        session.setMacKey(getMacKey());
-    }
 
     // method to generate and equip a MAC-key to a session
     public static void getMac(byte [] secret,
@@ -59,9 +52,6 @@ public class MAC {
 
     }
 
-    public void setMacKey(byte[] macKey) {
-        this.macKey = macKey;
-    }
 
     public byte[] getMacKey() {
         return macKey;
