@@ -1,15 +1,20 @@
-package frontend.GUI;
 
+//import main.*;
 import Controller.Controller;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 
 public class GUIMain extends Application {
@@ -64,7 +69,12 @@ public class GUIMain extends Application {
                 cont.login(userInput, passInput);
 
                 //TODO open new page if input successful
-                mainChatPage(primaryStage);
+                try {
+                    mainChatPage(primaryStage, userInput.toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
 
             }
         });
@@ -73,8 +83,11 @@ public class GUIMain extends Application {
 
     //The main page when logged in, where you can chat
     //Panes colored only to make everything visible
-    public void mainChatPage(Stage primaryStage){
+    public void mainChatPage(Stage primaryStage, String username) throws IOException {
 
+        Client client = new Client(username);
+        client.run();
+        System.out.println(client.username);
         //list of active chats, or where to create new conversations
         GridPane chattGrid = new GridPane();
         chattGrid.setScaleX(200);
@@ -89,7 +102,9 @@ public class GUIMain extends Application {
         //trying to add text field to write messages at the bottom of the left pane.....
 
         HBox lowerHBox = new HBox();
-        VBox textDispVBox =new VBox();
+        HBox textHBox = new HBox();
+        VBox textDispVBox =new VBox(10);
+        VBox recDispVBox = new VBox();
         VBox chatDisplay = new VBox();
 
 
@@ -98,30 +113,98 @@ public class GUIMain extends Application {
         writeMessage.setPromptText("Write message here");
         //conversationGrid.setBottom(writeMessage);
 
+
+
         Button sendButton = new Button("Send");
         sendButton.setOnAction(e -> {
-            //System.out.println(writeMessage.getText());
             Text sent = new Text("> " + writeMessage.getText());
             textDispVBox.getChildren().add(sent);
+            recDispVBox.getChildren().add(new Text ("")); //Add empty row on the other side
+            client.setForMessage(writeMessage.getText());
             writeMessage.clear();
         });
+
+        Text recTest = new Text( "Testing "+"<");
+
+
         lowerHBox.setHgrow(writeMessage, Priority.ALWAYS);//Added this line
         lowerHBox.setHgrow(sendButton, Priority.ALWAYS);//Added this line
         lowerHBox.getChildren().addAll(writeMessage,sendButton);
-        conversationGrid.getChildren().add(textDispVBox);
+        //conversationGrid.getChildren().add(textDispVBox);
+        //HBox.setHgrow(textDispVBox, Priority.ALWAYS);
+        //HBox.setHgrow(recDispVBox, Priority.ALWAYS);
+        //textHBox.getChildren().addAll(textDispVBox,recDispVBox); //Adding sent text and recieved in HBox
+        recDispVBox.setAlignment(Pos.TOP_CENTER);
 
         BorderPane border = new BorderPane();
         border.setRight(chattGrid);
 
         border.setBottom(lowerHBox);
         border.setLeft(textDispVBox);
+        border.setCenter(recDispVBox);
+        //border.setLeft(textHBox);
         //border.setLeft(conversationGrid);
         //border.setBottom(writeMessage);
         //border.setCenter(sendButton);
+        recDispVBox.getChildren().add(recTest);
+
+        Thread recMsg = new Thread(new Runnable() {
+                @Override
+                public void run(){
+                    Runnable updater = new Runnable() {
+                        @Override
+                        public void run() {
+
+                            if (client.newRecieve) {
+                                System.out.println("Jag har fått ett meddelande " + client.recieved);
+                                Text t = new Text(client.recieved);
+                                recDispVBox.getChildren().add(t);
+                                textDispVBox.getChildren().add(new Text("")); //Add empty row on other side
+                                client.newRecieve = false;
+
+                            }
+
+                        }
+                    };
+
+                    while(true){
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        Platform.runLater(updater);
+                    }
+                };
+        });
+        recMsg.setDaemon(true);
+        recMsg.start();
+
+
+
+
+        /* Thread recMsg = new Thread(()->{
+           while (true){
+               try {
+                   Thread.sleep(100);
+               } catch (InterruptedException e) {
+                   e.printStackTrace();
+               }
+              // System.out.println("client.newRecieve: "+ client.newRecieve);
+               if(client.newRecieve==true){
+                   System.out.println("Jag har fått ett meddelande");
+                   Text t= new Text(client.recieved);
+                   recDispVBox.getChildren().add(t);
+                   textDispVBox.getChildren().add(new Text("")); //Add empty row on other side
+                   client.newRecieve=false;
+               }
+           }
+        });
+
+        recMsg.start();*/
 
         primaryStage.setScene((new Scene(border, 700, 500)));
         primaryStage.show();
-
 
 
 

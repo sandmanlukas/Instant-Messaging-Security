@@ -14,9 +14,28 @@ import java.util.StringTokenizer;
 public class Client {
     final static int ServerPort = 1234;
     public static testClient client;
+    String username;
+    String toSend;
+    boolean newSend;
+    String recieved;
+    boolean newRecieve;
 
-    public static void main(String[] args) throws IOException {
-        final Scanner scn = new Scanner(System.in);
+
+    public Client(String username){
+        this.username=username;
+        this.toSend="";
+        //this.newSend=false;
+        this.recieved="";
+        this.newRecieve=false;
+
+
+    }
+
+
+    //public static void main(String[] args) throws IOException {
+
+    public void run() throws IOException{
+       // final Scanner scn = new Scanner(System.in);
         Curve curveClass = new Curve();
 
         // getting localhost ip
@@ -26,12 +45,13 @@ public class Client {
         Socket s = new Socket(ip, ServerPort);
 
         System.out.println("Connecting to " + ip + " on port " + ServerPort);
-        System.out.println("Type in Username: ");
+        System.out.println("Username: "+ this.username);
+        //System.out.println("Type in Username: ");
 
-        final String userName = scn.nextLine();
+       // final String userName = scn.nextLine();
         preKeyBundle preKeys = curveClass.generatePreKeyBundle();
 
-        client = new testClient(userName, preKeys);
+        client = new testClient(this.username, preKeys);
 
         // obtaining input and out streams
         ObjectOutputStream objectOutput = new ObjectOutputStream(s.getOutputStream());
@@ -39,26 +59,24 @@ public class Client {
 
         // sendMessage thread
         Thread sendMessage = new Thread(() -> {
+
             while (true) {
-                // read the message to deliver.
-                String msg = scn.nextLine();
-                StringTokenizer st = new StringTokenizer(msg, "#");
-                String msgToSend = st.nextToken();
-                String recipient = st.nextToken();
-                client.sendMessage(recipient, msgToSend, objectOutput);
-
-                /*//Message m = new Message(" ",recipient,"message",msgToSend);
-                //Message m = new Message(userName, recipient, "message", msgToSend);
-
                 try {
-                    // write on the output stream
-                    //objectOutput.writeObject(m)
-                }
-                catch (Exception e) {
-
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
                     e.printStackTrace();
-
-                }*/
+                }
+                // read the message to deliver.
+                //String msg = scn.nextLine();
+                if(this.newSend==true) {
+                    String msg = this.toSend;
+                    StringTokenizer st = new StringTokenizer(msg, "#");
+                    String msgToSend = st.nextToken();
+                    String recipient = st.nextToken();
+                    System.out.println("Sending msg "+ msgToSend + ", reciepient: " + recipient);
+                    client.sendMessage(recipient, msgToSend, objectOutput);
+                    this.newSend=false;
+                }
             }
         });
 
@@ -73,7 +91,7 @@ public class Client {
 
                     switch (msg.getType()) {
                         case "usernameMsg":
-                            m = new Message(msg.getRec(), "Server", "usernameMsg", userName);
+                            m = new Message(msg.getRec(), "Server", "usernameMsg", this.username);
                             objectOutput.writeObject(m);
                             break;
                         case "usernameRec":
@@ -89,7 +107,7 @@ public class Client {
                              keys[3 + i] = preKeys.getPublicKeys().getPublicOneTimePreKey(i);
                             }
 
-                            m = new Message(userName, "Server", "initMsg", keys);
+                            m = new Message(this.username, "Server", "initMsg", keys);
                             objectOutput.writeObject(m);
 
                             break;
@@ -185,6 +203,10 @@ public class Client {
                             String fMsg = AES_encryption.decrypt(firstMsgReceived[0], session.firstMsgKey, new IvParameterSpec(firstMsgReceived[1]), session);
                             System.out.println(msg.getSnd() + ": " + fMsg);
 
+                            this.recieved = msg.getSnd() + ": " + fMsg; //Write message to object
+                            this.newRecieve = true; //set flag
+
+
                             break;
                         case "encryptMsg":
                             //retrieves the received message, their ratchet and the IV
@@ -196,6 +218,9 @@ public class Client {
                                 //Decrypts the message and updates the session, then print it in the console
                                 String message = client.receiveMessage(theirPublicRatchetKey, encryptedMsg, iv, msg.sender);
                                 System.out.println(msg.getSnd() + ": " + message);
+
+                            this.recieved = msg.getSnd() + ": " + message; //Write message to object
+                            this.newRecieve = true; //set flag
                                 break;
                         case "noResponseEncryptMsg":
 
@@ -206,8 +231,9 @@ public class Client {
                             //decrypt received message
                             firstMsgReceived = (byte[][]) msg.getMsg();
                             fMsg = AES_encryption.decrypt(firstMsgReceived[0], session.firstMsgKey, new IvParameterSpec(firstMsgReceived[1]), session);
-                            System.out.println(msg.getSnd() + ": " + fMsg);
 
+                            this.recieved = msg.getSnd() + ": " + fMsg; //Write message to object
+                            this.newRecieve = true; //set flag
                             break;
                         default:
                             break;
@@ -223,5 +249,9 @@ public class Client {
         sendMessage.start();
         readMessage.start();
 
+    }
+    public void setForMessage(String s){
+        this.newSend=true;
+        this.toSend=s;
     }
 }
