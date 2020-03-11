@@ -1,9 +1,14 @@
 //package Controller;
 
+import javafx.stage.Stage;
+import javafx.stage.Window;
+
 import java.sql.SQLException;
 
 public class Controller {
     final PortalConnection c = new PortalConnection();
+
+
 
     public Controller() throws SQLException, ClassNotFoundException {
 

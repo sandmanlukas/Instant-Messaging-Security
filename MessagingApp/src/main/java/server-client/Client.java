@@ -130,6 +130,12 @@ public class Client {
                                     }
                                 }
                             });
+                            this.received = user + " was added to group: " + groupName;
+                            this.toSend = "You were added to group: " + groupName;
+                            client.sendMessage(user,toSend,objectOutput); //TODO: Look over this.
+                            //set flag
+                            newSend = true;
+                            newReceive = true;
                             break;
                         case 'g':
                             String group = st.nextToken();

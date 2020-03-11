@@ -22,12 +22,14 @@ public class GUIMain extends Application {
     private PasswordField password;
     private Controller cont;
     private Button sendButton;
-    private final Stage primaryStage = new Stage();
+    private Stage primaryStage;
+    private Scene scene;
     private Stage chatStage;
     private VBox textDispVBox;
     private VBox recDispVBox;
     private HBox lowerHBox;
     private Client client;
+    private StackPane startPane;
 
 
     public static void main(String[] args) {
@@ -37,26 +39,28 @@ public class GUIMain extends Application {
     @Override
     public void start(Stage primaryStage) throws SQLException, ClassNotFoundException {
 
+        this.primaryStage = primaryStage;
+        primaryStage = new Stage();
         cont = new Controller();
 
         primaryStage.setTitle("Main page");
 
-        StackPane startPane = new StackPane();
+        startPane = new StackPane();
 
         username = new TextField();
         password = new PasswordField();
 
         username.setMaxSize(100,10);
-        username.setPromptText("username");
+        username.setPromptText("Username");
         username.setTranslateX(0.0);
         username.setTranslateY(0.0);
 
         password.setMaxSize(100,10);
-        password.setPromptText("password");
+        password.setPromptText("Password");
         password.setTranslateX(0.0);
         password.setTranslateY(25.0);
 
-        Button login = new Button("login");
+        Button login = new Button("Login");
         login.setTranslateX(0.0);
         login.setTranslateY(50.0);
 
@@ -65,16 +69,22 @@ public class GUIMain extends Application {
         startPane.getChildren().add(login);
 
 
-        primaryStage.setScene((new Scene(startPane, 700, 500)));
+        this.scene = new Scene(startPane, 700, 500);
+        primaryStage.setScene(scene);
         primaryStage.show();
 
 
+        Stage finalPrimaryStage = primaryStage;
         password.setOnKeyPressed((keyEvent -> {if(keyEvent.getCode() == KeyCode.ENTER){
             tryLogin();
+            finalPrimaryStage.close();
         }
         }));
 
-        login.setOnAction(event -> tryLogin());
+        login.setOnAction(event -> {
+            tryLogin();
+            finalPrimaryStage.close();
+        });
 
     }
     public void failLogin(){
@@ -97,8 +107,8 @@ public class GUIMain extends Application {
 
         if (cont.login(userInput, passInput)) {
             try {
-                primaryStage.close();
-                mainChatPage(primaryStage, userInput);
+                mainChatPage(userInput);
+                //GUIChat chat = new GUIChat(primaryStage, userInput);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -118,15 +128,19 @@ public class GUIMain extends Application {
 
     //The main page when logged in, where you can chat
     //Panes colored only to make everything visible
-    public void mainChatPage(Stage primaryStage, String username) throws IOException {
+    public void mainChatPage(String username) throws IOException {
+
+        Stage chatStage;
+        chatStage = this.primaryStage;
 
         client = new Client(username);
         client.run();
-        System.out.println(client.username);
+
+        chatStage.setTitle("Chat Page");
         //list of active chats, or where to create new conversations
         GridPane chatGrid = new GridPane();
         chatGrid.setScaleX(200);
-        chatGrid.setStyle("-fx-border-color: blue;");
+        chatGrid.setStyle("-fx-border-color: purple;");
 
         //shows conversations one at the time
         BorderPane conversationGrid = new BorderPane();
@@ -144,23 +158,30 @@ public class GUIMain extends Application {
 
 
         writeMessage = new TextField();
-        writeMessage.setMaxSize(500,100);
+        writeMessage.setMaxWidth(Double.MAX_VALUE);
+        //writeMessage.setMaxSize(500,100);
         writeMessage.setPromptText("Write message here");
         //conversationGrid.setBottom(writeMessage);
 
 
 
+
         sendButton = new Button("Send");
+        sendButton.setMaxWidth(Double.MAX_VALUE);
+        //sendButton.setMinWidth(chatGrid.getMinWidth());
+
+        sendButton.setPrefWidth(chatGrid.getMaxWidth());
 
         writeMessage.setOnKeyPressed((keyEvent -> {if(keyEvent.getCode() == KeyCode.ENTER){
-        sendMessage();}
+        sendMessage();
+        }
         }));
 
         sendButton.setOnAction(e -> {
             sendMessage();
         });
 
-        Text recTest = new Text( "Testing "+"<");
+        Text recTest = new Text( "Testing "+"<, User: " + username);
 
 
         HBox.setHgrow(writeMessage, Priority.ALWAYS);//Added this line
@@ -232,9 +253,9 @@ public class GUIMain extends Application {
         });
 
         recMsg.start();*/
-
-        primaryStage.setScene((new Scene(border, 700, 500)));
-        primaryStage.show();
+        this.scene = new Scene(border,700,500);
+        chatStage.setScene(this.scene);
+        chatStage.show();
 
 
 
