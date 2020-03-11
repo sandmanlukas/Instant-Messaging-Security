@@ -14,9 +14,11 @@ public class Controller {
     public boolean login(String username, String password) {
 
         if (c.userExists(username)){
-            System.out.println("User already exists, tries to log in.");
-            System.out.println("pass: " + password);
-           return c.correctPassword(username, password);
+            if(c.correctPassword(username,password)) return true;
+            else {
+                System.out.println("That username is taken. Try another one.");
+                return false;
+            }
         }
         else if (!c.userExists(username)){
             c.newUser(username,password);
@@ -24,7 +26,6 @@ public class Controller {
             return true;
         }
 
-        //TODO call method in model/main to log in
         return false;
     }
 }

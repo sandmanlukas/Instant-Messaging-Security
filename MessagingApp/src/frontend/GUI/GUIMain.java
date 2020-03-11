@@ -18,10 +18,17 @@ import java.sql.SQLException;
 
 public class GUIMain extends Application {
     private TextField username;
+    private TextField writeMessage;
     private PasswordField password;
     private Controller cont;
+    private Button sendButton;
     private final Stage primaryStage = new Stage();
     private Stage chatStage;
+    private VBox textDispVBox;
+    private VBox recDispVBox;
+    private HBox lowerHBox;
+    private Client client;
+
 
     public static void main(String[] args) {
         launch(args);
@@ -72,9 +79,9 @@ public class GUIMain extends Application {
     }
     public void failLogin(){
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Wrong Password");
-        alert.setHeaderText("Wrong password.");
-        alert.setContentText("You entered the wrong password. Try again.");
+        alert.setTitle("Wrong Password or Username");
+        alert.setHeaderText("Wrong password or Username.");
+        alert.setContentText("You entered the wrong password or Username. Try again.");
         alert.showAndWait();
     }
 
@@ -101,11 +108,19 @@ public class GUIMain extends Application {
         }
     }
 
+    public void sendMessage(){
+        Text sent = new Text("> " + writeMessage.getText());
+        textDispVBox.getChildren().add(sent);
+        recDispVBox.getChildren().add(new Text ("")); //Add empty row on the other side
+        client.setForMessage(writeMessage.getText());
+        writeMessage.clear();
+    }
+
     //The main page when logged in, where you can chat
     //Panes colored only to make everything visible
     public void mainChatPage(Stage primaryStage, String username) throws IOException {
 
-        Client client = new Client(username);
+        client = new Client(username);
         client.run();
         System.out.println(client.username);
         //list of active chats, or where to create new conversations
@@ -121,27 +136,28 @@ public class GUIMain extends Application {
 
         //trying to add text field to write messages at the bottom of the left pane.....
 
-        HBox lowerHBox = new HBox();
+        lowerHBox = new HBox();
         HBox textHBox = new HBox();
-        VBox textDispVBox =new VBox(10);
-        VBox recDispVBox = new VBox();
+        textDispVBox =new VBox(10);
+        recDispVBox = new VBox();
         VBox chatDisplay = new VBox();
 
 
-        TextField writeMessage = new TextField();
+        writeMessage = new TextField();
         writeMessage.setMaxSize(500,100);
         writeMessage.setPromptText("Write message here");
         //conversationGrid.setBottom(writeMessage);
 
 
 
-        Button sendButton = new Button("Send");
+        sendButton = new Button("Send");
+
+        writeMessage.setOnKeyPressed((keyEvent -> {if(keyEvent.getCode() == KeyCode.ENTER){
+        sendMessage();}
+        }));
+
         sendButton.setOnAction(e -> {
-            Text sent = new Text("> " + writeMessage.getText());
-            textDispVBox.getChildren().add(sent);
-            recDispVBox.getChildren().add(new Text ("")); //Add empty row on the other side
-            client.setForMessage(writeMessage.getText());
-            writeMessage.clear();
+            sendMessage();
         });
 
         Text recTest = new Text( "Testing "+"<");

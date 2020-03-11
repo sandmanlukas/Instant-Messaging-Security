@@ -10,11 +10,11 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/frontend/GUI" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Controller" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/main/java/server-client" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/encryption" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/init" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/keys" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/messaging" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/main/java/server-client" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/src/main/java/server-client/groupChat" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
@@ -39,6 +39,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="lib" level="project" />
     <orderEntry type="library" name="Maven: org.whispersystems:curve25519-java:0.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.whispersystems:signal-protocol-java:2.8.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.protobuf:protobuf-javalite:3.10.0" level="project" />
@@ -60,6 +61,5 @@
     <orderEntry type="library" name="Maven: org.openjfx:javafx-base:win:13" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:13" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:win:13" level="project" />
-    <orderEntry type="library" name="lib" level="project" />
   </component>
 </module>
