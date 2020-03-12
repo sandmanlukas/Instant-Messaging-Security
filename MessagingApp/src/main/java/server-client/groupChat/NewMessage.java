@@ -1,4 +1,3 @@
-package groupChat;
 
 /**
  * NewMessage

@@ -105,8 +105,13 @@ class ClientHandler implements Runnable {
 
 
                 try {
+
+                    if (dis == null) {
+                        System.out.println("dcad");
+                    }
                     // receive the object
                     Message msg = (Message) dis.readObject();
+
                     switch (msg.getType()) {
                         case "usernameMsg":
                             for (ClientHandler mc : Server.ar) {

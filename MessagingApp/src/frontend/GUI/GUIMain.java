@@ -1,4 +1,3 @@
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -80,6 +79,10 @@ public class GUIMain extends Application {
             finalPrimaryStage.close();
         }
         }));
+
+        primaryStage.setOnCloseRequest(e -> {
+            finalPrimaryStage.close();
+        });
 
         login.setOnAction(event -> {
             tryLogin();
@@ -257,7 +260,10 @@ public class GUIMain extends Application {
         chatStage.setScene(this.scene);
         chatStage.show();
 
-
+        chatStage.setOnCloseRequest(e -> {
+            System.out.println("stänger ner");
+            System.exit(0);
+        });
 
     }
 }
