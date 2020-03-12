@@ -261,8 +261,7 @@ public class GUIMain extends Application {
         chatStage.show();
 
         chatStage.setOnCloseRequest(e -> {
-            System.out.println("stänger ner");
-            System.exit(0);
+            client.logOut = true;
         });
 
     }

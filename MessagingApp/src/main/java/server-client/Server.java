@@ -137,7 +137,6 @@ class ClientHandler implements Runnable {
                             break;
                         case "online":
                             boolean temp = false;
-                            System.out.print("hejehej");
                             for (ClientHandler mc : Server.ar) {
                                 if(mc.name.equals(msg.getSnd())) {
                                     for (ClientHandler mc2 : Server.ar) {
@@ -215,8 +214,11 @@ class ClientHandler implements Runnable {
                             for (ClientHandler mc : Server.ar) {
                                 if (mc.name.equals(msg.getSnd())) {
                                     //silently close the connection for the user
+                                    Message m = new Message("Server", msg.getSnd(), "logoutSuccess","");
+                                    mc.dos.writeObject(m);
                                     this.isloggedin = false;
                                     this.s.close();
+                                    Server.ar.remove(mc);
                                     break;
                                 }
                             }

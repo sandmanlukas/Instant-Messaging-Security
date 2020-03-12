@@ -21,6 +21,7 @@ public class Client {
     boolean newSend;
     public String received;
     boolean newReceive;
+    boolean logOut = false;
 
 
     public Client(String username){
@@ -70,6 +71,14 @@ public class Client {
                     e.printStackTrace();
                 }
 
+                if(this.logOut) {
+                    Message m = new Message(username, "server", "logout", "");
+                    try {
+                        objectOutput.writeObject(m);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
                 // read the message to deliver.
                 //String msg = scn.nextLine();
                 if(this.newSend) {
@@ -164,12 +173,13 @@ public class Client {
                             break;
                         case 'h':
                             String output = "";
-                            output += "\\m username message  -- Message another user \n";
-                            output += "\\u username password -- Register as a new user \n";
-                            output += "\\l username password -- Login as a new user \n";
-                            output += "\\c groupname         -- Create a new group \n";
-                            output += "\\g groupname message -- Message a group \n";
-                            output += "\\o username          -- Check if another user is online \n";
+                            output += "\\m username message      -- Message another user \n";
+                            //output += "\\u username password   -- Register as a new user \n";
+                            //output += "\\l username password   -- Login as a new user \n";
+                            output += "\\c groupname             -- Create a new group \n";
+                            output += "\\i username groupname    -- Invites a user to a group \n";
+                            output += "\\g groupname message     -- Message a group \n";
+                            output += "\\o username              -- Check if another user is online \n";
                             Client.this.received = output; //Write message to object
                             newReceive = true; //set flag
                             break;
@@ -192,6 +202,10 @@ public class Client {
                     Message m;
 
                     switch (msg.getType()) {
+                        case "logoutSuccess":
+                            System.out.println("heej");
+                            System.exit(0);
+                            break;
                         case "usernameMsg":
                             m = new Message(msg.getRec(), "Server", "usernameMsg", username);
                             objectOutput.writeObject(m);
@@ -232,7 +246,8 @@ public class Client {
                             break;
                         case "loginAttempt":
                         case "online":
-                            System.out.println(msg.getMsg());
+                            Client.this.received = msg.getMsg().toString();
+                            newReceive = true; //set flag
                             break;
                         case "initRec":
                             //Affirms that the server has received preKeyBundlePublic
