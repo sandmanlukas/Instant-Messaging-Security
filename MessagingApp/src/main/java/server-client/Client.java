@@ -202,8 +202,11 @@ public class Client {
                     Message m;
 
                     switch (msg.getType()) {
+                        case "msgError":
+                            Client.this.received = (String) msg.getMsg();
+                            newReceive = true; //set flag
+                            break;
                         case "logoutSuccess":
-                            System.out.println("heej");
                             System.exit(0);
                             break;
                         case "usernameMsg":

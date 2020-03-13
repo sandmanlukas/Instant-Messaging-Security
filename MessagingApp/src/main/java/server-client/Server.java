@@ -1,5 +1,6 @@
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.*;
 import java.net.*;
 
@@ -73,7 +74,7 @@ public class Server {
 class ClientHandler implements Runnable {
     Scanner scn = new Scanner(System.in);
     //PortalConnection conn = new PortalConnection();
-    //final PortalConnection conn = new PortalConnection();
+    final PortalConnection conn = new PortalConnection();
     private String name;
     final ObjectOutputStream dos;
     final ObjectInputStream dis;
@@ -81,12 +82,34 @@ class ClientHandler implements Runnable {
     boolean isloggedin;
 
     // constructor
-    public ClientHandler(Socket s, String name, ObjectInputStream dis, ObjectOutputStream dos) {
+    public ClientHandler(Socket s, String name, ObjectInputStream dis, ObjectOutputStream dos) throws SQLException, ClassNotFoundException {
         this.dis = dis;
         this.dos = dos;
         this.name = name;
         this.s = s;
         this.isloggedin = true;
+    }
+
+    public boolean userError(String sender, String receiver) throws IOException {
+        Message m;
+        boolean temp = true;
+        for(ClientHandler mc : Server.ar) {
+            if (mc.name.equals(receiver)) {
+                return true;
+            }
+        }
+        for(ClientHandler mc : Server.ar) {
+            if (mc.name.equals(sender)) {
+                if (conn.userExists(receiver)) {
+                    m = new Message("Server", sender, "msgError", "User is not online");
+                } else {
+                    m = new Message("Server", sender, "msgError", "User does not exist");
+                }
+                mc.dos.writeObject(m);
+                break;
+            }
+        }
+        return false;
     }
 
     public void setName(String name) {
@@ -106,9 +129,6 @@ class ClientHandler implements Runnable {
 
                 try {
 
-                    if (dis == null) {
-                        System.out.println("dcad");
-                    }
                     // receive the object
                     Message msg = (Message) dis.readObject();
 
@@ -169,7 +189,6 @@ class ClientHandler implements Runnable {
                         case "initMsg":
                             for (ClientHandler mc : Server.ar) {
                                 if (mc.name.equals(msg.getSnd())) {
-
                                     //retrieves the preKeyBundlePublic and formats it
                                     byte[][] keys = (byte[][]) msg.getMsg();
                                     ArrayList<byte[]> arrayKeys = new ArrayList<>();
@@ -184,28 +203,31 @@ class ClientHandler implements Runnable {
                                     break;
                                 }
                             }
+
                             break;
-
                         case "publicBundleRequest":
-                            for (ClientHandler mc : Server.ar) {
-                                if (mc.name.equals(msg.getSnd())) {
+                            if (userError(msg.getSnd(), msg.getRec())) {
+                                System.out.println("publicbundlerequest");
+                                for (ClientHandler mc : Server.ar) {
+                                    if (mc.name.equals(msg.getSnd())) {
 
-                                    //retrieves the requested preKeyBundlePublic and make it serializable by putting it in a 2D byte array
-                                    preKeyBundlePublic preKeys = Server.server.getClient(msg.getRec());
-                                    byte[] publicIdentityKey = preKeys.getPublicIdentityKey();
-                                    byte[] publicPreKey = preKeys.getPublicPreKey();
-                                    byte[] signedPublicPreKey = preKeys.getSignedPublicPreKey();
-                                    byte[][] keys = new byte[3 + preKeys.getPublicOneTimePreKeys().size()][];
-                                    keys[0] = publicIdentityKey;
-                                    keys[1] = publicPreKey;
-                                    keys[2] = signedPublicPreKey;
-                                    for (int i = 0; i < preKeys.getPublicOneTimePreKeys().size(); i++) {
-                                        keys[3 + i] = preKeys.getPublicOneTimePreKey(i);
+                                        //retrieves the requested preKeyBundlePublic and make it serializable by putting it in a 2D byte array
+                                        preKeyBundlePublic preKeys = Server.server.getClient(msg.getRec());
+                                        byte[] publicIdentityKey = preKeys.getPublicIdentityKey();
+                                        byte[] publicPreKey = preKeys.getPublicPreKey();
+                                        byte[] signedPublicPreKey = preKeys.getSignedPublicPreKey();
+                                        byte[][] keys = new byte[3 + preKeys.getPublicOneTimePreKeys().size()][];
+                                        keys[0] = publicIdentityKey;
+                                        keys[1] = publicPreKey;
+                                        keys[2] = signedPublicPreKey;
+                                        for (int i = 0; i < preKeys.getPublicOneTimePreKeys().size(); i++) {
+                                            keys[3 + i] = preKeys.getPublicOneTimePreKey(i);
+                                        }
+
+                                        Message m = new Message(msg.getRec(), mc.name, "publicBundleRequestRec", keys);
+                                        mc.dos.writeObject(m);
+                                        break;
                                     }
-
-                                    Message m = new Message(msg.getRec(), mc.name, "publicBundleRequestRec", keys);
-                                    mc.dos.writeObject(m);
-                                    break;
                                 }
                             }
                             break;
@@ -225,12 +247,14 @@ class ClientHandler implements Runnable {
                             break;
                         default:
                             System.out.println("Forwarded a message");
-                            for (ClientHandler mc2 : Server.ar) {
-
-                                //forwards the message to the correct online user
-                                if (mc2.name.equals(msg.getRec()) && mc2.isloggedin) {
-                                    mc2.dos.writeObject(msg);
-                                    break;
+                            if(userError(msg.getSnd(), msg.getRec())) {
+                                System.out.println("default");
+                                for (ClientHandler mc2 : Server.ar) {
+                                    //forwards the message to the correct online user
+                                    if (mc2.name.equals(msg.getRec()) && mc2.isloggedin) {
+                                        mc2.dos.writeObject(msg);
+                                        break;
+                                    }
                                 }
                             }
                             break;
