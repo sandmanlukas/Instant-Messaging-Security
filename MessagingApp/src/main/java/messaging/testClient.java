@@ -36,6 +36,10 @@ public class testClient {
         return preKeys;
     }
 
+    public boolean groupExists(String groupName) {
+        return (groupMap.get(groupName) != null);
+    }
+
     public void addSession(Session session) {
         sessionMap.put(session.getTheirs(), session);
     }

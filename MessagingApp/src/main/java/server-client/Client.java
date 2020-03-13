@@ -149,7 +149,12 @@ public class Client {
                         case 'g':
                             String group = st.nextToken();
                             msgToSend = msg.substring(command.length() + group.length() + 2);
-                            client.sendGroupMessage(group, msgToSend, objectOutput);
+                            if(client.groupExists(group)) {
+                                client.sendGroupMessage(group, msgToSend, objectOutput);
+                            } else {
+                                Client.this.received = "You are not in a group with that name"; //Write message to object
+                                newReceive = true; //set flag
+                            }
                             break;
                         case 'l':
                             String username = st.nextToken();
