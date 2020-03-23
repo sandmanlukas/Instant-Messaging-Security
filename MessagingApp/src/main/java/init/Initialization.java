@@ -55,14 +55,11 @@ public class Initialization {
         byte[] message = rootSecrets3.getRootKey();
         byte[] realChain = rootSecrets3.getChainKey();
 
-        System.out.println("one time public: " + Arrays.toString(theirs.getPublicOneTimePreKey(0)));
 
         // Remove public ephemeralKey that was used.
         theirs.removePublicOneTimePreKey(0);
         byte[] ephemeralPublic = ephemeralKeyPair.getPublicKey();
         byte[] ratchetPublic = ratchetKeyPair.getPublicKey();
-
-        System.out.println("one time public: " + Arrays.toString(theirs.getPublicOneTimePreKey(0)));
 
 
         //create a mac key and set it to session
@@ -122,10 +119,10 @@ public class Initialization {
                 session);
 
         // remove key that was used
-        System.out.println("one time private: " + Arrays.toString(ourBundle.getPrivateKeys().getPrivateOneTimePreKey(0)));
+        //System.out.println("one time private: " + Arrays.toString(ourBundle.getPrivateKeys().getPrivateOneTimePreKey(0)));
         //System.out.println("one time public: " + Arrays.toString(session.getOurBundle().getPublicKeys().getPublicOneTimePreKey(0)));
-        ourBundle.getPrivateKeys().removePrivateOneTimePreKey(0);
-        System.out.println("one time private: " + Arrays.toString(ourBundle.getPrivateKeys().getPrivateOneTimePreKey(0)));
+        //ourBundle.getPrivateKeys().removePrivateOneTimePreKey(0);
+        //System.out.println("one time private: " + Arrays.toString(ourBundle.getPrivateKeys().getPrivateOneTimePreKey(0)));
 
 
 

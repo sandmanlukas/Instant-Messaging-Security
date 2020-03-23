@@ -25,6 +25,9 @@ public class Controller {
                 return false;
             }
         }
+        else if (username.equals("")){
+            return false;
+        }
         else if (!c.userExists(username)){
             c.newUser(username,password);
             System.out.println("User doesn't exists, creates a new user and logs him in.");
