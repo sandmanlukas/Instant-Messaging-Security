@@ -28,7 +28,7 @@ public class GUIMain extends Application {
     private VBox recDispVBox;
     private HBox lowerHBox;
     private Client client;
-    private StackPane startPane;
+    private StackPane root = new StackPane();
 
 
     public static void main(String[] args) {
@@ -44,7 +44,8 @@ public class GUIMain extends Application {
 
         primaryStage.setTitle("Main page");
 
-        startPane = new StackPane();
+        root.getStylesheets().add(getClass().getResource("GUIMain.css").toExternalForm());
+        //root = new StackPane();
 
         username = new TextField();
         password = new PasswordField();
@@ -63,20 +64,19 @@ public class GUIMain extends Application {
         login.setTranslateX(0.0);
         login.setTranslateY(50.0);
 
-        startPane.getChildren().add(username);
-        startPane.getChildren().add(password);
-        startPane.getChildren().add(login);
+        root.getChildren().add(username);
+        root.getChildren().add(password);
+        root.getChildren().add(login);
 
 
-        this.scene = new Scene(startPane, 700, 500);
+        this.scene = new Scene(root, 700, 500);
         primaryStage.setScene(scene);
         primaryStage.show();
 
 
         Stage finalPrimaryStage = primaryStage;
         password.setOnKeyPressed((keyEvent -> {if(keyEvent.getCode() == KeyCode.ENTER){
-            tryLogin();
-            finalPrimaryStage.close();
+            if(tryLogin()) finalPrimaryStage.close();
         }
         }));
 
@@ -85,8 +85,7 @@ public class GUIMain extends Application {
         });
 
         login.setOnAction(event -> {
-            tryLogin();
-            finalPrimaryStage.close();
+            if(tryLogin()) finalPrimaryStage.close();
         });
 
     }
@@ -98,7 +97,7 @@ public class GUIMain extends Application {
         alert.showAndWait();
     }
 
-    public void tryLogin(){
+    public boolean tryLogin(){
         String userInput;
         String passInput;
 
@@ -111,6 +110,7 @@ public class GUIMain extends Application {
         if (cont.login(userInput, passInput)) {
             try {
                 mainChatPage(userInput);
+                return true;
                 //GUIChat chat = new GUIChat(primaryStage, userInput);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -118,7 +118,9 @@ public class GUIMain extends Application {
         }else {
             failLogin();
             System.out.println("Login failed, try again.");
+            return false;
         }
+        return false;
     }
 
     public void sendMessage(){
@@ -142,8 +144,10 @@ public class GUIMain extends Application {
         chatStage.setTitle("Chat Page");
         //list of active chats, or where to create new conversations
         GridPane chatGrid = new GridPane();
-        chatGrid.setScaleX(200);
-        chatGrid.setStyle("-fx-border-color: purple;");
+        chatGrid.getStylesheets().add(getClass().getResource("GUIChat.css").toExternalForm());
+        //chatGrid.setScaleX(200);
+        //chatGrid.setStyle("-fx-border-color: purple;");
+
 
         //shows conversations one at the time
         BorderPane conversationGrid = new BorderPane();
@@ -156,7 +160,8 @@ public class GUIMain extends Application {
         lowerHBox = new HBox();
         HBox textHBox = new HBox();
         textDispVBox =new VBox(10);
-        recDispVBox = new VBox();
+        textDispVBox.getStyleClass().add("GUIChat.css");
+        recDispVBox = new VBox(10);
         VBox chatDisplay = new VBox();
 
 
