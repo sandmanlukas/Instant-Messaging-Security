@@ -15,7 +15,7 @@ public class testClient {
     private final preKeyBundle preKeys;
     private final HashMap<String, Session> sessionMap;
     String initMsg;
-    private final HashMap<String, ArrayList<String>> groupMap;
+    private final HashMap<String, chatGroup> groupMap;
 
     public testClient(String username, preKeyBundle preKeys) {
         this.username = username;
@@ -36,6 +36,10 @@ public class testClient {
         return preKeys;
     }
 
+    public boolean groupCreator(String groupName) {
+        return groupMap.get(groupName).getCreator();
+    }
+
     public boolean groupExists(String groupName) {
         return (groupMap.get(groupName) != null);
     }
@@ -48,20 +52,28 @@ public class testClient {
         return sessionMap.get(theirs);
     }
 
-    public void addGroup(String groupName) {
-        groupMap.put(groupName, new ArrayList<>());
+    public void addOwnGroup(String groupName) {
+        groupMap.put(groupName, new chatGroup(true));
+    }
+
+    public void addOtherGroup(String groupName) {
+        groupMap.put(groupName, new chatGroup(false));
     }
 
     public void addGroupMember(String groupName, String memberName) {
-        groupMap.get(groupName).add(memberName);
+        groupMap.get(groupName).addMember(memberName);
     }
 
     public void removeGroupMember(String groupName, String memberName) {
-        groupMap.get(groupName).remove(memberName);
+        groupMap.get(groupName).removeMember(memberName);
     }
 
     public ArrayList<String> getGroupMembers(String groupName) {
-        return groupMap.get(groupName);
+        if (!groupExists(groupName)) {
+            return null;
+        } else {
+            return groupMap.get(groupName).getMembers();
+        }
     }
 
     public void sendGroupMessage(String groupName, String msg, ObjectOutputStream objectOutput) {

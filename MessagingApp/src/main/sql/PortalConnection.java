@@ -5,7 +5,7 @@ public class PortalConnection {
 
     static final String DATABASE = "jdbc:postgresql://localhost/kandidatpsw";
     static final String USERNAME = "postgres";
-    static final String PASSWORD = "postgres";
+    static final String PASSWORD = "henkehe98";
 
     private Connection conn;
 

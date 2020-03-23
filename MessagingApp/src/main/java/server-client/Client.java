@@ -110,7 +110,7 @@ public class Client {
                                 if (st.hasMoreElements()) {
                                     groupName = st.nextToken();
                                     if (groupName != null) {
-                                        client.addGroup(groupName);
+                                        client.addOwnGroup(groupName);
                                         client.addGroupMember(groupName, client.getUsername());
                                         Client.this.received = "Group " + "\"" + groupName + "\"" + " was created!"; //Write message to object
                                         newReceive = true; //set flag
@@ -124,12 +124,17 @@ public class Client {
                                         groupName = st.nextToken();
                                         if (user != null && groupName != null) {
                                             if(client.groupExists(groupName)) {
-                                                currentGroupName = groupName;
-                                                m = new Message(username, "Server", "userOnlineCheck", user);
-                                                try {
-                                                    objectOutput.writeObject(m);
-                                                } catch (IOException e) {
-                                                    e.printStackTrace();
+                                                if (client.groupCreator(groupName)) {
+                                                    currentGroupName = groupName;
+                                                    m = new Message(username, "Server", "userOnlineCheck", user);
+                                                    try {
+                                                        objectOutput.writeObject(m);
+                                                    } catch (IOException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                } else {
+                                                    Client.this.received = "You are not the creator of the group"; //Write message to object
+                                                    newReceive = true; //set flag
                                                 }
                                             } else {
                                                 Client.this.received = "You are not in a group with that name"; //Write message to object
@@ -224,7 +229,7 @@ public class Client {
                             String groupName = msg.getSnd();
 
                             if (client.getGroupMembers(groupName) == null) {
-                                client.addGroup(groupName);
+                                client.addOtherGroup(groupName);
                                 for (String user : users) {
                                     client.addGroupMember(groupName, user);
                                 }
