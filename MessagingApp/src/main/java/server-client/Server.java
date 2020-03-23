@@ -98,7 +98,7 @@ class ClientHandler implements Runnable {
                 temp = true;
             }
         }
-        if (msgType.equals("userOnlineCheck") || msgType.equals("publicBundleRequest")) {
+        if ((msgType.equals("userOnlineCheck") || msgType.equals("publicBundleRequest")) && !temp) {
             for (ClientHandler mc : Server.ar) {
                 if (mc.name.equals(sender)) {
                     if (conn.userExists(receiver)) {
