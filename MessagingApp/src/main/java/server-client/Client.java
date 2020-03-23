@@ -1,12 +1,12 @@
 import org.apache.commons.lang3.tuple.MutableTriple;
 import org.whispersystems.libsignal.util.Pair;
+
 import javax.crypto.spec.IvParameterSpec;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Client {
-    final static int ServerPort = 1234;
+    final static int ServerPort = 8008;
     public static testClient client;
     public final String username;
     public String toSend;
@@ -95,96 +95,80 @@ public class Client {
                     } catch (NoSuchAlgorithmException e) {
                         e.printStackTrace();
                     }
-                    switch(command.charAt(1)) {
-                        case 'u':
-                            String user = st.nextToken();
-                            String psw = st.nextToken();
-
-                            assert digest != null;
-                            m = new Message(user, "server", "newUser", digest.digest(psw.getBytes(StandardCharsets.UTF_8)));
-                            try {
-                                objectOutput.writeObject(m);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            break;
-                        case 'm':
-                            String recipient = st.nextToken();
-                            msgToSend = msg.substring(command.length() + recipient.length() + 2);
-                            client.sendMessage(recipient, msgToSend, objectOutput);
-                            break;
-                        case 'c':
-                            groupName = st.nextToken();
-                            client.addGroup(groupName);
-                            client.addGroupMember(groupName, client.getUsername());
-
-                            Client.this.received = "Group " + "\"" + groupName + "\"" + " was created!"; //Write message to object
-                            newReceive = true; //set flag
-                            break;
-                        case 'i':
-                            user = st.nextToken();
-                            groupName = st.nextToken();
-                            if(client.groupExists(groupName)) {
-                                currentGroupName = groupName;
-                                m = new Message(username, "Server", "userOnlineCheck", user);
-                                try {
-                                    objectOutput.writeObject(m);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
+                    if(command != null) {
+                        switch(command.charAt(1)) {
+                            case 'm':
+                                if (st.hasMoreElements()) {
+                                    String recipient = st.nextToken();
+                                    if(msg.length() >= (command.length() + recipient.length() + 2)) {
+                                        msgToSend = msg.substring(command.length() + recipient.length() + 2);
+                                        client.sendMessage(recipient, msgToSend, objectOutput);
+                                    }
                                 }
-                            } else {
-                                Client.this.received = "You are not in a group with that name"; //Write message to object
+                                break;
+                            case 'c':
+                                if (st.hasMoreElements()) {
+                                    groupName = st.nextToken();
+                                    if (groupName != null) {
+                                        client.addGroup(groupName);
+                                        client.addGroupMember(groupName, client.getUsername());
+                                        Client.this.received = "Group " + "\"" + groupName + "\"" + " was created!"; //Write message to object
+                                        newReceive = true; //set flag
+                                    }
+                                }
+                                break;
+                            case 'i':
+                                if (st.hasMoreElements()) {
+                                    String user = st.nextToken();
+                                    if (st.hasMoreElements()) {
+                                        groupName = st.nextToken();
+                                        if (user != null && groupName != null) {
+                                            if(client.groupExists(groupName)) {
+                                                currentGroupName = groupName;
+                                                m = new Message(username, "Server", "userOnlineCheck", user);
+                                                try {
+                                                    objectOutput.writeObject(m);
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            } else {
+                                                Client.this.received = "You are not in a group with that name"; //Write message to object
+                                                newReceive = true; //set flag
+                                            }
+                                        }
+                                    }
+                                }
+                                break;
+                            case 'g':
+                                if (st.hasMoreElements()) {
+                                    String group = st.nextToken();
+                                    if(group != null) {
+                                        msgToSend = msg.substring(command.length() + group.length() + 2);
+                                        if(client.groupExists(group)) {
+                                            client.sendGroupMessage(group, msgToSend, objectOutput);
+                                        } else {
+                                            Client.this.received = "You are not in a group with that name"; //Write message to object
+                                            newReceive = true; //set flag
+                                        }
+                                    }
+                                }
+                                break;
+                            case 'h':
+                                String output = "";
+                                output += "\\m username message      -- Message another user \n";
+                                output += "\\c groupname             -- Create a new group \n";
+                                output += "\\i username groupname    -- Invites a user to a group \n";
+                                output += "\\g groupname message     -- Message a group \n";
+                                Client.this.received = output; //Write message to object
                                 newReceive = true; //set flag
-                            }
-                            break;
-                        case 'g':
-                            String group = st.nextToken();
-                            msgToSend = msg.substring(command.length() + group.length() + 2);
-                            if(client.groupExists(group)) {
-                                client.sendGroupMessage(group, msgToSend, objectOutput);
-                            } else {
-                                Client.this.received = "You are not in a group with that name"; //Write message to object
+                                break;
+                            default:
+                                Client.this.received = "Unknown input"; //Write message to object
                                 newReceive = true; //set flag
-                            }
-                            break;
-                        case 'l':
-                            String username = st.nextToken();
-                            String password = st.nextToken();
-                            assert digest != null;
-                            m = new Message(username, "Server", "login", digest.digest(password.getBytes(StandardCharsets.UTF_8)));
-                            try {
-                                objectOutput.writeObject(m);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            break;
-                        case 'o':
-                            user = st.nextToken();
-                            m = new Message(client.getUsername(), "Server", "online", user);
-                            try {
-                                objectOutput.writeObject(m);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                            break;
-                        case 'h':
-                            String output = "";
-                            output += "\\m username message      -- Message another user \n";
-                            //output += "\\u username password   -- Register as a new user \n";
-                            //output += "\\l username password   -- Login as a new user \n";
-                            output += "\\c groupname             -- Create a new group \n";
-                            output += "\\i username groupname    -- Invites a user to a group \n";
-                            output += "\\g groupname message     -- Message a group \n";
-                            output += "\\o username              -- Check if another user is online \n";
-                            Client.this.received = output; //Write message to object
-                            newReceive = true; //set flag
-                            break;
-                        default:
-                            Client.this.received = "Unknown input"; //Write message to object
-                            newReceive = true; //set flag
-                            break;
+                                break;
+                        }
+                        this.newSend=false;
                     }
-                    this.newSend=false;
                 }
             }
         });
