@@ -22,6 +22,7 @@ public class Client {
     public String received;
     boolean newReceive;
     boolean logOut = false;
+    String currentGroupName;
 
 
     public Client(String username){
@@ -123,28 +124,18 @@ public class Client {
                         case 'i':
                             user = st.nextToken();
                             groupName = st.nextToken();
-                            client.addGroupMember(groupName, user);
-                            int size = client.getGroupMembers(groupName).size();
-                            String[] members = new String[size];
-                            for(int i = 0; i < size; i++) {
-                                members[i] = client.getGroupMembers(groupName).get(i);
-                            }
-                            client.getGroupMembers(groupName).forEach((u) -> {
-                                if(!client.getUsername().equals(u)) {
-                                    Message message = new Message(groupName, u, "userInvite", members);
-                                    try {
-                                        objectOutput.writeObject(message);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
+                            if(client.groupExists(groupName)) {
+                                currentGroupName = groupName;
+                                m = new Message(username, "Server", "userOnlineCheck", user);
+                                try {
+                                    objectOutput.writeObject(m);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
                                 }
-                            });
-                            this.received = user + " was added to group: " + groupName;
-                            this.toSend = "You were added to group: " + groupName;
-                            client.sendMessage(user,toSend,objectOutput); //TODO: Look over this.
-                            //set flag
-                            newSend = true;
-                            newReceive = true;
+                            } else {
+                                Client.this.received = "You are not in a group with that name"; //Write message to object
+                                newReceive = true; //set flag
+                            }
                             break;
                         case 'g':
                             String group = st.nextToken();
@@ -207,6 +198,32 @@ public class Client {
                     Message m;
 
                     switch (msg.getType()) {
+                        case "userOnlineCheckGroup":
+                            if((boolean) msg.getMsg()) {
+                                client.addGroupMember(currentGroupName, msg.getSnd());
+                                int size = client.getGroupMembers(currentGroupName).size();
+                                String[] members = new String[size];
+                                for (int i = 0; i < size; i++) {
+                                    members[i] = client.getGroupMembers(currentGroupName).get(i);
+                                }
+                                client.getGroupMembers(currentGroupName).forEach((u) -> {
+                                    if (!client.getUsername().equals(u)) {
+                                        Message message = new Message(currentGroupName, u, "userInvite", members);
+                                        try {
+                                            objectOutput.writeObject(message);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
+                                this.received = msg.getSnd() + " was added to group: " + currentGroupName;
+                                this.toSend = "You were added to group: " + currentGroupName;
+                                client.sendMessage(msg.getSnd(), toSend, objectOutput); //TODO: Look over this.
+                                //set flag
+                                newSend = true;
+                                newReceive = true;
+                            }
+                            break;
                         case "msgError":
                             Client.this.received = (String) msg.getMsg();
                             newReceive = true; //set flag
@@ -262,6 +279,8 @@ public class Client {
                             break;
                         case "publicBundleRequestRec":
                             //their preKeyBundlePublic has been received and is formatted
+                            Session session = Initialization.startSession(client.getPreKeys(), client.getUsername(), msg.getSnd());
+                            client.addSession(session);
                             byte[][] serverKeys = (byte[][]) msg.getMsg();
                             ArrayList<byte[]> arrayKeys = new ArrayList<>();
                             for (int k = 3; k < serverKeys.length; k++) {
@@ -342,7 +361,7 @@ public class Client {
                             preKeyBundlePublic theirsPreKeys = new preKeyBundlePublic(theirsPublicIdentityKey, theirsPublicPreKey, theirsSignedPublicPreKey, theirsOneTimePreKeys);
 
                             //crates a session for the sender and adds it to our client
-                            Session session = Initialization.establishContact(theirsEphemeralPublic, theirsRatchetPublic, theirsPreKeys, client.getUsername(), msg.getSnd(), client.getPreKeys());
+                            session = Initialization.establishContact(theirsEphemeralPublic, theirsRatchetPublic, theirsPreKeys, client.getUsername(), msg.getSnd(), client.getPreKeys());
                             client.addSession(session);
 
 

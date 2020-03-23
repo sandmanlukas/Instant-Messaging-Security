@@ -90,26 +90,28 @@ class ClientHandler implements Runnable {
         this.isloggedin = true;
     }
 
-    public boolean userError(String sender, String receiver) throws IOException {
+    public boolean userError(String sender, String receiver, String msgType) throws IOException {
         Message m;
-        boolean temp = true;
-        for(ClientHandler mc : Server.ar) {
+        boolean temp = false;
+        for (ClientHandler mc : Server.ar) {
             if (mc.name.equals(receiver)) {
-                return true;
+                temp = true;
             }
         }
-        for(ClientHandler mc : Server.ar) {
-            if (mc.name.equals(sender)) {
-                if (conn.userExists(receiver)) {
-                    m = new Message("Server", sender, "msgError", "User is not online");
-                } else {
-                    m = new Message("Server", sender, "msgError", "User does not exist");
+        if (msgType.equals("userOnlineCheck") || msgType.equals("publicBundleRequest")) {
+            for (ClientHandler mc : Server.ar) {
+                if (mc.name.equals(sender)) {
+                    if (conn.userExists(receiver)) {
+                        m = new Message("Server", sender, "msgError", "User is not online");
+                    } else {
+                        m = new Message("Server", sender, "msgError", "User does not exist");
+                    }
+                    mc.dos.writeObject(m);
+                    break;
                 }
-                mc.dos.writeObject(m);
-                break;
             }
         }
-        return false;
+        return temp;
     }
 
     public void setName(String name) {
@@ -131,6 +133,7 @@ class ClientHandler implements Runnable {
 
                     // receive the object
                     Message msg = (Message) dis.readObject();
+                    System.out.println(msg.getType());
 
                     switch (msg.getType()) {
                         case "usernameMsg":
@@ -155,22 +158,12 @@ class ClientHandler implements Runnable {
                                 }
                             }
                             break;
-                        case "online":
-                            boolean temp = false;
+                        case "userOnlineCheck":
                             for (ClientHandler mc : Server.ar) {
-                                if(mc.name.equals(msg.getSnd())) {
-                                    for (ClientHandler mc2 : Server.ar) {
-                                        if (mc2.name.equals(msg.getMsg())) {
-                                            Message m = new Message("server", msg.getSnd(), "online", true);
-                                            mc.dos.writeObject(m);
-                                            temp = true;
-                                            break;
-                                        }
-                                    }
-                                    if (!temp) {
-                                        Message m = new Message("server", msg.getSnd(), "online", false);
-                                        mc.dos.writeObject(m);
-                                    }
+                                if (mc.name.equals(msg.getSnd())) {
+                                    boolean temp = userError(msg.getSnd(), (String) msg.getMsg(), msg.getType());
+                                    Message m = new Message((String) msg.getMsg(), msg.getSnd(), "userOnlineCheckGroup", temp);
+                                    mc.dos.writeObject(m);
                                     break;
                                 }
                             }
@@ -206,8 +199,7 @@ class ClientHandler implements Runnable {
 
                             break;
                         case "publicBundleRequest":
-                            if (userError(msg.getSnd(), msg.getRec())) {
-                                System.out.println("publicbundlerequest");
+                            if (userError(msg.getSnd(), msg.getRec(), msg.getType())) {
                                 for (ClientHandler mc : Server.ar) {
                                     if (mc.name.equals(msg.getSnd())) {
 
@@ -245,10 +237,13 @@ class ClientHandler implements Runnable {
                                 }
                             }
                             break;
+                        case "online":
+                            break;
                         default:
-                            System.out.println("Forwarded a message");
-                            if(userError(msg.getSnd(), msg.getRec())) {
-                                System.out.println("default");
+                            System.out.println(msg.getSnd());
+                            System.out.println(msg.getRec());
+                            System.out.println(msg.getType());
+                            //if(userError(msg.getSnd(), msg.getRec(), msg.getType())) {
                                 for (ClientHandler mc2 : Server.ar) {
                                     //forwards the message to the correct online user
                                     if (mc2.name.equals(msg.getRec()) && mc2.isloggedin) {
@@ -256,7 +251,7 @@ class ClientHandler implements Runnable {
                                         break;
                                     }
                                 }
-                            }
+                           // }
                             break;
                     }
 
