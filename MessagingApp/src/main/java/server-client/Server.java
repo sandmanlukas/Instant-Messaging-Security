@@ -89,7 +89,7 @@ class ClientHandler implements Runnable {
         this.s = s;
         this.isloggedin = true;
     }
-
+    //Kollar om användaren är registrerad/användaren är online
     public boolean userError(String sender, String receiver, String msgType) throws IOException {
         Message m;
         boolean temp = false;
@@ -149,11 +149,11 @@ class ClientHandler implements Runnable {
                             break;
 
                         case "newUser":
+                            //oklart om den här används överhuvudtaget
                             for (ClientHandler mc : Server.ar) {
                                 if (mc.name.equals(msg.getSnd())) {
                                     String hash = Arrays.toString((byte[]) msg.getMsg());
                                     String userName = msg.getSnd();
-                                    //conn.newUser(userName, hash);
                                     break;
                                 }
                             }
@@ -161,6 +161,7 @@ class ClientHandler implements Runnable {
                         case "userOnlineCheck":
                             for (ClientHandler mc : Server.ar) {
                                 if (mc.name.equals(msg.getSnd())) {
+                                    //kollar om användaren är online, och skickar en boolean till användaren
                                     boolean temp = userError(msg.getSnd(), (String) msg.getMsg(), msg.getType());
                                     Message m = new Message((String) msg.getMsg(), msg.getSnd(), "userOnlineCheckGroup", temp);
                                     mc.dos.writeObject(m);
@@ -169,6 +170,7 @@ class ClientHandler implements Runnable {
                             }
                             break;
                         case "login":
+                            //används definitivt aldrig
                             for (ClientHandler mc : Server.ar) {
                                 if (mc.name.equals(msg.getSnd())) {
                                     String hash =  Arrays.toString((byte[]) msg.getMsg());
@@ -240,9 +242,6 @@ class ClientHandler implements Runnable {
                         case "online":
                             break;
                         default:
-                            System.out.println(msg.getSnd());
-                            System.out.println(msg.getRec());
-                            System.out.println(msg.getType());
                             //if(userError(msg.getSnd(), msg.getRec(), msg.getType())) {
                                 for (ClientHandler mc2 : Server.ar) {
                                     //forwards the message to the correct online user

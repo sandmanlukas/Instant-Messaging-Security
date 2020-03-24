@@ -7,8 +7,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringTokenizer;
@@ -81,7 +79,6 @@ public class Client {
                     }
                 }
                 // read the message to deliver.
-                //String msg = scn.nextLine();
                 if(this.newSend) {
                     String msg = this.toSend;
                     StringTokenizer st = new StringTokenizer(msg, " ");
@@ -89,17 +86,12 @@ public class Client {
                     String groupName;
                     String msgToSend;
                     Message m;
-                    MessageDigest digest = null;
-                    try {
-                        digest = MessageDigest.getInstance("SHA-256");
-                    } catch (NoSuchAlgorithmException e) {
-                        e.printStackTrace();
-                    }
                     if(command != null) {
                         switch(command.charAt(1)) {
                             case 'm':
                                 if (st.hasMoreElements()) {
                                     String recipient = st.nextToken();
+                                    //mest för att säkerställa att substring-metoden inte ger error
                                     if(msg.length() >= (command.length() + recipient.length() + 2)) {
                                         msgToSend = msg.substring(command.length() + recipient.length() + 2);
                                         client.sendMessage(recipient, msgToSend, objectOutput);
@@ -110,6 +102,8 @@ public class Client {
                                 if (st.hasMoreElements()) {
                                     groupName = st.nextToken();
                                     if (groupName != null) {
+                                        //Använder en av två metoder för att skapa en grupp, för att säkerställa att
+                                        //endast användaren som skapa gruppen kan bjuda in användare
                                         client.addOwnGroup(groupName);
                                         client.addGroupMember(groupName, client.getUsername());
                                         Client.this.received = "Group " + "\"" + groupName + "\"" + " was created!"; //Write message to object
@@ -123,11 +117,14 @@ public class Client {
                                     if (st.hasMoreElements()) {
                                         groupName = st.nextToken();
                                         if (user != null && groupName != null) {
+                                            //kollar så att gruppen finns
                                             if(client.groupExists(groupName)) {
+                                                //kollar om användaren redan är med i gruppen
                                                 if (client.getGroupMember(groupName, user)) {
                                                     Client.this.received = "User already in the group";
                                                     newReceive = true;
                                                 } else {
+                                                    //kollar så att användaren är den som skapat gruppen
                                                     if (client.groupCreator(groupName)) {
                                                         currentGroupName = groupName;
                                                         m = new Message(username, "Server", "userOnlineCheck", user);
@@ -154,6 +151,7 @@ public class Client {
                                     String group = st.nextToken();
                                     if(group != null) {
                                         msgToSend = msg.substring(command.length() + group.length() + 2);
+                                        //kollar så att gruppen finns
                                         if(client.groupExists(group)) {
                                             client.sendGroupMessage(group, msgToSend, objectOutput);
                                         } else {
@@ -193,13 +191,20 @@ public class Client {
 
                     switch (msg.getType()) {
                         case "userOnlineCheckGroup":
+                            //gensvar som antyder att användaren som ska läggas till i gruppen är online
                             if((boolean) msg.getMsg()) {
+                                //lägger till användaren i gruppen
                                 client.addGroupMember(currentGroupName, msg.getSnd());
                                 int size = client.getGroupMembers(currentGroupName).size();
+                                //formaterar om till en array av strängar för att de ska gå att serialisera
                                 String[] members = new String[size];
                                 for (int i = 0; i < size; i++) {
                                     members[i] = client.getGroupMembers(currentGroupName).get(i);
                                 }
+                                //använder sig av en lambda funktion, för jag tycker sånt är coolt
+                                //skickar uppgifter om vilka användare som är med i gruppen "under the hood" till
+                                //samtliga användare i gruppen, för att de som redan är med i gruppen ska se vem
+                                //som är tillagd samt att den tillagda ska se vilka som är med
                                 client.getGroupMembers(currentGroupName).forEach((u) -> {
                                     if (!client.getUsername().equals(u)) {
                                         Message message = new Message(currentGroupName, u, "userInvite", members);
@@ -223,6 +228,7 @@ public class Client {
                             newReceive = true; //set flag
                             break;
                         case "logoutSuccess":
+                            //ska i teorin ses som ett svar från servern att den har stängt socketen
                             System.exit(0);
                             break;
                         case "usernameMsg":
@@ -232,12 +238,13 @@ public class Client {
                         case "userInvite":
                             String[] users = (String[]) msg.getMsg();
                             String groupName = msg.getSnd();
-
+                            //om användare precis blivit tillagd i gruppen
                             if (client.getGroupMembers(groupName) == null) {
                                 client.addOtherGroup(groupName);
                                 for (String user : users) {
                                     client.addGroupMember(groupName, user);
                                 }
+                            //om användaren redan var med i gruppen, och en användare har lagts till
                             } else {
                                 for (String user : users) {
                                     if (!client.getGroupMembers(groupName).contains(user)) {

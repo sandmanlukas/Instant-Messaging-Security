@@ -94,11 +94,6 @@ public class testClient {
         initMsg = msg;
         //Checks if their is a previously initialized session with the recipient
         if (s == null) {
-            //Saves the message for when a message key is derived
-
-            //Initialize a session with the recipient
-            //s = Initialization.startSession(getPreKeys(), getUsername(), recipient);
-            //addSession(s);
 
             //Sends a message to the server requesting the preKeyBundlePublic for the recipient
             Message m = new Message(getUsername(), recipient, "publicBundleRequest", "");
@@ -115,8 +110,6 @@ public class testClient {
         else {
 
             if (s.getRatchetKeyTheirPublic() == null) {
-                //updates message- and chain key
-                //s = Initialization.noResponseKeyUpdate(s);
 
                 //encrypts the message using the current keys for the session
                 byte[] initMsgKey = s.firstMsgKey;
