@@ -124,17 +124,22 @@ public class Client {
                                         groupName = st.nextToken();
                                         if (user != null && groupName != null) {
                                             if(client.groupExists(groupName)) {
-                                                if (client.groupCreator(groupName)) {
-                                                    currentGroupName = groupName;
-                                                    m = new Message(username, "Server", "userOnlineCheck", user);
-                                                    try {
-                                                        objectOutput.writeObject(m);
-                                                    } catch (IOException e) {
-                                                        e.printStackTrace();
-                                                    }
+                                                if (client.getGroupMember(groupName, user)) {
+                                                    Client.this.received = "User already in the group";
+                                                    newReceive = true;
                                                 } else {
-                                                    Client.this.received = "You are not the creator of the group"; //Write message to object
-                                                    newReceive = true; //set flag
+                                                    if (client.groupCreator(groupName)) {
+                                                        currentGroupName = groupName;
+                                                        m = new Message(username, "Server", "userOnlineCheck", user);
+                                                        try {
+                                                            objectOutput.writeObject(m);
+                                                        } catch (IOException e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                    } else {
+                                                        Client.this.received = "You are not the creator of the group"; //Write message to object
+                                                        newReceive = true; //set flag
+                                                    }
                                                 }
                                             } else {
                                                 Client.this.received = "You are not in a group with that name"; //Write message to object
@@ -168,8 +173,8 @@ public class Client {
                                 newReceive = true; //set flag
                                 break;
                             default:
-                                Client.this.received = "Unknown input"; //Write message to object
-                                newReceive = true; //set flag
+                                /*Client.this.received = "Unknown input"; //Write message to object
+                                newReceive = true; //set flag*/
                                 break;
                         }
                         this.newSend=false;

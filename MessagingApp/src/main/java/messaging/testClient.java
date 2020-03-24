@@ -76,6 +76,10 @@ public class testClient {
         }
     }
 
+    public Boolean getGroupMember(String groupName, String memberName) {
+        return groupMap.get(groupName).getMember(memberName);
+    }
+
     public void sendGroupMessage(String groupName, String msg, ObjectOutputStream objectOutput) {
         ArrayList<String> members = getGroupMembers(groupName);
         members.forEach((m) -> {

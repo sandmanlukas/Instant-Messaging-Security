@@ -14,6 +14,10 @@ public class chatGroup {
         return members;
     }
 
+    public boolean getMember(String memberName) {
+        return members.contains(memberName);
+    }
+
     public boolean getCreator() {
         return creator;
     }
