@@ -71,6 +71,9 @@ public class Client {
                 }
 
                 if(this.logOut) {
+                    //sends message to all groups in order for them to remove the user
+                    client.logoutUser(objectOutput);
+                    //sends message to server in order for it to close the socket
                     Message m = new Message(username, "server", "logout", "");
                     try {
                         objectOutput.writeObject(m);
@@ -190,6 +193,9 @@ public class Client {
                     Message m;
 
                     switch (msg.getType()) {
+                        case "logoutAttempt":
+                            client.logoutResponse(msg.getSnd());
+                            break;
                         case "userOnlineCheckGroup":
                             //gensvar som antyder att användaren som ska läggas till i gruppen är online
                             if((boolean) msg.getMsg()) {
@@ -396,7 +402,7 @@ public class Client {
 
                             //update the message and the chain key
                             session = client.getSession(msg.getSnd());
-                            session = Initialization.noResponseKeyUpdate(session);
+                            Initialization.noResponseKeyUpdate(session);
 
                             //decrypt received message
                             firstMsgReceived = (byte[][]) msg.getMsg();

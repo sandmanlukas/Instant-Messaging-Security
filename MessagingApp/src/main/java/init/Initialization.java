@@ -7,7 +7,6 @@ import org.whispersystems.libsignal.kdf.DerivedRootSecrets;
 import org.whispersystems.libsignal.kdf.HKDF;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Initialization {
     static final byte [] info = new byte [0];
@@ -137,7 +136,7 @@ public class Initialization {
     }
 
     //Updates the message key when no response is received
-    public static Session noResponseKeyUpdate(Session session) {
+    public static void noResponseKeyUpdate(Session session) {
 
         byte[] secret = kdf.deriveSecrets(session.chainKey, info, 64);
         DerivedRootSecrets root = new DerivedRootSecrets(secret);
@@ -146,7 +145,5 @@ public class Initialization {
 
         session.setChainKey(chain);
         session.setFirstMsgKey(message);
-
-        return session;
     }
 }
