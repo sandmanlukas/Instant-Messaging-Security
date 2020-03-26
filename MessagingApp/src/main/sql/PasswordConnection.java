@@ -1,7 +1,7 @@
 import java.sql.*;
 import java.util.Properties;
 
-public class PortalConnection {
+public class PasswordConnection {
 
     static final String DATABASE = "jdbc:postgresql://localhost/kandidatpsw";
     static final String USERNAME = "postgres";
@@ -9,11 +9,11 @@ public class PortalConnection {
 
     private Connection conn;
 
-    public PortalConnection() throws SQLException, ClassNotFoundException {
+    public PasswordConnection() throws SQLException, ClassNotFoundException {
         this(DATABASE, USERNAME, PASSWORD);
     }
 
-    public PortalConnection(String db, String user, String pwd) throws SQLException, ClassNotFoundException {
+    public PasswordConnection(String db, String user, String pwd) throws SQLException, ClassNotFoundException {
         Class.forName("org.postgresql.Driver");
         Properties props = new Properties();
         props.setProperty("user", user);
@@ -75,7 +75,7 @@ public class PortalConnection {
 
     public static void main(String[] args){
         try{
-            PortalConnection c = new PortalConnection();
+            PasswordConnection c = new PasswordConnection();
 
             c.newUser("lukas", "test123");
             c.newUser("henrik", "hej2314");

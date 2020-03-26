@@ -2,6 +2,7 @@ import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
@@ -37,9 +38,9 @@ public class GUIChat {
         chatStage.setTitle("Chat Page");
         //list of active chats, or where to create new conversations
         GridPane chatGrid = new GridPane();
+        ScrollPane scrollPane = new ScrollPane();
+
         //chatGrid.getStylesheets().add(getClass().getResource("GUIChat.css").toExternalForm());
-
-
 
 
         //shows conversations one at the time
@@ -54,7 +55,7 @@ public class GUIChat {
         textDispVBox = new VBox(10);
         textDispVBox.getStyleClass().add("GUIChat.css");
         recDispVBox = new VBox(10);
-
+        scrollPane.setContent(textDispVBox);
 
         writeMessage = new TextField();
         writeMessage.setMaxWidth(Double.MAX_VALUE);
@@ -94,10 +95,6 @@ public class GUIChat {
         border.setBottom(lowerHBox);
         border.setLeft(textDispVBox);
         border.setCenter(recDispVBox);
-        //border.setLeft(textHBox);
-        //border.setLeft(conversationGrid);
-        //border.setBottom(writeMessage);
-        //border.setCenter(sendButton);
         recDispVBox.getChildren().add(recTest);
 
         Thread recMsg = new Thread(() -> {
@@ -126,28 +123,6 @@ public class GUIChat {
         recMsg.setDaemon(true);
         recMsg.start();
 
-
-
-
-        /* Thread recMsg = new Thread(()->{
-           while (true){
-               try {
-                   Thread.sleep(100);
-               } catch (InterruptedException e) {
-                   e.printStackTrace();
-               }
-              // System.out.println("client.newRecieve: "+ client.newRecieve);
-               if(client.newRecieve==true){
-                   System.out.println("Jag har fått ett meddelande");
-                   Text t= new Text(client.recieved);
-                   recDispVBox.getChildren().add(t);
-                   textDispVBox.getChildren().add(new Text("")); //Add empty row on other side
-                   client.newRecieve=false;
-               }
-           }
-        });
-
-        recMsg.start();*/
         this.scene = new Scene(border, 700, 500);
         chatStage.setScene(this.scene);
         scene.getStylesheets().add(getClass().getResource("GUIMain.css").toExternalForm());

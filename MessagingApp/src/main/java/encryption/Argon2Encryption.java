@@ -1,6 +1,7 @@
 
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
+import de.mkammerer.argon2.Argon2Helper;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -11,7 +12,7 @@ public class Argon2Encryption {
     static final Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
 
     public static String getArgon(String password){
-        return argon2.hash(6,1024*256,4, password);
+        return argon2.hash(9,1024*256,4, password);
     }
 
     public static boolean verifyArgon(String hash, String password){
@@ -19,6 +20,7 @@ public class Argon2Encryption {
     }
 
     public static void main(String[] args) {
+        System.out.println(Argon2Helper.findIterations(argon2, 1000, 1024*256, 4));
         String password = "Hello World!";
         Instant beginHash = Instant.now();
 

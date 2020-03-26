@@ -67,7 +67,7 @@ public class GUIMain extends Application {
         primaryStage.show();
 
         //TODO: REMOVE LATER, TESTING ONLY
-        tryLogin();
+        //tryLogin();
         Stage finalPrimaryStage = primaryStage;
         password.setOnKeyPressed((keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
@@ -96,11 +96,11 @@ public class GUIMain extends Application {
         String passInput;
 
         //TODO: REMOVE LATE TESTING ONLY
-        //userInput = username.getText();
-        //passInput = password.getText();
+        userInput = username.getText();
+        passInput = password.getText();
 
-        userInput = "lukas";
-        passInput = "test123";
+        //userInput = "lukas";
+        //passInput = "test123";
 
         //sends login input to Controller
 

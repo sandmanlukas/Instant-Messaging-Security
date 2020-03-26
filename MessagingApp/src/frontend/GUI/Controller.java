@@ -5,7 +5,7 @@
 import java.sql.SQLException;
 
 public class Controller {
-    final PortalConnection c = new PortalConnection();
+    final PasswordConnection c = new PasswordConnection();
 
 
 
@@ -14,6 +14,8 @@ public class Controller {
 
 
     }
+
+
 
     public boolean login(String username, String password) {
 
@@ -24,7 +26,7 @@ public class Controller {
                 return false;
             }
         }
-        else if (username.equals("")){
+        else if (username.equals("") || password.equals("")){
             return false;
         }
         else if (!c.userExists(username)){
@@ -35,4 +37,6 @@ public class Controller {
 
         return false;
     }
+
+
 }
