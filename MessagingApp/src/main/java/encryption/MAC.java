@@ -8,7 +8,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class MAC {
-    private byte [] macKey;
     private static final int MAC_LENGTH = 8;
 
 
@@ -53,7 +52,4 @@ public class MAC {
     }
 
 
-    public byte[] getMacKey() {
-        return macKey;
-    }
 }

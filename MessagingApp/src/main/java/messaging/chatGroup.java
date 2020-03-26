@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class chatGroup {
 
-    private ArrayList<String> members;
+    private final ArrayList<String> members;
     private final boolean creator;
 
     public chatGroup(boolean creator) {

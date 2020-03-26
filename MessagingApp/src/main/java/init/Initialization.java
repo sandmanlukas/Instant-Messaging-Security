@@ -7,7 +7,6 @@ import org.whispersystems.libsignal.kdf.DerivedRootSecrets;
 import org.whispersystems.libsignal.kdf.HKDF;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Initialization {
     static final byte [] info = new byte [0];

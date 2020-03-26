@@ -23,6 +23,7 @@ public class AES_encryption {
 
             //Encrypts the message using the random bytes and the message key
             SecretKeySpec skeyspec = new SecretKeySpec(secret, "AES");
+            System.out.println("key length: " + secret.length);
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.ENCRYPT_MODE, skeyspec, iv);
             byte[] encrypted = cipher.doFinal(stringToEncrypt.getBytes());

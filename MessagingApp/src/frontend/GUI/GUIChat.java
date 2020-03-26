@@ -12,26 +12,35 @@ import java.io.IOException;
 
 public class GUIChat {
 
-    private HBox lowerHBox;
     private VBox textDispVBox;
     private VBox recDispVBox;
     private TextField writeMessage;
-    private Button sendButton;
-    private Client client;
+    private final Client client;
     Scene scene;
 
-    public GUIChat (Stage primaryStage, String username) throws IOException {
+    public void sendMessage(){
+        Text sent = new Text("> " + writeMessage.getText());
+        textDispVBox.getChildren().add(sent);
+        recDispVBox.getChildren().add(new Text ("")); //Add empty row on the other side
+        client.setForMessage(writeMessage.getText());
+        writeMessage.clear();
+    }
 
-        primaryStage.hide();
+    public GUIChat(Stage primaryStage, String username) throws IOException {
+
+        Stage chatStage;
+        chatStage = primaryStage;
 
         client = new Client(username);
         client.run();
 
-        primaryStage.setTitle("Chat Page");
+        chatStage.setTitle("Chat Page");
         //list of active chats, or where to create new conversations
         GridPane chatGrid = new GridPane();
-        chatGrid.setScaleX(200);
-        chatGrid.setStyle("-fx-border-color: purple;");
+        //chatGrid.getStylesheets().add(getClass().getResource("GUIChat.css").toExternalForm());
+
+
+
 
         //shows conversations one at the time
         BorderPane conversationGrid = new BorderPane();
@@ -41,11 +50,10 @@ public class GUIChat {
 
         //trying to add text field to write messages at the bottom of the left pane.....
 
-        lowerHBox = new HBox();
-        HBox textHBox = new HBox();
-        textDispVBox =new VBox(10);
-        recDispVBox = new VBox();
-        VBox chatDisplay = new VBox();
+        HBox lowerHBox = new HBox();
+        textDispVBox = new VBox(10);
+        textDispVBox.getStyleClass().add("GUIChat.css");
+        recDispVBox = new VBox(10);
 
 
         writeMessage = new TextField();
@@ -55,29 +63,25 @@ public class GUIChat {
         //conversationGrid.setBottom(writeMessage);
 
 
-
-
-        sendButton = new Button("Send");
+        Button sendButton = new Button("Send");
         sendButton.setMaxWidth(Double.MAX_VALUE);
-        //sendButton.setMinWidth(chatGrid.getMinWidth());
 
         sendButton.setPrefWidth(chatGrid.getMaxWidth());
 
-        writeMessage.setOnKeyPressed((keyEvent -> {if(keyEvent.getCode() == KeyCode.ENTER){
-            sendMessage();
-        }
+        writeMessage.setOnKeyPressed((keyEvent -> {
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                sendMessage();
+            }
         }));
 
-        sendButton.setOnAction(e -> {
-            sendMessage();
-        });
+        sendButton.setOnAction(e -> sendMessage());
 
-        Text recTest = new Text( "Testing "+"<");
+        Text recTest = new Text("Testing " + "<, User: " + username);
 
 
         HBox.setHgrow(writeMessage, Priority.ALWAYS);//Added this line
         HBox.setHgrow(sendButton, Priority.ALWAYS);//Added this line
-        lowerHBox.getChildren().addAll(writeMessage,sendButton);
+        lowerHBox.getChildren().addAll(writeMessage, sendButton);
         //conversationGrid.getChildren().add(textDispVBox);
         //HBox.setHgrow(textDispVBox, Priority.ALWAYS);
         //HBox.setHgrow(recDispVBox, Priority.ALWAYS);
@@ -110,7 +114,7 @@ public class GUIChat {
 
             };
 
-            while(true){
+            while (true) {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -144,19 +148,12 @@ public class GUIChat {
         });
 
         recMsg.start();*/
-        Scene scene = new Scene(border,700,500);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        this.scene = new Scene(border, 700, 500);
+        chatStage.setScene(this.scene);
+        scene.getStylesheets().add(getClass().getResource("GUIMain.css").toExternalForm());
+        chatStage.show();
 
+        chatStage.setOnCloseRequest(e -> client.logOut = true);
 
-
-    }
-    public void sendMessage(){
-        Text sent = new Text("> " + writeMessage.getText());
-        textDispVBox.getChildren().add(sent);
-        recDispVBox.getChildren().add(new Text ("")); //Add empty row on the other side
-        client.setForMessage(writeMessage.getText());
-        writeMessage.clear();
     }
 }
-

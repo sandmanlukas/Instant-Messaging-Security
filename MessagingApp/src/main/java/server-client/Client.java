@@ -82,23 +82,32 @@ public class Client {
                 if(this.newSend) {
                     String msg = this.toSend;
                     StringTokenizer st = new StringTokenizer(msg, " ");
-                    String command = st.nextToken();
-                    String groupName;
-                    String msgToSend;
-                    Message m;
-                    if(command != null) {
-                        switch(command.charAt(1)) {
-                            case 'm':
+/*
+                    if (!st.hasMoreElements()){
+                        Client.this.received = "Unknown input \nTry typing \\h for help."; //Write message to object
+                        newReceive = true; //set flag
+                        break;
+                    }
+*/
+
+                    if(st.hasMoreElements()) {
+                        String command = st.nextToken();
+                        String groupName;
+                        String msgToSend;
+                        Message m;
+                        switch(command) {
+                            case "\\m":
                                 if (st.hasMoreElements()) {
                                     String recipient = st.nextToken();
                                     //mest för att säkerställa att substring-metoden inte ger error
-                                    if(msg.length() >= (command.length() + recipient.length() + 2)) {
-                                        msgToSend = msg.substring(command.length() + recipient.length() + 2);
+                                    final int msgLength = command.length() + recipient.length() + 2;
+                                    if(msg.length() >= msgLength) {
+                                        msgToSend = msg.substring(msgLength);
                                         client.sendMessage(recipient, msgToSend, objectOutput);
                                     }
                                 }
                                 break;
-                            case 'c':
+                            case "\\c":
                                 if (st.hasMoreElements()) {
                                     groupName = st.nextToken();
                                     if (groupName != null) {
@@ -111,7 +120,7 @@ public class Client {
                                     }
                                 }
                                 break;
-                            case 'i':
+                            case "\\i":
                                 if (st.hasMoreElements()) {
                                     String user = st.nextToken();
                                     if (st.hasMoreElements()) {
@@ -146,7 +155,7 @@ public class Client {
                                     }
                                 }
                                 break;
-                            case 'g':
+                            case "\\g":
                                 if (st.hasMoreElements()) {
                                     String group = st.nextToken();
                                     if(group != null) {
@@ -161,7 +170,7 @@ public class Client {
                                     }
                                 }
                                 break;
-                            case 'h':
+                            case "\\h":
                                 String output = "";
                                 output += "\\m username message      -- Message another user \n";
                                 output += "\\c groupname             -- Create a new group \n";
@@ -171,11 +180,15 @@ public class Client {
                                 newReceive = true; //set flag
                                 break;
                             default:
-                                /*Client.this.received = "Unknown input"; //Write message to object
-                                newReceive = true; //set flag*/
+                                Client.this.received = "Unknown input \nTry typing \\h for help."; //Write message to object
+                                newReceive = true; //set flag
                                 break;
                         }
                         this.newSend=false;
+                    }else{
+                        Client.this.received = "Unknown input \nTry typing \\h for help."; //Write message to object
+                        newReceive = true; //set flag
+                        this.newSend = false;
                     }
                 }
             }
@@ -396,7 +409,7 @@ public class Client {
 
                             //update the message and the chain key
                             session = client.getSession(msg.getSnd());
-                            session = Initialization.noResponseKeyUpdate(session);
+                            //session = Initialization.noResponseKeyUpdate(session);
 
                             //decrypt received message
                             firstMsgReceived = (byte[][]) msg.getMsg();
