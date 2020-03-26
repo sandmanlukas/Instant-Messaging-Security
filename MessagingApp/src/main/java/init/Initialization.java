@@ -136,7 +136,7 @@ public class Initialization {
     }
 
     //Updates the message key when no response is received
-    public static Session noResponseKeyUpdate(Session session) {
+    public static void noResponseKeyUpdate(Session session) {
 
         byte[] secret = kdf.deriveSecrets(session.chainKey, info, 64);
         DerivedRootSecrets root = new DerivedRootSecrets(secret);
@@ -145,7 +145,5 @@ public class Initialization {
 
         session.setChainKey(chain);
         session.setFirstMsgKey(message);
-
-        return session;
     }
 }

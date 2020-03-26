@@ -3,6 +3,7 @@ import org.apache.commons.lang3.tuple.MutableTriple;
 import org.whispersystems.libsignal.util.Pair;
 
 import javax.crypto.spec.IvParameterSpec;
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +53,10 @@ public class testClient {
         return sessionMap.get(theirs);
     }
 
+    public void removeSession(String theirs) {
+        sessionMap.remove(theirs);
+    }
+
     public void addOwnGroup(String groupName) {
         groupMap.put(groupName, new chatGroup(true));
     }
@@ -89,6 +94,25 @@ public class testClient {
         });
     }
 
+    public void logoutUser(ObjectOutputStream objectOutput) {
+        sessionMap.forEach((k,v) -> {
+            Message m = new Message(username, k, "logoutAttempt", "");
+            try {
+                objectOutput.writeObject(m);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+    }
+
+    public void logoutResponse(String user) {
+        removeSession(user);
+        groupMap.forEach((k,v) -> {
+            removeGroupMember(k, user);
+        });
+    }
+
     public void sendMessage(String recipient, String msg, ObjectOutputStream objectOutput) {
         Session s = getSession(recipient);
         initMsg = msg;
@@ -112,6 +136,7 @@ public class testClient {
             if (s.getRatchetKeyTheirPublic() == null) {
 
                 //encrypts the message using the current keys for the session
+                Initialization.noResponseKeyUpdate(s);
                 byte[] initMsgKey = s.firstMsgKey;
                 Pair<byte[], IvParameterSpec> firstMsg = AES_encryption.encrypt(getInitMsg(), initMsgKey, s);
                 byte[][] firstMsgResult = new byte[2][];
