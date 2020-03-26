@@ -1,21 +1,32 @@
 //package Controller;
 
 
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
+
 public class Controller {
-    final PasswordConnection c = new PasswordConnection();
+    private final PasswordConnection c = new PasswordConnection();
 
-
+    @FXML
+    private PasswordField password;
+    @FXML
+    private TextField username;
+    @FXML
+    private Stage primaryStage;
 
     public Controller() throws SQLException, ClassNotFoundException {
-
-
-
     }
-
-
 
     public boolean login(String username, String password) {
 
@@ -37,6 +48,50 @@ public class Controller {
 
         return false;
     }
+
+    public void failLogin() {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Wrong Password or Username");
+        alert.setHeaderText("Wrong password or Username.");
+        alert.setContentText("You entered the wrong password or Username. Try again.");
+        alert.showAndWait();
+    }
+    public boolean tryLogin() {
+        String userInput;
+        String passInput;
+
+        //TODO: REMOVE LATE TESTING ONLY
+        userInput = username.getText();
+        passInput = password.getText();
+
+        //userInput = "lukas";
+        //passInput = "test123";
+
+        //sends login input to Controller
+
+        if (login(userInput, passInput)) {
+            try {
+                //mainChatPage(userInput);
+                new GUIChat(primaryStage, userInput);
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            failLogin();
+            System.out.println("Login failed, try again.");
+            return false;
+        }
+        return false;
+    }
+
+    public void enterLogin (KeyEvent event){
+        if(event.getCode() == KeyCode.ENTER){
+            if (tryLogin()) primaryStage.close();
+        }
+    }
+
+
 
 
 }

@@ -1,17 +1,11 @@
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.geometry.Pos;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.*;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.awt.*;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -21,7 +15,7 @@ public class GUIMain extends Application {
     private PasswordField password;
     private Controller cont;
     private Stage primaryStage;
-    private final StackPane root = new StackPane();
+    //private final StackPane root = new StackPane();
 
 
     public static void main(String[] args) {
@@ -29,14 +23,20 @@ public class GUIMain extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws SQLException, ClassNotFoundException {
+    public void start(Stage primaryStage) throws SQLException, ClassNotFoundException, IOException {
+        Parent root  = FXMLLoader.load(getClass().getResource("GUIMain.fxml"));
+        primaryStage.setTitle("Welcome to the CHAT!");
+        primaryStage.setScene(new Scene(root));
+        //cont = new Controller();
+        primaryStage.show();
 
-        this.primaryStage = primaryStage;
-        primaryStage = new Stage();
-        cont = new Controller();
+        //this.primaryStage = primaryStage;
+        //primaryStage = new Stage();
+        //cont = new Controller();
 
-        primaryStage.setTitle("Main page");
+        //primaryStage.setTitle("Main page");
 
+        /*
         root.getStylesheets().add(getClass().getResource("GUIMain.css").toExternalForm());
         //root = new StackPane();
 
@@ -80,7 +80,28 @@ public class GUIMain extends Application {
         login.setOnAction(event -> {
             if (tryLogin()) finalPrimaryStage.close();
         });
+*/
+    }
+/*
+    public boolean login(String username, String password) {
 
+        if (c.userExists(username)){
+            if(c.correctPassword(username,password)) return true;
+            else {
+                System.out.println("That username is taken. Try another one.");
+                return false;
+            }
+        }
+        else if (username.equals("") || password.equals("")){
+            return false;
+        }
+        else if (!c.userExists(username)){
+            c.newUser(username,password);
+            System.out.println("User doesn't exists, creates a new user and logs him in.");
+            return true;
+        }
+
+        return false;
     }
 
     public void failLogin() {
@@ -104,10 +125,10 @@ public class GUIMain extends Application {
 
         //sends login input to Controller
 
-        if (cont.login(userInput, passInput)) {
+        if (login(userInput, passInput)) {
             try {
                 //mainChatPage(userInput);
-                GUIChat chat = new GUIChat(primaryStage, userInput);
+                new GUIChat(primaryStage, userInput);
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -119,4 +140,6 @@ public class GUIMain extends Application {
         }
         return false;
     }
+
+ */
 }
