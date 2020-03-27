@@ -1,4 +1,6 @@
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,9 +13,11 @@ import java.sql.SQLException;
 
 
 public class GUIMain extends Application {
+    @FXML
     private TextField username;
+    @FXML
     private PasswordField password;
-    private Controller cont;
+    private MainController cont;
     private Stage primaryStage;
     //private final StackPane root = new StackPane();
 
@@ -24,7 +28,10 @@ public class GUIMain extends Application {
 
     @Override
     public void start(Stage primaryStage) throws SQLException, ClassNotFoundException, IOException {
-        Parent root  = FXMLLoader.load(getClass().getResource("GUIMain.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("GUIMain.fxml"));
+        loader.setController(new MainController());
+        Parent root  = loader.load();
+
         primaryStage.setTitle("Welcome to the CHAT!");
         primaryStage.setScene(new Scene(root));
         //cont = new Controller();
@@ -83,6 +90,7 @@ public class GUIMain extends Application {
 */
     }
 /*
+
     public boolean login(String username, String password) {
 
         if (c.userExists(username)){
@@ -142,4 +150,5 @@ public class GUIMain extends Application {
     }
 
  */
+
 }

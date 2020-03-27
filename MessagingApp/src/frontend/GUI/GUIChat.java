@@ -1,8 +1,10 @@
+import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.geometry.Pos;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
@@ -10,14 +12,21 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
-public class GUIChat {
+public class GUIChat extends Application {
+
+    @FXML
+    private Button sendButton;
+    @FXML
+    private Stage primaryStage;
 
     private VBox textDispVBox;
     private VBox recDispVBox;
     private TextField writeMessage;
-    private final Client client;
+    private Client client;
     Scene scene;
+
 
     public void sendMessage(){
         Text sent = new Text("> " + writeMessage.getText());
@@ -27,15 +36,23 @@ public class GUIChat {
         writeMessage.clear();
     }
 
+
     public GUIChat(Stage primaryStage, String username) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("GUIChat.fxml"));
+        //loader.setController(new ChatController());
+        Parent root  = loader.load();
+        this.primaryStage = primaryStage;
 
-        Stage chatStage;
-        chatStage = primaryStage;
+        primaryStage.setScene(new Scene(root));
 
-        client = new Client(username);
-        client.run();
 
-        chatStage.setTitle("Chat Page");
+        //client = new Client(username);
+        //client.run();
+
+        primaryStage.setTitle("Chat Page");
+
+
+        /*
         //list of active chats, or where to create new conversations
         GridPane chatGrid = new GridPane();
         ScrollPane scrollPane = new ScrollPane();
@@ -69,6 +86,8 @@ public class GUIChat {
 
         sendButton.setPrefWidth(chatGrid.getMaxWidth());
 
+
+         */
         writeMessage.setOnKeyPressed((keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
                 sendMessage();
@@ -80,13 +99,10 @@ public class GUIChat {
         Text recTest = new Text("Testing " + "<, User: " + username);
 
 
+        /*
         HBox.setHgrow(writeMessage, Priority.ALWAYS);//Added this line
         HBox.setHgrow(sendButton, Priority.ALWAYS);//Added this line
         lowerHBox.getChildren().addAll(writeMessage, sendButton);
-        //conversationGrid.getChildren().add(textDispVBox);
-        //HBox.setHgrow(textDispVBox, Priority.ALWAYS);
-        //HBox.setHgrow(recDispVBox, Priority.ALWAYS);
-        //textHBox.getChildren().addAll(textDispVBox,recDispVBox); //Adding sent text and recieved in HBox
         recDispVBox.setAlignment(Pos.TOP_CENTER);
 
         BorderPane border = new BorderPane();
@@ -97,11 +113,11 @@ public class GUIChat {
         border.setCenter(recDispVBox);
         recDispVBox.getChildren().add(recTest);
 
+
+         */
         Thread recMsg = new Thread(() -> {
             Runnable updater = () -> {
-
                 if (client.newReceive) {
-                    System.out.println("Jag har fått ett meddelande " + client.received);
                     Text t = new Text(client.received);
                     recDispVBox.getChildren().add(t);
                     textDispVBox.getChildren().add(new Text("")); //Add empty row on other side
@@ -123,12 +139,16 @@ public class GUIChat {
         recMsg.setDaemon(true);
         recMsg.start();
 
-        this.scene = new Scene(border, 700, 500);
-        chatStage.setScene(this.scene);
-        scene.getStylesheets().add(getClass().getResource("GUIMain.css").toExternalForm());
-        chatStage.show();
+        //this.scene = new Scene(border, 700, 500);
+        primaryStage.setScene(this.scene);
+        primaryStage.show();
 
-        chatStage.setOnCloseRequest(e -> client.logOut = true);
+        primaryStage.setOnCloseRequest(e -> client.logOut = true);
+
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
 
     }
 }

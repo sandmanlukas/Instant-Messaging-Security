@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 
-public class Controller {
+public class MainController {
     private final PasswordConnection c = new PasswordConnection();
 
     @FXML
@@ -25,9 +25,11 @@ public class Controller {
     @FXML
     private Stage primaryStage;
 
-    public Controller() throws SQLException, ClassNotFoundException {
+
+    public MainController() throws SQLException, ClassNotFoundException {
     }
 
+    //TODO: REMOVE, TESTING PURPOSES
     public boolean login(String username, String password) {
 
         if (c.userExists(username)){
@@ -56,23 +58,23 @@ public class Controller {
         alert.setContentText("You entered the wrong password or Username. Try again.");
         alert.showAndWait();
     }
-    public boolean tryLogin() {
+    public boolean tryLogin() throws Exception {
         String userInput;
         String passInput;
 
         //TODO: REMOVE LATE TESTING ONLY
-        userInput = username.getText();
-        passInput = password.getText();
+        //userInput = username.getText();
+        //passInput = password.getText();
 
-        //userInput = "lukas";
-        //passInput = "test123";
+        userInput = "lukas";
+        passInput = "test123";
 
         //sends login input to Controller
 
         if (login(userInput, passInput)) {
             try {
                 //mainChatPage(userInput);
-                new GUIChat(primaryStage, userInput);
+                new GUIChat(primaryStage,userInput);
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -85,10 +87,14 @@ public class Controller {
         return false;
     }
 
-    public void enterLogin (KeyEvent event){
+    public void enterLogin (KeyEvent event) throws Exception {
         if(event.getCode() == KeyCode.ENTER){
             if (tryLogin()) primaryStage.close();
         }
+    }
+
+    public void mouseLogin (ActionEvent event) throws Exception {
+        if (tryLogin()) primaryStage.close();
     }
 
 
