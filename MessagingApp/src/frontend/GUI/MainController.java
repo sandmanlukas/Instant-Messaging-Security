@@ -11,12 +11,15 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
+
+
 import java.io.IOException;
 import java.sql.SQLException;
 
 
 public class MainController {
     private final PasswordConnection c = new PasswordConnection();
+    private UsernameValidator usernameValidator;
 
     @FXML
     private PasswordField password;
@@ -58,18 +61,35 @@ public class MainController {
         alert.setContentText("You entered the wrong password or Username. Try again.");
         alert.showAndWait();
     }
+
+    public void illegalUsername(){
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Illegal Username");
+        alert.setHeaderText("Illegal Username");
+        alert.setContentText("You entered an illegal username. Allowed symbols are a-z, A-Z, 0-9,_ and -. \nThe password has to be at least 3 characters long and at max 15 characters. ");
+        alert.showAndWait();
+    }
     public boolean tryLogin() throws Exception {
         String userInput;
         String passInput;
 
         //TODO: REMOVE LATE TESTING ONLY
-        //userInput = username.getText();
-        //passInput = password.getText();
+        userInput = username.getText();
+        passInput = password.getText();
 
-        userInput = "lukas";
-        passInput = "test123";
+        usernameValidator = new UsernameValidator();
+        if (!usernameValidator.validate(userInput)){
+            illegalUsername();
+            username.setText("");
+            return false;
+        }
+
+
+        //userInput = "lukas";
+        //passInput = "test123";
 
         //sends login input to Controller
+
 
         if (login(userInput, passInput)) {
             try {

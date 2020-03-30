@@ -15,6 +15,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/keys" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/messaging" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/server-client" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/frontend/validation" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/src/main/java/server-client/groupChat" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
