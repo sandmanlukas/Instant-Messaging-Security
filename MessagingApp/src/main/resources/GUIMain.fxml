@@ -3,10 +3,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" stylesheets="@GUIMain.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <Button fx:id="login" layoutX="245.0" layoutY="304.0" mnemonicParsing="false" onAction="#mouseLogin" prefHeight="35.0" prefWidth="225.0" text="Login" />
-      <TextField fx:id="username" layoutX="245.0" layoutY="184.0" prefHeight="35.0" prefWidth="225.0" promptText="Username" />
-      <PasswordField fx:id="password" layoutX="245.0" layoutY="223.0" onKeyPressed="#enterLogin" prefHeight="35.0" prefWidth="225.0" promptText="Password" stylesheets="@GUIMain.css" />
-   </children>
+<AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="500.0" prefWidth="700.0" stylesheets="@GUIMain.css"
+            xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="MainController">
+   <Button fx:id="login" layoutX="245.0" layoutY="304.0" mnemonicParsing="false" onAction="#mouseLogin"
+           prefHeight="35.0" prefWidth="225.0" text="Login"/>
+   <TextField fx:id="username" layoutX="245.0" layoutY="184.0" onKeyPressed="#enterLogin" prefHeight="35.0"
+              prefWidth="225.0" promptText="Username"/>
+   <PasswordField fx:id="password" layoutX="245.0" layoutY="223.0" onKeyPressed="#enterLogin" prefHeight="35.0"
+                  prefWidth="225.0" promptText="Password" stylesheets="@GUIMain.css"/>
 </AnchorPane>

@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ChatController">
-   <children>
-      <TextField fx:id="text" layoutY="374.0" prefHeight="25.0" prefWidth="433.0" promptText="Type a message here!" />
-      <Button fx:id="sendButton" layoutX="433.0" layoutY="374.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="166.0" text="Send" />
-      <TabPane prefHeight="374.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE">
-        <tabs>
-          <Tab closable="false" text="Main" />
-          <Tab text="Untitled Tab 2" />
-        </tabs>
-      </TabPane>
-   </children>
-   <stylesheets>
-      <URL value="@GUIChat.css" />
-      <URL value="@GUIMain.css" />
-   </stylesheets>
+<AnchorPane prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="ChatController">
+    <stylesheets>
+        <URL value="@GUIChat.css"/>
+        <URL value="@GUIMain.css"/>
+    </stylesheets>
+    <TabPane layoutX="1.0" layoutY="7.0" prefHeight="448.0" prefWidth="700.0" tabClosingPolicy="UNAVAILABLE">
+        <Tab closable="false" text="Main"/>
+    </TabPane>
+    <TextField fx:id="writeMessage" layoutX="7.0" layoutY="457.0" prefHeight="35.0" prefWidth="433.0"
+               promptText="Type a message here!"/>
+    <Button fx:id="sendButton" layoutX="444.0" layoutY="457.0" mnemonicParsing="false" prefHeight="35.0"
+            prefWidth="253.0" text="Send"/>
 </AnchorPane>

@@ -19,6 +19,7 @@ public class GUIMain extends Application {
     private PasswordField password;
     private MainController cont;
     private Stage primaryStage;
+
     //private final StackPane root = new StackPane();
 
 
@@ -27,9 +28,8 @@ public class GUIMain extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws SQLException, ClassNotFoundException, IOException {
+    public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GUIMain.fxml"));
-        loader.setController(new MainController());
         Parent root  = loader.load();
 
         primaryStage.setTitle("Welcome to the CHAT!");

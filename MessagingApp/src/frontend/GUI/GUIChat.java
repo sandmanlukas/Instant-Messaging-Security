@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class GUIChat extends Application {
+public class GUIChat {
 
     @FXML
     private Button sendButton;
@@ -37,17 +37,18 @@ public class GUIChat extends Application {
     }
 
 
-    public GUIChat(Stage primaryStage, String username) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("GUIChat.fxml"));
+    public GUIChat(Stage primaryStage, String username) {
+        //FXMLLoader loader = new FXMLLoader(getClass().getResource("GUIChat.fxml"));
         //loader.setController(new ChatController());
-        Parent root  = loader.load();
-        primaryStage.setScene(new Scene(root));
+        // root  = loader.load();
+        //(ChatController) loader.getController().setPrimaryStage(primaryStage);
+//        primaryStage.setScene(new Scene(root));
 
 
         //client = new Client(username);
         //client.run();
 
-        primaryStage.setTitle("Chat Page");
+        //primaryStage.setTitle("Chat Page");
 
 
         /*
@@ -145,8 +146,4 @@ public class GUIChat extends Application {
 
     }
 
-    @Override
-    public void start(Stage stage) throws Exception {
-
-    }
 }

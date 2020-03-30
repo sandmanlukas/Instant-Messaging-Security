@@ -3,12 +3,14 @@
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 
@@ -19,6 +21,7 @@ import java.sql.SQLException;
 
 public class MainController {
     private final PasswordConnection c = new PasswordConnection();
+
     private UsernameValidator usernameValidator;
 
     @FXML
@@ -26,13 +29,12 @@ public class MainController {
     @FXML
     private TextField username;
     @FXML
-    private Stage primaryStage;
+    private AnchorPane rootPane;
 
 
     public MainController() throws SQLException, ClassNotFoundException {
     }
 
-    //TODO: REMOVE, TESTING PURPOSES
     public boolean login(String username, String password) {
 
         if (c.userExists(username)){
@@ -66,10 +68,10 @@ public class MainController {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Illegal Username");
         alert.setHeaderText("Illegal Username");
-        alert.setContentText("You entered an illegal username. Allowed symbols are a-z, A-Z, 0-9,_ and -. \nThe password has to be at least 3 characters long and at max 15 characters. ");
+        alert.setContentText("You entered an illegal username. Allowed symbols are a-z, A-Z, 0-9, _ and -. \nThe password has to be at least 3 characters long and at max 15 characters. ");
         alert.showAndWait();
     }
-    public boolean tryLogin() throws Exception {
+    public boolean tryLogin() {
         String userInput;
         String passInput;
 
@@ -92,30 +94,41 @@ public class MainController {
 
 
         if (login(userInput, passInput)) {
-            try {
+          //  try {
                 //mainChatPage(userInput);
-                new GUIChat(primaryStage,userInput);
+               // new GUIChat(primaryStage,userInput);
 
                 return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+           // } catch (IOException e) {
+             //   e.printStackTrace();
+          //  }
         } else {
             failLogin();
             System.out.println("Login failed, try again.");
             return false;
         }
-        return false;
+      //  return false;
     }
 
+    @FXML
     public void enterLogin (KeyEvent event) throws Exception {
         if(event.getCode() == KeyCode.ENTER){
-            if (tryLogin()) primaryStage.close();
+            if (tryLogin()){
+                AnchorPane pane = FXMLLoader.load(getClass().getResource("GUIChat.fxml"));
+                rootPane.getChildren().setAll(pane);
+
+                //primaryStage.close();
+            }
         }
     }
 
-    public void mouseLogin (ActionEvent event) throws Exception {
-        if (tryLogin()) primaryStage.close();
+    @FXML
+    public void mouseLogin() throws Exception {
+        if (tryLogin()){
+            AnchorPane pane = FXMLLoader.load(getClass().getResource("GUIChat.fxml"));
+            rootPane.getChildren().setAll(pane);
+
+        }
     }
 
 
