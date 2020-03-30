@@ -41,8 +41,6 @@ public class GUIChat extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GUIChat.fxml"));
         //loader.setController(new ChatController());
         Parent root  = loader.load();
-        this.primaryStage = primaryStage;
-
         primaryStage.setScene(new Scene(root));
 
 

@@ -75,6 +75,7 @@ public class MainController {
             try {
                 //mainChatPage(userInput);
                 new GUIChat(primaryStage,userInput);
+
                 return true;
             } catch (IOException e) {
                 e.printStackTrace();
