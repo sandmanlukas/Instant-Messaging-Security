@@ -21,15 +21,14 @@ import java.sql.SQLException;
 
 public class MainController {
     private final PasswordConnection c = new PasswordConnection();
-
     private UsernameValidator usernameValidator;
-
     @FXML
     private PasswordField password;
     @FXML
     private TextField username;
     @FXML
     private AnchorPane rootPane;
+    private Stage primaryStage;
 
 
     public MainController() throws SQLException, ClassNotFoundException {
@@ -95,9 +94,8 @@ public class MainController {
 
         if (login(userInput, passInput)) {
           //  try {
-                //mainChatPage(userInput);
-               // new GUIChat(primaryStage,userInput);
-
+                //new GUIChat(userInput);
+                //new ChatController(userInput);
                 return true;
            // } catch (IOException e) {
              //   e.printStackTrace();
@@ -116,6 +114,8 @@ public class MainController {
             if (tryLogin()){
                 AnchorPane pane = FXMLLoader.load(getClass().getResource("GUIChat.fxml"));
                 rootPane.getChildren().setAll(pane);
+                new GUIChat(username.getText());
+
 
                 //primaryStage.close();
             }
@@ -127,6 +127,7 @@ public class MainController {
         if (tryLogin()){
             AnchorPane pane = FXMLLoader.load(getClass().getResource("GUIChat.fxml"));
             rootPane.getChildren().setAll(pane);
+            new GUIChat(username.getText());
 
         }
     }

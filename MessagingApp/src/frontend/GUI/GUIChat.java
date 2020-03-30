@@ -5,6 +5,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
@@ -14,17 +16,26 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class GUIChat {
+public class GUIChat extends GUIMain {
 
     @FXML
     private Button sendButton;
     @FXML
     private Stage primaryStage;
+    @FXML
+    private AnchorPane chatPane;
+    @FXML
+    private Tab mainTab;
+    @FXML
+    private VBox rightVBox;
+
 
     private VBox textDispVBox;
     private VBox recDispVBox;
+    @FXML
     private TextField writeMessage;
     private Client client;
+    private static Stage chatStage;
     Scene scene;
 
 
@@ -36,19 +47,32 @@ public class GUIChat {
         writeMessage.clear();
     }
 
+    public static void setStage(Stage primaryStage)  {
+        chatStage = primaryStage;
+    }
 
-    public GUIChat(Stage primaryStage, String username) {
+
+    public GUIChat(String username)  {
         //FXMLLoader loader = new FXMLLoader(getClass().getResource("GUIChat.fxml"));
         //loader.setController(new ChatController());
+        //AnchorPane pane = FXMLLoader.load(getClass().getResource("GUIChat.fxml"));
+        //chatPane.getChildren().setAll(pane);
+
+        //ScrollPane scrollPane = new ScrollPane();
+        //scrollPane.setContent(pane);
+        //mainTab.setContent(scrollPane);
+
+
+
         // root  = loader.load();
         //(ChatController) loader.getController().setPrimaryStage(primaryStage);
 //        primaryStage.setScene(new Scene(root));
 
+        //TODO: uncomment
 
-        //client = new Client(username);
-        //client.run();
+        client = new Client(username);
+        ChatController.setAndStartClient(client);
 
-        //primaryStage.setTitle("Chat Page");
 
 
         /*
@@ -87,6 +111,9 @@ public class GUIChat {
 
 
          */
+        //TODO: uncomment
+        /*
+
         writeMessage.setOnKeyPressed((keyEvent -> {
             if (keyEvent.getCode() == KeyCode.ENTER) {
                 sendMessage();
@@ -97,6 +124,9 @@ public class GUIChat {
 
         Text recTest = new Text("Testing " + "<, User: " + username);
 
+
+         */
+        //TODO: uncomment maybe
 
         /*
         HBox.setHgrow(writeMessage, Priority.ALWAYS);//Added this line
@@ -114,6 +144,8 @@ public class GUIChat {
 
 
          */
+        //TODO: uncomment
+        /*
         Thread recMsg = new Thread(() -> {
             Runnable updater = () -> {
                 if (client.newReceive) {
@@ -138,11 +170,17 @@ public class GUIChat {
         recMsg.setDaemon(true);
         recMsg.start();
 
-        //this.scene = new Scene(border, 700, 500);
-        primaryStage.setScene(this.scene);
-        primaryStage.show();
 
-        primaryStage.setOnCloseRequest(e -> client.logOut = true);
+
+         */
+        //TODO: uncomment
+
+        //this.scene = new Scene(border, 700, 500);
+        //primaryStage.setScene(this.scene);
+        //primaryStage.show();
+
+        //TODO: fix this as well
+        chatStage.setOnCloseRequest(e -> client.logOut = true);
 
     }
 

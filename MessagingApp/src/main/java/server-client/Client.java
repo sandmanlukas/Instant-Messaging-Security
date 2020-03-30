@@ -29,6 +29,7 @@ public class Client {
         //this.newSend=false;
         this.received ="";
         this.newReceive =false;
+        System.out.println("A client was created!");
 
 
     }

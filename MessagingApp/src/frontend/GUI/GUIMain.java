@@ -32,10 +32,12 @@ public class GUIMain extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GUIMain.fxml"));
         Parent root  = loader.load();
 
-        primaryStage.setTitle("Welcome to the CHAT!");
-        primaryStage.setScene(new Scene(root));
+        this.primaryStage = primaryStage;
+        this.primaryStage.setTitle("Welcome to the CHAT!");
+        this.primaryStage.setScene(new Scene(root));
         //cont = new Controller();
-        primaryStage.show();
+        this.primaryStage.show();
+        GUIChat.setStage(primaryStage);
 
         //this.primaryStage = primaryStage;
         //primaryStage = new Stage();
