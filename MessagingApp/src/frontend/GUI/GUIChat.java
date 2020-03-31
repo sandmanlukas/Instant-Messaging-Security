@@ -52,7 +52,8 @@ public class GUIChat extends GUIMain {
     }
 
 
-    public GUIChat(String username)  {
+
+    public GUIChat(String username) throws IOException {
         //FXMLLoader loader = new FXMLLoader(getClass().getResource("GUIChat.fxml"));
         //loader.setController(new ChatController());
         //AnchorPane pane = FXMLLoader.load(getClass().getResource("GUIChat.fxml"));
@@ -62,6 +63,7 @@ public class GUIChat extends GUIMain {
         //scrollPane.setContent(pane);
         //mainTab.setContent(scrollPane);
 
+        new ChatController(username, chatStage);
 
 
         // root  = loader.load();
@@ -70,8 +72,8 @@ public class GUIChat extends GUIMain {
 
         //TODO: uncomment
 
-        client = new Client(username);
-        ChatController.setAndStartClient(client);
+        //client = new Client(username);
+        //ChatController.setAndStartClient(client);
 
 
 

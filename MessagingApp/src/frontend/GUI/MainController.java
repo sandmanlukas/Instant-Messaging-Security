@@ -127,6 +127,7 @@ public class MainController {
         if (tryLogin()){
             AnchorPane pane = FXMLLoader.load(getClass().getResource("GUIChat.fxml"));
             rootPane.getChildren().setAll(pane);
+
             new GUIChat(username.getText());
 
         }

@@ -4,28 +4,22 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane fx:id="chatPane" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/10.0.2-internal"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="ChatController">
+<AnchorPane fx:id="chatPane" prefHeight="500.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ChatController">
     <stylesheets>
-        <URL value="@GUIChat.css"/>
-        <URL value="@GUIMain.css"/>
+        <URL value="@GUIChat.css" />
+        <URL value="@GUIMain.css" />
     </stylesheets>
     <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="455.0" prefWidth="700.0">
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="500.0" prefWidth="700.0">
             <TabPane prefHeight="450.0" prefWidth="700.0" tabClosingPolicy="UNAVAILABLE">
                 <Tab closable="false" text="Main">
-                    <VBox fx:id="rightVBox" fillWidth="false" prefHeight="300.0" prefWidth="100.0"
-                          style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3; -fx-border-style: dashed;">
-                        <HBox fx:id="senderHBox" alignment="BOTTOM_RIGHT" prefHeight="400.0"
-                              prefWidth="348.0"
-                              style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3;"/>
+                    <VBox fx:id="rightVBox" fillWidth="false" prefHeight="300.0" prefWidth="100.0" style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3; -fx-border-style: dashed;">
+                        <HBox fx:id="senderHBox" alignment="BOTTOM_RIGHT" layoutX="150.0" prefHeight="400.0" prefWidth="243.0" style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3;" />
                     </VBox>
                 </Tab>
             </TabPane>
         </AnchorPane>
     </ScrollPane>
-    <TextField fx:id="text" layoutX="7.0" layoutY="457.0" onKeyPressed="#writeMessageEnter" prefHeight="35.0"
-               prefWidth="433.0" promptText="Type a message here!"/>
-    <Button fx:id="sendButton" layoutX="444.0" layoutY="457.0" mnemonicParsing="false" onAction="#writeMessage"
-            prefHeight="35.0" prefWidth="253.0" text="Send"/>
+    <TextField fx:id="text" layoutX="7.0" layoutY="457.0" onKeyPressed="#writeMessageEnter" prefHeight="35.0" prefWidth="433.0" promptText="Type a message here!" />
+    <Button fx:id="sendButton" layoutX="444.0" layoutY="457.0" mnemonicParsing="false" onAction="#writeMessage" prefHeight="35.0" prefWidth="253.0" text="Send" />
 </AnchorPane>

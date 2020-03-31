@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -38,7 +39,7 @@ public class GUIMain extends Application {
         //cont = new Controller();
         this.primaryStage.show();
         GUIChat.setStage(primaryStage);
-
+        primaryStage.setOnCloseRequest(e -> primaryStage.close());
         //this.primaryStage = primaryStage;
         //primaryStage = new Stage();
         //cont = new Controller();

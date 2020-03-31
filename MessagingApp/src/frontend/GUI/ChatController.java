@@ -1,5 +1,6 @@
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -7,6 +8,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+
+import java.io.IOException;
 
 public class ChatController {
     @FXML
@@ -16,31 +21,42 @@ public class ChatController {
     @FXML
     private VBox rightVBox;
     @FXML
-    private HBox senderHBox;
+    private HBox senderHBox; //TODO: doesn't work if static
     private static Client controllerClient;
-    private String username;
-    private ChatController controller;
+    private Stage chatStage;
 
 
 
-    public static void setAndStartClient(Client client){
-        controllerClient = client;
+    public static void setAndStartClient(Client client) throws IOException {
+        //controllerClient = client;
+        //controllerClient.run();
+        //tartThread();
     }
-
-
 
 
     public ChatController(){
-        startThread();
+
     }
 
+
+    public ChatController(String username, Stage chatStage) throws IOException {
+        System.out.println("I'm accessed!");
+        controllerClient = new Client(username);
+        controllerClient.run();
+        this.chatStage = chatStage;
+        System.out.println("username: " + controllerClient.username);
+        System.out.println("newReceive: " + controllerClient.newReceive);
+        startThread();
+        //startThread();
+        //System.out.println("Controller newReceive: " + controllerClient.newReceive);
+    }
 
 
     public void sendMessage(){
         Text sent = new Text(text.getText() + " <");
+        senderHBox.setAlignment(Pos.BOTTOM_RIGHT);
         senderHBox.getChildren().add(sent);
-        senderHBox.getChildren().add(new Text ("")); //Add empty row on the other side
-        System.out.println("username is " + controllerClient.username);
+        senderHBox.getChildren().add(new Text ("\n")); //Add empty row on the other side
         controllerClient.setForMessage(text.getText());
         text.clear();
     }
@@ -61,14 +77,14 @@ public class ChatController {
     //Text recTest = new Text("Testing " + "<, User: " + client.username);
 
     public void startThread() {
-        System.out.println("Thread started");
         Thread recMessage = new Thread(() -> {
             Runnable updater = () -> {
                 if (controllerClient.newReceive) {
-                    System.out.println("inside updater");
                     Text t = new Text(controllerClient.received);
+                    System.out.println("message: " + controllerClient.received );
+                    senderHBox.setAlignment(Pos.BOTTOM_LEFT);
                     senderHBox.getChildren().add(t);
-                    senderHBox.getChildren().add(new Text("")); //Add empty row on other side
+                    senderHBox.getChildren().add(new Text("\n")); //Add empty row on other side
                     controllerClient.newReceive = false;
 
                 }
@@ -92,5 +108,10 @@ public class ChatController {
     //primaryStage.setScene(this.scene);
     //primaryStage.show();
 
-        //primaryStage.setOnCloseRequest(e -> client.logOut = true);
+    public void close (WindowEvent event){
+        chatStage.setOnCloseRequest(e -> controllerClient.logOut = true);
+        Platform.exit();
+        System.exit(0);
+    }
+
 }
