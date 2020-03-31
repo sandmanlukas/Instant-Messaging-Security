@@ -1,6 +1,8 @@
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -12,6 +14,8 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChatController {
     @FXML
@@ -22,20 +26,24 @@ public class ChatController {
     private VBox rightVBox;
     @FXML
     private HBox senderHBox; //TODO: doesn't work if static
+    @FXML
+    private ScrollPane scrollPane;
+    private List<Label> sentMessages = new ArrayList<>();
+    private List<Label> receivedMessages = new ArrayList<>();
     private static Client controllerClient;
     private Stage chatStage;
 
 
 
-    public static void setAndStartClient(Client client) throws IOException {
-        //controllerClient = client;
-        //controllerClient.run();
-        //tartThread();
-    }
-
 
     public ChatController(){
 
+    }
+
+    public static void logout(){
+        controllerClient.logOut = true;
+        Platform.exit();
+        System.exit(0);
     }
 
 
@@ -54,11 +62,26 @@ public class ChatController {
 
     public void sendMessage(){
         Text sent = new Text(text.getText() + " <");
-        senderHBox.setAlignment(Pos.BOTTOM_RIGHT);
-        senderHBox.getChildren().add(sent);
-        senderHBox.getChildren().add(new Text ("\n")); //Add empty row on the other side
+        Label msg = new Label(text.getText() + " <");
+        msg.setAlignment(Pos.BOTTOM_RIGHT);
+        //senderHBox.setAlignment(Pos.BOTTOM_RIGHT);
+        //senderHBox.getChildren().add(sent);
+        //senderHBox.getChildren().add(new Text ("\n")); //Add empty row on the other side
+        //sentMessages.add(msg);
+        rightVBox.getChildren().add(msg);
         controllerClient.setForMessage(text.getText());
         text.clear();
+    }
+    public void recieveMessage(){
+        Text t = new Text(controllerClient.received);
+        // System.out.println("message: " + t );
+        Label msgReceived = new Label("> " + t.getText());
+        //senderHBox.setAlignment(Pos.BOTTOM_LEFT);
+        //senderHBox.getChildren().add(t);
+        //senderHBox.getChildren().add(new Text("\n")); //Add empty row on other side
+        msgReceived.setAlignment(Pos.BOTTOM_LEFT);
+        rightVBox.getChildren().add(msgReceived);
+        controllerClient.newReceive = false;
     }
 
     @FXML
@@ -80,13 +103,20 @@ public class ChatController {
         Thread recMessage = new Thread(() -> {
             Runnable updater = () -> {
                 if (controllerClient.newReceive) {
+                    /*
                     Text t = new Text(controllerClient.received);
-                    System.out.println("message: " + controllerClient.received );
-                    senderHBox.setAlignment(Pos.BOTTOM_LEFT);
-                    senderHBox.getChildren().add(t);
-                    senderHBox.getChildren().add(new Text("\n")); //Add empty row on other side
+                   // System.out.println("message: " + t );
+                    Label msgReceived = new Label("> " + t.getText());
+                    //senderHBox.setAlignment(Pos.BOTTOM_LEFT);
+                    //senderHBox.getChildren().add(t);
+                    //senderHBox.getChildren().add(new Text("\n")); //Add empty row on other side
+                    msgReceived.setAlignment(Pos.BOTTOM_LEFT);
+                    rightVBox.getChildren().add(msgReceived);
                     controllerClient.newReceive = false;
 
+                     */
+
+                    recieveMessage();
                 }
 
             };
@@ -110,6 +140,7 @@ public class ChatController {
 
     public void close (WindowEvent event){
         chatStage.setOnCloseRequest(e -> controllerClient.logOut = true);
+        //TODO: fix connection reset exception, maybe check so dis.readObject() doesn't read.
         Platform.exit();
         System.exit(0);
     }

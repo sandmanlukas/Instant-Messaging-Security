@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Client {
-    final static int ServerPort = 1234;
+    final static int ServerPort = 8008;
     public static testClient client;
     public final String username;
     public String toSend;

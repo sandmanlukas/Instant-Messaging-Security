@@ -64,7 +64,7 @@ public class GUIChat extends GUIMain {
         //mainTab.setContent(scrollPane);
 
         new ChatController(username, chatStage);
-
+        chatStage.setOnCloseRequest(e -> ChatController.logout());
 
         // root  = loader.load();
         //(ChatController) loader.getController().setPrimaryStage(primaryStage);
@@ -181,8 +181,8 @@ public class GUIChat extends GUIMain {
         //primaryStage.setScene(this.scene);
         //primaryStage.show();
 
-        //TODO: fix this as well
-        chatStage.setOnCloseRequest(e -> client.logOut = true);
+
+
 
     }
 

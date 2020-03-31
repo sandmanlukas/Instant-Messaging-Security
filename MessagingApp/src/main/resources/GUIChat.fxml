@@ -9,12 +9,12 @@
         <URL value="@GUIChat.css" />
         <URL value="@GUIMain.css" />
     </stylesheets>
-    <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="455.0" prefWidth="700.0">
+    <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" pannable="true" prefHeight="455.0" prefWidth="700.0">
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="500.0" prefWidth="700.0">
             <TabPane prefHeight="450.0" prefWidth="700.0" tabClosingPolicy="UNAVAILABLE">
                 <Tab closable="false" text="Main">
-                    <VBox fx:id="rightVBox" fillWidth="false" prefHeight="300.0" prefWidth="100.0" style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3; -fx-border-style: dashed;">
-                        <HBox fx:id="senderHBox" alignment="BOTTOM_RIGHT" layoutX="150.0" prefHeight="400.0" prefWidth="243.0" style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3;" />
+                    <VBox fx:id="rightVBox" alignment="BOTTOM_LEFT" fillWidth="false" prefHeight="300.0" prefWidth="100.0" style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3; -fx-border-style: dashed;">
+                        <HBox fx:id="senderHBox" alignment="BOTTOM_RIGHT" disable="true" layoutX="150.0" prefHeight="400.0" prefWidth="393.0" style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3;" visible="false" />
                     </VBox>
                 </Tab>
             </TabPane>
