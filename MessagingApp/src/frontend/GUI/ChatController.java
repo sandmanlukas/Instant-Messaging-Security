@@ -36,6 +36,7 @@ public class ChatController implements Initializable {
     private TabPane tabPane;
 
     private static Client controllerClient;
+    private String username;
     private Stage chatStage;
 
 
@@ -56,37 +57,27 @@ public class ChatController implements Initializable {
         controllerClient = new Client(username);
         controllerClient.run();
         this.chatStage = chatStage;
+        this.username = username;
         //startThread();
     }
 
 
     public void sendMessage(){
+        Text sent = new Text("[You]: " + text.getText());
         Label msg = new Label(text.getText() + " <");
-        msg.setAlignment(Pos.CENTER_RIGHT);
-        //rightVBox.setAlignment(Pos.BOTTOM_LEFT);
-        //rightVBox.getChildren().add(msg);
-
-        //senderHBox.getChildren().add(new Text ("\n")); //Add empty row on the other side
-        //sentMessages.add(msg);
-
-        senderHBox.setAlignment(Pos.BOTTOM_RIGHT);
-        senderHBox.getChildren().add(msg);
+        msg.setWrapText(true);
+        //msg.setAlignment(Pos.CENTER_RIGHT);
+        rightVBox.getChildren().add(sent);
+        //rightVBox.getChildren().add(new Text("\n"));
         controllerClient.setForMessage(text.getText());
         text.clear();
     }
 
     public void recieveMessage(){
         Text t = new Text(controllerClient.received);
-        System.out.println("message: \n" + t.getText() );
         Label msgReceived = new Label("> " + t.getText());
-        msgReceived.setAlignment(Pos.BOTTOM_LEFT);
-
-
-        senderHBox.setAlignment(Pos.BOTTOM_LEFT);
-        senderHBox.getChildren().add(msgReceived);
-        //senderHBox.getChildren().add(new Text("\n")); //Add empty row on other side
-
-       // rightVBox.getChildren().add(msgReceived);
+        msgReceived.setWrapText(true);
+        rightVBox.getChildren().add(t);
         controllerClient.newReceive = false;
     }
 

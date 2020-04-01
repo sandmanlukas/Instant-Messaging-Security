@@ -20,13 +20,14 @@ public class Client {
     public String received;
     boolean newReceive;
     boolean logOut = false;
+    static boolean systemMessage = false;
     String currentGroupName;
 
 
     public Client(String username){
         this.username=username;
         this.toSend="";
-        //this.newSend=false;
+        this.newSend=false;
         this.received ="";
         this.newReceive =false;
         System.out.println("A client was created!");
@@ -62,7 +63,6 @@ public class Client {
 
         // sendMessage thread
         Thread sendMessage = new Thread(() -> {
-            System.out.println("Inside sendMessage thread");
             while (true) {
                 try {
                     Thread.sleep(100);
@@ -118,8 +118,8 @@ public class Client {
                                         //endast användaren som skapa gruppen kan bjuda in användare
                                         client.addOwnGroup(groupName);
                                         client.addGroupMember(groupName, client.getUsername());
-                                        Client.this.received = "Group " + "\"" + groupName + "\"" + " was created!"; //Write message to object
-                                        newReceive = true; //set flag
+                                        Client.this.received = "[System]: Group " + "\"" + groupName + "\"" + " was created!"; //Write message to object
+                                        this.newReceive = true; //set flag
                                     }
                                 }
                                 break;
@@ -133,7 +133,7 @@ public class Client {
                                             if(client.groupExists(groupName)) {
                                                 //kollar om användaren redan är med i gruppen
                                                 if (client.getGroupMember(groupName, user)) {
-                                                    Client.this.received = "User already in the group";
+                                                    Client.this.received = "[System]: User already in the group";
                                                     newReceive = true;
                                                 } else {
                                                     //kollar så att användaren är den som skapat gruppen
@@ -142,16 +142,18 @@ public class Client {
                                                         m = new Message(username, "Server", "userOnlineCheck", user);
                                                         try {
                                                             objectOutput.writeObject(m);
+                                                            newReceive = true;
+                                                            //newSend = false;
                                                         } catch (IOException e) {
                                                             e.printStackTrace();
                                                         }
                                                     } else {
-                                                        Client.this.received = "You are not the creator of the group"; //Write message to object
+                                                        Client.this.received = "[System]: You are not the creator of the group"; //Write message to object
                                                         newReceive = true; //set flag
                                                     }
                                                 }
                                             } else {
-                                                Client.this.received = "You are not in a group with that name"; //Write message to object
+                                                Client.this.received = "[System]: You are not in a group with that name"; //Write message to object
                                                 newReceive = true; //set flag
                                             }
                                         }
@@ -174,24 +176,24 @@ public class Client {
                                 }
                                 break;
                             case "\\h":
-                                String output = "";
-                                output += "\\m username message      -- Message another user \n";
-                                output += "\\c groupname             -- Create a new group \n";
-                                output += "\\i username groupname    -- Invites a user to a group \n";
-                                output += "\\g groupname message     -- Message a group \n";
+                                String output = "[System]: \n";
+                                output += "\\m username message      -- Message another user\n";
+                                output += "\\c groupname               -- Create a new group\n";
+                                output += "\\i username groupname    -- Invites a user to a group\n";
+                                output += "\\g groupname message     -- Message a group\n";
                                 Client.this.received = output; //Write message to object
                                 newReceive = true; //set flag
                                 break;
                             default:
-                                Client.this.received = "Unknown input\nTry typing \\h for help."; //Write message to object
+                                Client.this.received = "[System]: Unknown input. Try typing \\h for help."; //Write message to object
                                 newReceive = true; //set flag
                                 break;
                         }
                         this.newSend=false;
                     }else{
-                        Client.this.received = "Unknown input\nTry typing \\h for help."; //Write message to object
+                        Client.this.received = "[System]: Unknown input. Try typing \\h for help."; //Write message to object
                         newReceive = true; //set flag
-                        this.newSend = false;
+                        //this.newSend = false;
                     }
                 }
             }
@@ -234,17 +236,20 @@ public class Client {
                                         }
                                     }
                                 });
-                                this.received = msg.getSnd() + " was added to group: " + currentGroupName;
-                                this.toSend = "You were added to group: " + currentGroupName;
-                                client.sendMessage(msg.getSnd(), toSend, objectOutput); //TODO: Look over this.
+                                Client.this.received = "[System]: " + msg.getSnd() + " was added to group, " + currentGroupName;
+                                Client.this.toSend = "User " + client.getUsername() + " added you to group, " + currentGroupName;
+                                systemMessage = true;
+                                client.sendMessage(msg.getSnd(), toSend, objectOutput); //TODO: Look over this. Returns unknown input to group owner.
+                                systemMessage = false;
                                 //set flag
-                                newSend = true;
-                                newReceive = true;
+                                this.newSend = true;
+                                this.newReceive = true;
+
                             }
                             break;
                         case "msgError":
                             Client.this.received = (String) msg.getMsg();
-                            newReceive = true; //set flag
+                            this.newReceive = true; //set flag
                             break;
                         case "logoutSuccess":
                             //ska i teorin ses som ett svar från servern att den har stängt socketen
@@ -292,7 +297,7 @@ public class Client {
                         case "loginAttempt":
                         case "online":
                             Client.this.received = msg.getMsg().toString();
-                            newReceive = true; //set flag
+                            this.newReceive = true; //set flag
                             break;
                         case "initRec":
                             //Affirms that the server has received preKeyBundlePublic
@@ -389,10 +394,10 @@ public class Client {
                             System.out.println("one time private: " + Arrays.toString(session.getOurBundle().getPrivateKeys().getPrivateOneTimePreKey(0)));
 
                             String fMsg = AES_encryption.decrypt(firstMsgReceived[0], session.firstMsgKey, new IvParameterSpec(firstMsgReceived[1]), session);
-                            System.out.println("[" + msg.getSnd() + "] " + fMsg);
+                            System.out.println("[" + msg.getSnd() + "]: " + fMsg);
 
-                            Client.this.received = msg.getSnd() + ": " + fMsg; //Write message to object
-                            newReceive = true; //set flag
+                            Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
+                            this.newReceive = true; //set flag
 
 
                             break;
@@ -405,10 +410,10 @@ public class Client {
 
                             //Decrypts the message and updates the session, then print it in the console
                             String message = client.receiveMessage(theirPublicRatchetKey, encryptedMsg, iv, msg.sender);
-                            System.out.println(msg.getSnd() + ": " + message);
+                            System.out.println("[" + msg.getSnd() + "]: " + message);
 
-                            Client.this.received = msg.getSnd() + ": " + message; //Write message to object
-                            newReceive = true; //set flag
+                            Client.this.received = "[" + msg.getSnd() + "]: " + message; //Write message to object
+                            this.newReceive = true; //set flag
 
                             break;
                         case "noResponseEncryptMsg":
@@ -422,8 +427,8 @@ public class Client {
                             fMsg = AES_encryption.decrypt(firstMsgReceived[0], session.firstMsgKey, new IvParameterSpec(firstMsgReceived[1]), session);
                             System.out.println("[" + msg.getSnd() + "] " + fMsg);
 
-                            Client.this.received = msg.getSnd() + ": " + fMsg; //Write message to object
-                            newReceive = true; //set flag
+                            Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
+                            this.newReceive = true; //set flag
                             break;
                         default:
                             break;

@@ -1,5 +1,5 @@
 public class Message implements java.io.Serializable{
-	public final String sender;
+	public String sender;
 	public final String recipient;
 	public final String type;
 	public final Object message;
@@ -15,6 +15,9 @@ public class Message implements java.io.Serializable{
 	}
 	public String getRec(){
 		return this.recipient;
+	}
+	public void setSender(String sender){
+		this.sender = sender;
 	}
 
 	public Object getMsg(){

@@ -13,14 +13,18 @@
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="500.0" prefWidth="700.0">
             <TabPane fx:id="tabPane" prefHeight="450.0" prefWidth="700.0" tabClosingPolicy="UNAVAILABLE">
                 <Tab closable="false" text="Main">
-                    <VBox fx:id="rightVBox" alignment="BOTTOM_RIGHT" fillWidth="false" prefHeight="37.0" prefWidth="700.0" style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3; -fx-border-style: dashed;">
-                  <children>
-                           <HBox fx:id="senderHBox" alignment="BOTTOM_RIGHT" disable="true" prefHeight="400.0" prefWidth="492.0" style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3;" />
-                  </children></VBox>
+                    <VBox fx:id="rightVBox" alignment="BOTTOM_LEFT" fillWidth="false" prefHeight="37.0"
+                          prefWidth="700.0"
+                          style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3; -fx-border-style: dashed;">
+                        <HBox fx:id="senderHBox" alignment="BOTTOM_RIGHT" disable="true" prefHeight="400.0"
+                              prefWidth="492.0"
+                              style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3;"
+                              visible="false"/>
+                    </VBox>
                 </Tab>
             </TabPane>
         </AnchorPane>
     </ScrollPane>
     <TextField fx:id="text" layoutX="7.0" layoutY="457.0" onKeyPressed="#writeMessageEnter" prefHeight="35.0" prefWidth="433.0" promptText="Type a message here!" />
-    <Button fx:id="sendButton" layoutX="444.0" layoutY="457.0" mnemonicParsing="false" onAction="#writeMessage" prefHeight="35.0" prefWidth="253.0" text="Send" />
+    <Button layoutX="444.0" layoutY="457.0" mnemonicParsing="false" onAction="#writeMessage" prefHeight="35.0" prefWidth="253.0" text="Send" />
 </AnchorPane>

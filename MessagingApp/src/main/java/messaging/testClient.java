@@ -12,7 +12,7 @@ public class testClient {
 
     //Curve curveClass = new Curve();
 
-    private final String username;
+    private String username;
     private final preKeyBundle preKeys;
     private final HashMap<String, Session> sessionMap;
     String initMsg;
@@ -31,6 +31,10 @@ public class testClient {
 
     public String getUsername() {
         return username;
+    }
+    public void setUsername(String username){
+        this.username = username;
+
     }
 
     public preKeyBundle getPreKeys() {
@@ -108,9 +112,7 @@ public class testClient {
 
     public void logoutResponse(String user) {
         removeSession(user);
-        groupMap.forEach((k,v) -> {
-            removeGroupMember(k, user);
-        });
+        groupMap.forEach((k,v) -> removeGroupMember(k, user));
     }
 
     public void sendMessage(String recipient, String msg, ObjectOutputStream objectOutput) {
@@ -118,13 +120,30 @@ public class testClient {
         initMsg = msg;
         //Checks if their is a previously initialized session with the recipient
         if (s == null) {
-
             //Sends a message to the server requesting the preKeyBundlePublic for the recipient
             Message m = new Message(getUsername(), recipient, "publicBundleRequest", "");
+            System.out.println("Recipient: " + recipient);
+            System.out.println("Username: " + getUsername());
+            System.out.println("Sender: " + m.sender);
+
+            if (Client.systemMessage){
+                m.setSender("System");
+                System.out.println("inside client.systemMessage (s==null)\n");
+            }
+
+
+
+
+
 
             try {
+
                 // write on the output stream
                 objectOutput.writeObject(m);
+                System.out.println("Recipient: " + recipient);
+                System.out.println("Username: " + getUsername());
+                System.out.println("Sender: " + m.sender);
+                m.setSender(getUsername());
             }
             catch (Exception e){
                 e.printStackTrace();
@@ -145,10 +164,20 @@ public class testClient {
                 firstMsgResult[1] = firstMsg.second().getIV();
 
                 //sends the message to the recipient
+                System.out.println("I'm here now");
                 Message m = new Message(getUsername(), recipient, "noResponseEncryptMsg", firstMsgResult);
+
+
+                if (Client.systemMessage){
+                    m.setSender("System");
+                    System.out.println("inside client.systemMesagge (ratchetket == null)\n");
+                }
+
+
                 try {
                     // write on the output stream
                     objectOutput.writeObject(m);
+                    m.setSender(getUsername());
                 } catch (Exception e) {
                     e.printStackTrace();
 
