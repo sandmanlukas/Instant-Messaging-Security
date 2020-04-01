@@ -37,7 +37,7 @@ public class MainController {
     public boolean login(String username, String password) {
 
         if (c.userExists(username)){
-            if(c.correctPassword(username,password)) return true;
+            if(Argon2Encryption.verifyArgon(c.correctPassword(username), password)) return true;
             else {
                 System.out.println("That username is taken. Try another one.");
                 return false;
@@ -47,7 +47,8 @@ public class MainController {
             return false;
         }
         else if (!c.userExists(username)){
-            c.newUser(username,password);
+            String hash =  Argon2Encryption.getArgon(password);
+            c.newUser(username, hash);
             System.out.println("User doesn't exists, creates a new user and logs him in.");
             return true;
         }

@@ -38,20 +38,20 @@ public class PasswordConnection {
         return false;
     }
 
-    public void newUser(String userName, String password) {
+    public void newUser(String userName, String hash) {
         try (PreparedStatement ps = conn.prepareStatement (
                 "INSERT INTO passwordView VALUES (?,?)")) {
 
             ps.setString(1, userName);
-            ps.setString(2, Argon2Encryption.getArgon(password));
+            ps.setString(2, hash);
             ps.executeUpdate();
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
-    public boolean correctPassword(String userName, String password) {
+    //TODO: Fix so this happens client side.
+    public String correctPassword(String userName) {
         try (PreparedStatement ps = conn.prepareStatement (
                 "SELECT hash FROM passwordView WHERE userName=?")) {
 
@@ -59,15 +59,14 @@ public class PasswordConnection {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 String pswHash = rs.getString("hash");
-                return Argon2Encryption.verifyArgon(pswHash, password);
-            } else {
-                return false;
+                //TODO: return pswHash and verify it client side.
+                return pswHash;
             }
         }
         catch (SQLException e) {
            e.printStackTrace();
         }
-        return false;
+       return null;
     }
 
     public static void main(String[] args){
@@ -80,8 +79,8 @@ public class PasswordConnection {
             c.newUser("hampus", "test123");
 
 
-            c.correctPassword("lukas", "test123");
-            c.correctPassword("henrik", "hej2315");
+            //Argon2Encryption.verifyArgon(correctPassword("lukas"), "lukas");
+            c.correctPassword("henrik");
 
             c.userExists("lukas");
             c.userExists("viktor");
