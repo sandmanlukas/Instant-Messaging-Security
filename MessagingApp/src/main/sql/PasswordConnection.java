@@ -59,9 +59,6 @@ public class PasswordConnection {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 String pswHash = rs.getString("hash");
-                //System.out.println(success ? "Success!" : "Failure!");
-                System.out.println(pswHash);
-                System.out.println(password);
                 return Argon2Encryption.verifyArgon(pswHash, password);
             } else {
                 return false;

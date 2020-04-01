@@ -43,7 +43,7 @@ public class MainController {
                 return false;
             }
         }
-        else if (username.equals("") || password.equals("")){
+        else if (username.isEmpty() || password.isEmpty()){
             return false;
         }
         else if (!c.userExists(username)){
