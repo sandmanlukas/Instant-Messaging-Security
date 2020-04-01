@@ -1,11 +1,9 @@
 //package Controller;
 
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -14,8 +12,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 
-
-import java.io.IOException;
 import java.sql.SQLException;
 
 
@@ -37,7 +33,7 @@ public class MainController {
     public boolean login(String username, String password) {
 
         if (c.userExists(username)){
-            if(Argon2Encryption.verifyArgon(c.correctPassword(username), password)) return true;
+            if(c.correctPassword(username, password)) return true;
             else {
                 System.out.println("That username is taken. Try another one.");
                 return false;
@@ -47,8 +43,7 @@ public class MainController {
             return false;
         }
         else if (!c.userExists(username)){
-            String hash =  Argon2Encryption.getArgon(password);
-            c.newUser(username, hash);
+            c.newUser(username, password);
             System.out.println("User doesn't exists, creates a new user and logs him in.");
             return true;
         }

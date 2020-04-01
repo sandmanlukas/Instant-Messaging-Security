@@ -50,9 +50,7 @@ public class Client {
 
         System.out.println("Connecting to " + ip + " on port " + ServerPort);
         System.out.println("Username: "+ this.username);
-        //System.out.println("Type in Username: ");
 
-       // final String userName = scn.nextLine();
         preKeyBundle preKeys = curveClass.generatePreKeyBundle();
 
         client = new testClient(this.username, preKeys);
@@ -185,13 +183,13 @@ public class Client {
                                 newReceive = true; //set flag
                                 break;
                             default:
-                                Client.this.received = "Unknown input \nTry typing \\h for help."; //Write message to object
+                                Client.this.received = "Unknown input\nTry typing \\h for help."; //Write message to object
                                 newReceive = true; //set flag
                                 break;
                         }
                         this.newSend=false;
                     }else{
-                        Client.this.received = "Unknown input \nTry typing \\h for help."; //Write message to object
+                        Client.this.received = "Unknown input\nTry typing \\h for help."; //Write message to object
                         newReceive = true; //set flag
                         this.newSend = false;
                     }
