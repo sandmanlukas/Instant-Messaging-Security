@@ -15,6 +15,7 @@ public class testClient {
     private String username;
     private final preKeyBundle preKeys;
     private final HashMap<String, Session> sessionMap;
+    private boolean system = false;
     String initMsg;
     private final HashMap<String, chatGroup> groupMap;
 
@@ -35,6 +36,13 @@ public class testClient {
     public void setUsername(String username){
         this.username = username;
 
+    }
+    public boolean getSystem(){
+        return system;
+    }
+
+    public void setSystem(boolean system){
+        this.system = system;
     }
 
     public preKeyBundle getPreKeys() {
@@ -115,35 +123,19 @@ public class testClient {
         groupMap.forEach((k,v) -> removeGroupMember(k, user));
     }
 
+
     public void sendMessage(String recipient, String msg, ObjectOutputStream objectOutput) {
         Session s = getSession(recipient);
         initMsg = msg;
+
         //Checks if their is a previously initialized session with the recipient
         if (s == null) {
             //Sends a message to the server requesting the preKeyBundlePublic for the recipient
             Message m = new Message(getUsername(), recipient, "publicBundleRequest", "");
-            System.out.println("Recipient: " + recipient);
-            System.out.println("Username: " + getUsername());
-            System.out.println("Sender: " + m.sender);
-
-            if (Client.systemMessage){
-                m.setSender("System");
-                System.out.println("inside client.systemMessage (s==null)\n");
-            }
-
-
-
-
-
 
             try {
-
                 // write on the output stream
                 objectOutput.writeObject(m);
-                System.out.println("Recipient: " + recipient);
-                System.out.println("Username: " + getUsername());
-                System.out.println("Sender: " + m.sender);
-                m.setSender(getUsername());
             }
             catch (Exception e){
                 e.printStackTrace();
@@ -164,20 +156,11 @@ public class testClient {
                 firstMsgResult[1] = firstMsg.second().getIV();
 
                 //sends the message to the recipient
-                System.out.println("I'm here now");
                 Message m = new Message(getUsername(), recipient, "noResponseEncryptMsg", firstMsgResult);
-
-
-                if (Client.systemMessage){
-                    m.setSender("System");
-                    System.out.println("inside client.systemMesagge (ratchetket == null)\n");
-                }
-
 
                 try {
                     // write on the output stream
                     objectOutput.writeObject(m);
-                    m.setSender(getUsername());
                 } catch (Exception e) {
                     e.printStackTrace();
 

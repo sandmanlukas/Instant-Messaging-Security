@@ -59,7 +59,6 @@ public class Client {
         // obtaining input and out streams
         ObjectOutputStream objectOutput = new ObjectOutputStream(s.getOutputStream());
         ObjectInputStream objectInput = new ObjectInputStream(s.getInputStream());
-        System.out.println(objectInput);
 
         // sendMessage thread
         Thread sendMessage = new Thread(() -> {
@@ -240,9 +239,8 @@ public class Client {
                                 Client.this.toSend = "User " + client.getUsername() + " added you to group, " + currentGroupName;
                                 systemMessage = true;
                                 client.sendMessage(msg.getSnd(), toSend, objectOutput); //TODO: Look over this. Returns unknown input to group owner.
-                                systemMessage = false;
                                 //set flag
-                                this.newSend = true;
+                                //this.newSend = true;
                                 this.newReceive = true;
 
                             }
@@ -317,6 +315,7 @@ public class Client {
                             Session sess = client.getSession(msg.getSnd());
                             sess.setTheirBundle(bundle);
 
+
                             //performs an initialization where the generated keys are equipped to the the session
                             MutableTriple<byte[], byte[], ArrayList<byte[]>> derivedKeys = Initialization.serverBundleResponse(sess, bundle);
 
@@ -355,7 +354,13 @@ public class Client {
                             result[1] = ourKeys;
                             result[2] = firstMsgResult;
 
+
                             m = new Message(client.getUsername(), msg.getSnd(), "firstStep", result);
+
+                            if (Client.systemMessage){
+                                m.setSender("System");
+                                Client.systemMessage = false;
+                            }
                             objectOutput.writeObject(m);
 
                             break;
@@ -394,9 +399,10 @@ public class Client {
                             System.out.println("one time private: " + Arrays.toString(session.getOurBundle().getPrivateKeys().getPrivateOneTimePreKey(0)));
 
                             String fMsg = AES_encryption.decrypt(firstMsgReceived[0], session.firstMsgKey, new IvParameterSpec(firstMsgReceived[1]), session);
-                            System.out.println("[" + msg.getSnd() + "]: " + fMsg);
+
 
                             Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
+
                             this.newReceive = true; //set flag
 
 
@@ -413,6 +419,7 @@ public class Client {
                             System.out.println("[" + msg.getSnd() + "]: " + message);
 
                             Client.this.received = "[" + msg.getSnd() + "]: " + message; //Write message to object
+
                             this.newReceive = true; //set flag
 
                             break;
@@ -426,6 +433,7 @@ public class Client {
                             firstMsgReceived = (byte[][]) msg.getMsg();
                             fMsg = AES_encryption.decrypt(firstMsgReceived[0], session.firstMsgKey, new IvParameterSpec(firstMsgReceived[1]), session);
                             System.out.println("[" + msg.getSnd() + "] " + fMsg);
+
 
                             Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
                             this.newReceive = true; //set flag

@@ -69,6 +69,8 @@ public class Session {
         this.ourBundle = ourBundle;
     }
 
+
+
     public void setFirstMsgKey(byte[] msgKey) {
         firstMsgKey = msgKey;
     }
