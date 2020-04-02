@@ -213,6 +213,7 @@ public class Client {
                         case "userOnlineCheckGroup":
                             //gensvar som antyder att användaren som ska läggas till i gruppen är online
                             if((boolean) msg.getMsg()) {
+                                systemMessage = true;
                                 //lägger till användaren i gruppen
                                 client.addGroupMember(currentGroupName, msg.getSnd());
                                 int size = client.getGroupMembers(currentGroupName).size();
@@ -237,8 +238,8 @@ public class Client {
                                 });
                                 Client.this.received = "[System]: " + msg.getSnd() + " was added to group, " + currentGroupName;
                                 Client.this.toSend = "User " + client.getUsername() + " added you to group, " + currentGroupName;
-                                systemMessage = true;
                                 client.sendMessage(msg.getSnd(), toSend, objectOutput); //TODO: Look over this. Returns unknown input to group owner.
+
                                 //set flag
                                 //this.newSend = true;
                                 this.newReceive = true;
@@ -356,12 +357,17 @@ public class Client {
 
 
                             m = new Message(client.getUsername(), msg.getSnd(), "firstStep", result);
-
+                            //TODO: fix this, need to find a way to pass the systemMessage variable to another instance of client.
+                            //TODO: right now, the recieving client adds system as it's session partner instead of user.
                             if (Client.systemMessage){
                                 m.setSender("System");
                                 Client.systemMessage = false;
+                                objectOutput.writeObject(m);
+                                m.setSender(client.getUsername());
+                            }else{
+                                objectOutput.writeObject(m);
                             }
-                            objectOutput.writeObject(m);
+
 
                             break;
                         case "firstStep":
@@ -392,6 +398,7 @@ public class Client {
 
                             //crates a session for the sender and adds it to our client
                             session = Initialization.establishContact(theirsEphemeralPublic, theirsRatchetPublic, theirsPreKeys, client.getUsername(), msg.getSnd(), client.getPreKeys());
+                            //TODO: adds system as the session holder since it last recieved a system message
                             client.addSession(session);
 
 
@@ -425,6 +432,13 @@ public class Client {
                             break;
                         case "noResponseEncryptMsg":
 
+                            if (Client.systemMessage){
+                                m = new Message("System", msg.getSnd(), "firstStep", null);
+                                Client.systemMessage = false;
+                                objectOutput.writeObject(m);
+                                m.setSender(client.getUsername());
+                            }
+
                             //update the message and the chain key
                             session = client.getSession(msg.getSnd());
                             Initialization.noResponseKeyUpdate(session);
@@ -438,6 +452,8 @@ public class Client {
                             Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
                             this.newReceive = true; //set flag
                             break;
+
+
                         default:
                             break;
                     }

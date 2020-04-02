@@ -155,6 +155,7 @@ public class testClient {
                 firstMsgResult[0] = firstMsg.first();
                 firstMsgResult[1] = firstMsg.second().getIV();
 
+
                 //sends the message to the recipient
                 Message m = new Message(getUsername(), recipient, "noResponseEncryptMsg", firstMsgResult);
 
