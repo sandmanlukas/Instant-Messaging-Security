@@ -113,12 +113,18 @@ public class Client {
                                 if (st.hasMoreElements()) {
                                     groupName = st.nextToken();
                                     if (groupName != null) {
-                                        //Använder en av två metoder för att skapa en grupp, för att säkerställa att
-                                        //endast användaren som skapa gruppen kan bjuda in användare
-                                        client.addOwnGroup(groupName);
-                                        client.addGroupMember(groupName, client.getUsername());
-                                        Client.this.received = "[System]: Group " + "\"" + groupName + "\"" + " was created!"; //Write message to object
-                                        this.newReceive = true; //set flag
+                                        if (client.groupExists(groupName)){
+                                            Client.this.received = "[System]: Group " + "\"" + groupName+ "\"" + " already exists.";
+                                            this.newReceive = true;
+                                        }else{
+                                            //Använder en av två metoder för att skapa en grupp, för att säkerställa att
+                                            //endast användaren som skapa gruppen kan bjuda in användare
+                                            client.addOwnGroup(groupName);
+                                            client.addGroupMember(groupName, client.getUsername());
+                                            Client.this.received = "[System]: Group " + "\"" + groupName + "\"" + " was created!"; //Write message to object
+                                            this.newReceive = true; //set flag
+                                        }
+
                                     }
                                 }
                                 break;
@@ -237,8 +243,8 @@ public class Client {
                                         }
                                     }
                                 });
-                                Client.this.received = "[System]: " + msg.getSnd() + " was added to group, " + currentGroupName;
-                                Client.this.toSend = "User " + client.getUsername() + " added you to group, " + currentGroupName;
+                                Client.this.received = "[System]: " + msg.getSnd() + " was added to group, \"" + currentGroupName + "\"";
+                                Client.this.toSend = "User " + client.getUsername() + " added you to group, \"" + currentGroupName + "\"";
                                 client.sendMessage(msg.getSnd(), toSend, objectOutput); //TODO: Look over this. Returns unknown input to group owner.
 
                                 //set flag
