@@ -84,12 +84,24 @@ public class ChatController implements Initializable {
     @FXML
     public void writeMessageEnter(KeyEvent event){
         if (event.getCode() == KeyCode.ENTER){
-            sendMessage();
+            if(text.getText().startsWith("\\clear")){
+                rightVBox.getChildren().clear();
+                text.clear();
+            }
+            else{
+                sendMessage();
+            }
+
         }
     }
     @FXML
     public void writeMessage (){
-        sendMessage();
+        if(text.getText().startsWith("\\clear")){
+            rightVBox.getChildren().clear();
+            text.clear();
+        }else{
+            sendMessage();
+        }
     }
 
     @Override

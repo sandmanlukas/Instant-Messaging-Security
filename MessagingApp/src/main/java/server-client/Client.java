@@ -176,10 +176,11 @@ public class Client {
                                 break;
                             case "\\h":
                                 String output = "[System]: \n";
-                                output += "\\m username message      -- Message another user\n";
-                                output += "\\c groupname               -- Create a new group\n";
-                                output += "\\i username groupname    -- Invites a user to a group\n";
-                                output += "\\g groupname message     -- Message a group\n";
+                                output += "\\m username message      -- Message another user.\n";
+                                output += "\\c groupname               -- Create a new group.\n";
+                                output += "\\i username groupname    -- Invites a user to a group.\n";
+                                output += "\\g groupname message     -- Message a group.\n";
+                                output += "\\clear                   -- Clear the screen.\n";
                                 Client.this.received = output; //Write message to object
                                 newReceive = true; //set flag
                                 break;
@@ -426,8 +427,14 @@ public class Client {
                             //Decrypts the message and updates the session, then print it in the console
                             String message = client.receiveMessage(theirPublicRatchetKey, encryptedMsg, iv, msg.sender);
                             System.out.println("[" + msg.getSnd() + "]: " + message);
+                            //TODO: maybe add system message here as well
+                            if (msg.getSystem()){
+                                Client.this.received = "[System]: " + message; //Write message to object
+                                msg.setSystem(false);
+                            }else{
+                                Client.this.received = "[" + msg.getSnd() + "]: " + message; //Write message to object
+                            }
 
-                            Client.this.received = "[" + msg.getSnd() + "]: " + message; //Write message to object
 
                             this.newReceive = true; //set flag
 
