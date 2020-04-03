@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Client {
-    final static int ServerPort = 8008;
+    final static int ServerPort = 1234;
     public static testClient client;
     public final String username;
     public String toSend;
@@ -97,6 +97,7 @@ public class Client {
                         String groupName;
                         String msgToSend;
                         Message m;
+                        if (command.isEmpty()) break;
                         switch(command) {
                             case "\\m":
                                 if (st.hasMoreElements()) {
@@ -106,6 +107,7 @@ public class Client {
                                     if(msg.length() >= msgLength) {
                                         msgToSend = msg.substring(msgLength);
                                         client.sendMessage(recipient, msgToSend, objectOutput);
+                                        GUIChat.openTab(recipient);
                                     }
                                 }
                                 break;

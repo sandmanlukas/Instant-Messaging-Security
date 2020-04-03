@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.Arrays;
 import java.util.Properties;
 
 public class PasswordConnection {
@@ -75,17 +76,17 @@ public class PasswordConnection {
         try{
             PasswordConnection c = new PasswordConnection();
 
-            c.newUser("lukas", "test123");
-            c.newUser("henrik", "hej2314");
-            c.newUser("john", "qwerty123");
-            c.newUser("hampus", "test123");
+            String test = "\\clear screen";
+            String test1 = "\\g test hej";
+            String test2 = "\\c test";
 
+            String[] splitTest = test.split(" ");
+            String[] splitTest2 = test1.split(" ");
+            String[] splitTest3 = test2.split(" ");
 
-            //Argon2Encryption.verifyArgon(correctPassword("lukas"), "lukas");
-
-
-            c.userExists("lukas");
-            c.userExists("viktor");
+            System.out.println(Arrays.toString(splitTest));
+            System.out.println(Arrays.toString(splitTest2));
+            System.out.println(Arrays.toString(splitTest3));
 
         }catch (SQLException | ClassNotFoundException e){
             e.printStackTrace();

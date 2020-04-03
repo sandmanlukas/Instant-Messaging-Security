@@ -4,10 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
@@ -28,6 +25,8 @@ public class GUIChat extends GUIMain {
     private Tab mainTab;
     @FXML
     private VBox rightVBox;
+    @FXML
+    private static TabPane tabPane = new TabPane();
 
 
     private VBox textDispVBox;
@@ -49,6 +48,13 @@ public class GUIChat extends GUIMain {
 
     public static void setStage(Stage primaryStage)  {
         chatStage = primaryStage;
+    }
+
+    public static void openTab(String tabName){
+        Tab tab = new Tab();
+        tab.setText(tabName);
+        tabPane.getTabs().add(tab);
+
     }
 
 

@@ -17,7 +17,7 @@ public class Server {
     public static void main(String[] args) throws IOException
     { 
         // server is listening on port 1234 
-        ServerSocket ss = new ServerSocket(8008);
+        ServerSocket ss = new ServerSocket(1234);
           
         Socket s;
 

@@ -2,10 +2,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
@@ -20,12 +17,11 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 
 public class ChatController implements Initializable {
     @FXML
     private TextField text;
-    @FXML
-    private AnchorPane chatPane;
     @FXML
     private VBox rightVBox;
     @FXML
@@ -50,6 +46,14 @@ public class ChatController implements Initializable {
         controllerClient.logOut = true;
         Platform.exit();
         System.exit(0);
+    }
+
+    public void openTab(){
+        Tab tab = new Tab();
+        tab.setText("New Tab");
+        tabPane.getTabs().add(tab);
+        SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
+        selectionModel.select(tab);
     }
 
 
@@ -81,6 +85,14 @@ public class ChatController implements Initializable {
         controllerClient.newReceive = false;
     }
 
+    public void messageSwitch(){
+        String message = text.getText();
+        switch (message){
+            case "\\c":
+
+        }
+    }
+
     @FXML
     public void writeMessageEnter(KeyEvent event){
         if (event.getCode() == KeyCode.ENTER){
@@ -96,10 +108,16 @@ public class ChatController implements Initializable {
     }
     @FXML
     public void writeMessage (){
+        String message = text.getText();
+        String test = "\\clear";
+        String test1 = "clear";
+       // String command = message.substring(message.indexOf("\\" + 1));
+        //System.out.println(command);
         if(text.getText().startsWith("\\clear")){
             rightVBox.getChildren().clear();
             text.clear();
         }else{
+            //openTab();
             sendMessage();
         }
     }
