@@ -156,8 +156,13 @@ public class testClient {
                 firstMsgResult[1] = firstMsg.second().getIV();
 
 
+
                 //sends the message to the recipient
                 Message m = new Message(getUsername(), recipient, "noResponseEncryptMsg", firstMsgResult);
+                if (Client.systemMessage){
+                    m.setSystem(true);
+                    Client.systemMessage = false;
+                }
 
                 try {
                     // write on the output stream

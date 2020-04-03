@@ -360,13 +360,10 @@ public class Client {
                             //TODO: fix this, need to find a way to pass the systemMessage variable to another instance of client.
                             //TODO: right now, the recieving client adds system as it's session partner instead of user.
                             if (Client.systemMessage){
-                                m.setSender("System");
+                                m.setSystem(true);
                                 Client.systemMessage = false;
-                                objectOutput.writeObject(m);
-                                m.setSender(client.getUsername());
-                            }else{
-                                objectOutput.writeObject(m);
                             }
+                            objectOutput.writeObject(m);
 
 
                             break;
@@ -407,8 +404,13 @@ public class Client {
 
                             String fMsg = AES_encryption.decrypt(firstMsgReceived[0], session.firstMsgKey, new IvParameterSpec(firstMsgReceived[1]), session);
 
+                            if (msg.getSystem()){
+                                Client.this.received = "[System]: " + fMsg; //Write message to object
+                                msg.setSystem(false);
+                            }else{
+                                Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
+                            }
 
-                            Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
 
                             this.newReceive = true; //set flag
 
@@ -432,12 +434,7 @@ public class Client {
                             break;
                         case "noResponseEncryptMsg":
 
-                            if (Client.systemMessage){
-                                m = new Message("System", msg.getSnd(), "firstStep", null);
-                                Client.systemMessage = false;
-                                objectOutput.writeObject(m);
-                                m.setSender(client.getUsername());
-                            }
+
 
                             //update the message and the chain key
                             session = client.getSession(msg.getSnd());
@@ -448,8 +445,14 @@ public class Client {
                             fMsg = AES_encryption.decrypt(firstMsgReceived[0], session.firstMsgKey, new IvParameterSpec(firstMsgReceived[1]), session);
                             System.out.println("[" + msg.getSnd() + "] " + fMsg);
 
+                            if (msg.getSystem()){
+                                Client.this.received = "[System]: " + fMsg; //Write message to object
+                                msg.setSystem(false);
+                            }else{
+                                Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
+                            }
 
-                            Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
+
                             this.newReceive = true; //set flag
                             break;
 
