@@ -16,13 +16,13 @@ public class Client {
     public static testClient client;
     public final String username;
     public String toSend;
-    boolean newSend;
+    public boolean newSend;
     public String received;
-    boolean newReceive;
-    boolean logOut = false;
-    static boolean systemMessage = false;
-    String currentGroupName;
-
+    public boolean newReceive;
+    public boolean logOut = false;
+    public static boolean systemMessage = false;
+    public String currentGroupName;
+    public ChatController clientController;
 
     public Client(String username){
         this.username=username;
@@ -31,13 +31,11 @@ public class Client {
         this.received ="";
         this.newReceive =false;
         System.out.println("A client was created!");
-
-
     }
 
 
 
-    //public static void main(String[] args) throws IOException {
+
 
     public void run() throws IOException{
        // final Scanner scn = new Scanner(System.in);
@@ -107,7 +105,11 @@ public class Client {
                                     if(msg.length() >= msgLength) {
                                         msgToSend = msg.substring(msgLength);
                                         client.sendMessage(recipient, msgToSend, objectOutput);
-                                        GUIChat.openTab(recipient);
+                                        try {
+                                            clientController.openTab(recipient);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
                                 }
                                 break;
@@ -155,12 +157,12 @@ public class Client {
                                                             e.printStackTrace();
                                                         }
                                                     } else {
-                                                        Client.this.received = "[System]: You are not the creator of the group"; //Write message to object
+                                                        Client.this.received = "[Server]: You are not the creator of the group"; //Write message to object
                                                         newReceive = true; //set flag
                                                     }
                                                 }
                                             } else {
-                                                Client.this.received = "[System]: You are not in a group with that name"; //Write message to object
+                                                Client.this.received = "[Server]: You are not in a group with that name"; //Write message to object
                                                 newReceive = true; //set flag
                                             }
                                         }
@@ -183,7 +185,7 @@ public class Client {
                                 }
                                 break;
                             case "\\h":
-                                String output = "[System]: \n";
+                                String output = "[Server]: \n";
                                 output += "\\m username message      -- Message another user.\n";
                                 output += "\\c groupname               -- Create a new group.\n";
                                 output += "\\i username groupname    -- Invites a user to a group.\n";
@@ -193,13 +195,13 @@ public class Client {
                                 newReceive = true; //set flag
                                 break;
                             default:
-                                Client.this.received = "[System]: Unknown input. Try typing \\h for help."; //Write message to object
+                                Client.this.received = "[Server]: Unknown input. Try typing \\h for help."; //Write message to object
                                 newReceive = true; //set flag
                                 break;
                         }
                         this.newSend=false;
                     }else{
-                        Client.this.received = "[System]: Unknown input. Try typing \\h for help."; //Write message to object
+                        Client.this.received = "[Server]: Unknown input. Try typing \\h for help."; //Write message to object
                         newReceive = true; //set flag
                         //this.newSend = false;
                     }
@@ -245,7 +247,7 @@ public class Client {
                                         }
                                     }
                                 });
-                                Client.this.received = "[System]: " + msg.getSnd() + " was added to group, \"" + currentGroupName + "\"";
+                                Client.this.received = "[Server]: " + msg.getSnd() + " was added to group, \"" + currentGroupName + "\"";
                                 Client.this.toSend = "User " + client.getUsername() + " added you to group, \"" + currentGroupName + "\"";
                                 client.sendMessage(msg.getSnd(), toSend, objectOutput); //TODO: Look over this. Returns unknown input to group owner.
 
@@ -368,6 +370,7 @@ public class Client {
                             m = new Message(client.getUsername(), msg.getSnd(), "firstStep", result);
                             //TODO: fix this, need to find a way to pass the systemMessage variable to another instance of client.
                             //TODO: right now, the recieving client adds system as it's session partner instead of user.
+
                             if (Client.systemMessage){
                                 m.setSystem(true);
                                 Client.systemMessage = false;
@@ -414,9 +417,10 @@ public class Client {
                             String fMsg = AES_encryption.decrypt(firstMsgReceived[0], session.firstMsgKey, new IvParameterSpec(firstMsgReceived[1]), session);
 
                             if (msg.getSystem()){
-                                Client.this.received = "[System]: " + fMsg; //Write message to object
+                                Client.this.received = "[Server]: " + fMsg; //Write message to object
                                 msg.setSystem(false);
                             }else{
+                                clientController.openTab(msg.getSnd());
                                 Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
                             }
 
@@ -437,9 +441,10 @@ public class Client {
                             System.out.println("[" + msg.getSnd() + "]: " + message);
                             //TODO: maybe add system message here as well
                             if (msg.getSystem()){
-                                Client.this.received = "[System]: " + message; //Write message to object
+                                Client.this.received = "[Server]: " + message; //Write message to object
                                 msg.setSystem(false);
                             }else{
+                                clientController.openTab(msg.getSnd());
                                 Client.this.received = "[" + msg.getSnd() + "]: " + message; //Write message to object
                             }
 
@@ -461,9 +466,10 @@ public class Client {
                             System.out.println("[" + msg.getSnd() + "] " + fMsg);
 
                             if (msg.getSystem()){
-                                Client.this.received = "[System]: " + fMsg; //Write message to object
+                                Client.this.received = "[Server]: " + fMsg; //Write message to object
                                 msg.setSystem(false);
                             }else{
+                                clientController.openTab(msg.getSnd());
                                 Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
                             }
 

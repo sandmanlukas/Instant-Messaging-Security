@@ -12,16 +12,16 @@
     <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" pannable="true" prefHeight="455.0" prefWidth="700.0">
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="500.0" prefWidth="700.0">
             <TabPane fx:id="tabPane" prefHeight="450.0" prefWidth="700.0" tabClosingPolicy="UNAVAILABLE">
-                <Tab closable="false" text="Main">
-                    <VBox fx:id="rightVBox" alignment="BOTTOM_LEFT" fillWidth="false" prefHeight="37.0"
+               <Tab closable="false" text="Main">
+                    <VBox fx:id="rightVBox" alignment="BOTTOM_LEFT" fillWidth="false" prefHeight="415.0"
                           prefWidth="700.0"
                           style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3; -fx-border-style: dashed;">
-                        <HBox fx:id="senderHBox" alignment="BOTTOM_RIGHT" disable="true" prefHeight="400.0"
+                        <!--<HBox fx:id="senderHBox" alignment="BOTTOM_RIGHT" disable="true" prefHeight="400.0"
                               prefWidth="492.0"
                               style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3;"
-                              visible="false"/>
+                              visible="false"/>-->
                     </VBox>
-                </Tab>
+               </Tab>
             </TabPane>
         </AnchorPane>
     </ScrollPane>

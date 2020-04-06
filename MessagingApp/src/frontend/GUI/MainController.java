@@ -24,7 +24,6 @@ public class MainController {
     private TextField username;
     @FXML
     private AnchorPane rootPane;
-    private Stage primaryStage;
 
 
     public MainController() throws SQLException, ClassNotFoundException {
@@ -107,29 +106,36 @@ public class MainController {
     @FXML
     public void enterLogin (KeyEvent event) throws Exception {
         if(event.getCode() == KeyCode.ENTER){
-            if (tryLogin()){
-                AnchorPane pane = FXMLLoader.load(getClass().getResource("GUIChat.fxml"));
-                rootPane.getChildren().setAll(pane);
-                new GUIChat(username.getText());
-
-
-                //primaryStage.close();
-            }
+            startClient();
         }
     }
 
     @FXML
     public void mouseLogin() throws Exception {
-        if (tryLogin()){
-            AnchorPane pane = FXMLLoader.load(getClass().getResource("GUIChat.fxml"));
-            rootPane.getChildren().setAll(pane);
+        startClient();
+    }
 
-            new GUIChat(username.getText());
+    private void startClient() throws java.io.IOException {
+        if (tryLogin()){
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("GUIChat.fxml"));
+            AnchorPane pane = loader.load();
+            rootPane.getChildren().setAll(pane);
+            Client controllerClient = new Client(username.getText());
+            //TODO: to access setOnCloseRequest, must be a better way
+            //new GUIChat(username.getText());
+
+            ChatController chatController = loader.getController();
+            controllerClient.clientController = chatController;
+            chatController.setClient(controllerClient);
+            chatController.initialize();
+
+            controllerClient.run();
+            //new ChatController(username.getText(), primaryStage);
+
+            //new GUIChat(username.getText());
 
         }
     }
-
-
 
 
 }

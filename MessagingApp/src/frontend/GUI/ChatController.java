@@ -1,7 +1,10 @@
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -19,24 +22,21 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
-public class ChatController implements Initializable {
+
+public class ChatController {
     @FXML
     private TextField text;
     @FXML
     private VBox rightVBox;
     @FXML
-    private HBox senderHBox; //TODO: doesn't work if static
-    @FXML
     private ScrollPane scrollPane;
     @FXML
     private TabPane tabPane;
-
+    @FXML
+    ChatController chatController;
     private static Client controllerClient;
-    private String username;
-    private Stage chatStage;
-
-
-
+    private SelectionModel selectionTab;
+    private SelectionModel groupSelectionTab;
 
     public ChatController(){
 
@@ -47,51 +47,60 @@ public class ChatController implements Initializable {
         Platform.exit();
         System.exit(0);
     }
+    public TabPane getTabPane(){
+        return this.tabPane;
+    }
+    public void setClient (Client client){
+        controllerClient = client;
+    }
 
-    public void openTab(){
-        Tab tab = new Tab();
-        tab.setText("New Tab");
-        tabPane.getTabs().add(tab);
-        SingleSelectionModel<Tab> selectionModel = tabPane.getSelectionModel();
-        selectionModel.select(tab);
+    public void openTab(String tabName) throws IOException {
+        Tab tab = new Tab(tabName);
+        tab.setContent(FXMLLoader.load(GUIChat.class.getResource("Tabs.fxml")));
+        //tab.setText(tabName);
+        //TabPane tabPane = getTabPane();
+        Platform.runLater(() -> {
+            tabPane.getTabs().add(tab);
+            selectionTab = tabPane.getSelectionModel();
+            tabPane.setSelectionModel((SingleSelectionModel<Tab>) selectionTab);
+            selectionTab.select(tab);
+        });
+
     }
 
 
-    public ChatController(String username, Stage chatStage) throws IOException {
+
+    /*
+    public ChatController(String username) throws IOException {
         controllerClient = new Client(username);
         controllerClient.run();
-        this.chatStage = chatStage;
-        this.username = username;
-        //startThread();
+        controllerClient.clientController = chatController;
     }
 
 
+     */
+
     public void sendMessage(){
+        SingleSelectionModel<Tab> activeTabSelection = tabPane.getSelectionModel();
+        Tab activeTab = activeTabSelection.getSelectedItem();
+        activeTab.setText("test");
         Text sent = new Text("[You]: " + text.getText());
-        Label msg = new Label(text.getText() + " <");
-        msg.setWrapText(true);
-        //msg.setAlignment(Pos.CENTER_RIGHT);
+       // Label msg = new Label(text.getText() + " <");
+        //msg.setWrapText(true);
         rightVBox.getChildren().add(sent);
-        //rightVBox.getChildren().add(new Text("\n"));
         controllerClient.setForMessage(text.getText());
         text.clear();
     }
 
     public void recieveMessage(){
+        //tabPane.setSelectionModel((SingleSelectionModel<Tab>) selectionTab);
         Text t = new Text(controllerClient.received);
-        Label msgReceived = new Label("> " + t.getText());
-        msgReceived.setWrapText(true);
+        //Label msgReceived = new Label("> " + t.getText());
+        //msgReceived.setWrapText(true);
         rightVBox.getChildren().add(t);
         controllerClient.newReceive = false;
     }
 
-    public void messageSwitch(){
-        String message = text.getText();
-        switch (message){
-            case "\\c":
-
-        }
-    }
 
     @FXML
     public void writeMessageEnter(KeyEvent event){
@@ -107,23 +116,17 @@ public class ChatController implements Initializable {
         }
     }
     @FXML
-    public void writeMessage (){
-        String message = text.getText();
-        String test = "\\clear";
-        String test1 = "clear";
-       // String command = message.substring(message.indexOf("\\" + 1));
-        //System.out.println(command);
+    public void writeMessage() {
         if(text.getText().startsWith("\\clear")){
             rightVBox.getChildren().clear();
             text.clear();
         }else{
-            //openTab();
             sendMessage();
         }
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+
+    public void initialize() {
         Thread recMessage = new Thread(() -> {
             Runnable updater = () -> {
                 if (controllerClient.newReceive) {
