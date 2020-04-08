@@ -53,7 +53,10 @@ public class ChatController implements Initializable {
         controllerClient = client;
     }
 
-    public void openTab(String tabName) throws IOException {
+    //TODO: checks so that a message is valid before opening a new tab
+    //TODO: maybe add to that \m isn't necessary when in a tab
+    //TODO: what should happen in main tab?
+    public void openTab(String tabName, String message) throws IOException {
         if (openTabs.containsKey(tabName)){
             tabPane.getSelectionModel().select(openTabs.get(tabName));
         }else {
@@ -71,8 +74,11 @@ public class ChatController implements Initializable {
                 selectionTab = tabPane.getSelectionModel();
                 selectionTab.select(tab);
                 //activeTab = selectionTab.getSelectedItem();
-                //TODO: check createLabel
-                //tabVBox.getChildren().add(createLabel("This is a test"));
+                //TODO: check this, currently only works the first time
+                if(!controllerClient.newReceive){
+                    tabVBox.getChildren().add(createLabel(message));
+                }
+
 
 
             });
@@ -87,10 +93,10 @@ public class ChatController implements Initializable {
 
     public void sendMessage(){
         //activeTab.setContent(rightVBox);
-        Text sent = new Text("[You]: " + text.getText());
-        Label msg = new Label("[You]: " + text.getText());
-        msg.setWrapText(true);
-        tabVBox.getChildren().add(msg);
+        //Text sent = new Text("[You]: " + text.getText());
+        //Label msg = new Label("[You]: " + text.getText());
+        //msg.setWrapText(true);
+        //tabVBox.getChildren().add(msg);
         controllerClient.setForMessage(text.getText());
         text.clear();
     }
@@ -99,7 +105,7 @@ public class ChatController implements Initializable {
 
         Label msgRecieved = new Label(controllerClient.received);
         msgRecieved.setWrapText(true);
-        rightVBox.getChildren().add(msgRecieved);
+        tabVBox.getChildren().add(msgRecieved);
         controllerClient.newReceive = false;
     }
 

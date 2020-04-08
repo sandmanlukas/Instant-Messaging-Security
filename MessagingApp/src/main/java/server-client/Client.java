@@ -106,7 +106,7 @@ public class Client {
                                         msgToSend = msg.substring(msgLength);
                                         client.sendMessage(recipient, msgToSend, objectOutput);
                                         try {
-                                            clientController.openTab(recipient);
+                                            clientController.openTab(recipient,msgToSend);
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
@@ -128,7 +128,7 @@ public class Client {
                                             Client.this.received = "[System]: Group " + "\"" + groupName + "\"" + " was created!"; //Write message to object
                                             //Tries to open a new tab when creating a group.
                                             try {
-                                                clientController.openTab(groupName);
+                                                clientController.openTab(groupName,this.received);
                                             } catch (IOException e) {
                                                 e.printStackTrace();
                                             }
@@ -422,10 +422,10 @@ public class Client {
                             if (msg.getSystem()){
                                 Client.this.received = "[Server]: " + fMsg; //Write message to object
                                 msg.setSystem(false);
-                                clientController.openTab(currentGroupName);
+                                clientController.openTab(currentGroupName, fMsg);
 
                             }else{
-                                clientController.openTab(msg.getSnd());
+                                clientController.openTab(msg.getSnd(),fMsg);
                                 Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
                             }
 
@@ -448,9 +448,9 @@ public class Client {
                             if (msg.getSystem()){
                                 Client.this.received = "[Server]: " + message; //Write message to object
                                 msg.setSystem(false);
-                                clientController.openTab(currentGroupName);
+                                clientController.openTab(currentGroupName, message);
                             }else{
-                                clientController.openTab(msg.getSnd());
+                                clientController.openTab(msg.getSnd(), message);
                                 Client.this.received = "[" + msg.getSnd() + "]: " + message; //Write message to object
                             }
 
@@ -474,10 +474,10 @@ public class Client {
                             if (msg.getSystem()){
                                 Client.this.received = "[Server]: " + fMsg; //Write message to object
                                 msg.setSystem(false);
-                                clientController.openTab(fMsg);
+                                clientController.openTab(msg.getSnd(),fMsg);
 
                             }else{
-                                clientController.openTab(msg.getSnd());
+                                clientController.openTab(msg.getSnd(),fMsg);
                                 Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
                             }
 
