@@ -50,6 +50,7 @@ public class ChatController {
             tabPane.getSelectionModel().select(openTabs.get(tabName));
         }else {
             Tab tab = new Tab(tabName);
+            tab.setClosable(true);
             tab.setContent(FXMLLoader.load(GUIChat.class.getResource("Tabs.fxml")));
             Platform.runLater(() -> {
                 tabPane.getTabs().add(tab);
