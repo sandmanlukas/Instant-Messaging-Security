@@ -12,9 +12,10 @@ public class testClient {
 
     //Curve curveClass = new Curve();
 
-    private final String username;
+    private String username;
     private final preKeyBundle preKeys;
     private final HashMap<String, Session> sessionMap;
+    private boolean system = false;
     String initMsg;
     private final HashMap<String, chatGroup> groupMap;
 
@@ -31,6 +32,17 @@ public class testClient {
 
     public String getUsername() {
         return username;
+    }
+    public void setUsername(String username){
+        this.username = username;
+
+    }
+    public boolean getSystem(){
+        return system;
+    }
+
+    public void setSystem(boolean system){
+        this.system = system;
     }
 
     public preKeyBundle getPreKeys() {
@@ -108,17 +120,16 @@ public class testClient {
 
     public void logoutResponse(String user) {
         removeSession(user);
-        groupMap.forEach((k,v) -> {
-            removeGroupMember(k, user);
-        });
+        groupMap.forEach((k,v) -> removeGroupMember(k, user));
     }
+
 
     public void sendMessage(String recipient, String msg, ObjectOutputStream objectOutput) {
         Session s = getSession(recipient);
         initMsg = msg;
+
         //Checks if their is a previously initialized session with the recipient
         if (s == null) {
-
             //Sends a message to the server requesting the preKeyBundlePublic for the recipient
             Message m = new Message(getUsername(), recipient, "publicBundleRequest", "");
 
@@ -144,8 +155,15 @@ public class testClient {
                 firstMsgResult[0] = firstMsg.first();
                 firstMsgResult[1] = firstMsg.second().getIV();
 
+
+
                 //sends the message to the recipient
                 Message m = new Message(getUsername(), recipient, "noResponseEncryptMsg", firstMsgResult);
+                if (Client.systemMessage){
+                    m.setSystem(true);
+                    Client.systemMessage = false;
+                }
+
                 try {
                     // write on the output stream
                     objectOutput.writeObject(m);

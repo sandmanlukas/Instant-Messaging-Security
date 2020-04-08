@@ -103,9 +103,9 @@ class ClientHandler implements Runnable {
             for (ClientHandler mc : Server.ar) {
                 if (mc.name.equals(sender)) {
                     if (conn.userExists(receiver)) {
-                        m = new Message("Server", sender, "msgError", "User is not online");
+                        m = new Message("Server", sender, "msgError", "[Server]: User is not online");
                     } else {
-                        m = new Message("Server", sender, "msgError", "User does not exist");
+                        m = new Message("Server", sender, "msgError", "[Server]: User does not exist");
                     }
                     mc.dos.writeObject(m);
                     break;

@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.Arrays;
 import java.util.Properties;
 
 public class PasswordConnection {
@@ -50,7 +51,6 @@ public class PasswordConnection {
             e.printStackTrace();
         }
     }
-
     public boolean correctPassword(String userName, String password) {
         try (PreparedStatement ps = conn.prepareStatement (
                 "SELECT hash FROM passwordView WHERE userName=?")) {
@@ -59,9 +59,6 @@ public class PasswordConnection {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 String pswHash = rs.getString("hash");
-                //System.out.println(success ? "Success!" : "Failure!");
-                System.out.println(pswHash);
-                System.out.println(password);
                 return Argon2Encryption.verifyArgon(pswHash, password);
             } else {
                 return false;
@@ -70,24 +67,24 @@ public class PasswordConnection {
         catch (SQLException e) {
            e.printStackTrace();
         }
-        return false;
+       return false;
     }
 
     public static void main(String[] args){
         try{
             PasswordConnection c = new PasswordConnection();
 
-            c.newUser("lukas", "test123");
-            c.newUser("henrik", "hej2314");
-            c.newUser("john", "qwerty123");
-            c.newUser("hampus", "test123");
+            String test = "\\clear screen";
+            String test1 = "\\g test hej";
+            String test2 = "\\c test";
 
+            String[] splitTest = test.split(" ");
+            String[] splitTest2 = test1.split(" ");
+            String[] splitTest3 = test2.split(" ");
 
-            c.correctPassword("lukas", "test123");
-            c.correctPassword("henrik", "hej2315");
-
-            c.userExists("lukas");
-            c.userExists("viktor");
+            System.out.println(Arrays.toString(splitTest));
+            System.out.println(Arrays.toString(splitTest2));
+            System.out.println(Arrays.toString(splitTest3));
 
         }catch (SQLException | ClassNotFoundException e){
             e.printStackTrace();
