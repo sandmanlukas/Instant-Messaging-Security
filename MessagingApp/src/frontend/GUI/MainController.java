@@ -121,17 +121,12 @@ public class MainController {
             rootPane.getChildren().setAll(pane);
             Client controllerClient = new Client(username.getText());
             //TODO: to access setOnCloseRequest, must be a better way
-            //new GUIChat(username.getText());
-
+            new GUIChat();
             ChatController chatController = loader.getController();
             controllerClient.clientController = chatController;
             chatController.setClient(controllerClient);
             chatController.initialize();
-
             controllerClient.run();
-            //new ChatController(username.getText(), primaryStage);
-
-            //new GUIChat(username.getText());
 
         }
     }

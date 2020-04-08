@@ -497,9 +497,9 @@ public class Client {
         sendMessage.start();
         readMessage.start();
     }
-    public void setForMessage(String s){
+    public void setForMessage(String message){
         this.newSend=true;
-        this.toSend=s;
+        this.toSend=message;
     }
 
 

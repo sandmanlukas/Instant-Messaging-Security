@@ -1,12 +1,18 @@
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ChatController {
     @FXML
@@ -20,9 +26,10 @@ public class ChatController {
     @FXML
     private TabPane tabPane;
 
+    private Map<String, Tab> openTabs = new HashMap<>();
     private static Client controllerClient;
     private SelectionModel<Tab> selectionTab;
-    private Tab activeTab;
+    public Tab activeTab;
     private SelectionModel<Tab> groupSelectionTab;
 
     public ChatController(){
@@ -39,19 +46,29 @@ public class ChatController {
     }
 
     public void openTab(String tabName) throws IOException {
-        Tab tab = new Tab(tabName);
-        tab.setContent(FXMLLoader.load(GUIChat.class.getResource("Tabs.fxml")));
-        //tab.setText(tabName);
-        //TabPane tabPane = getTabPane();
-       Platform.runLater(() -> {
-            tabPane.getTabs().add(tab);
-            selectionTab = tabPane.getSelectionModel();
-            selectionTab.select(tab);
-        });
+        if (openTabs.containsKey(tabName)){
+            tabPane.getSelectionModel().select(openTabs.get(tabName));
+        }else {
+            Tab tab = new Tab(tabName);
+            tab.setContent(FXMLLoader.load(GUIChat.class.getResource("Tabs.fxml")));
+            Platform.runLater(() -> {
+                tabPane.getTabs().add(tab);
+                openTabs.put(tabName, tab);
+                tab.setOnClosed(e -> openTabs.remove(tabName));
+                selectionTab = tabPane.getSelectionModel();
+                selectionTab.select(tab);
+                activeTab = selectionTab.getSelectedItem();
+                tabVBox.getChildren().add(new Text("test test test"));
 
+            });
+        }
     }
 
+
+
+    
     public void sendMessage(){
+        //activeTab.setContent(rightVBox);
         Text sent = new Text("[You]: " + text.getText());
        // Label msg = new Label(text.getText() + " <");
         //msg.setWrapText(true);
@@ -69,6 +86,16 @@ public class ChatController {
         controllerClient.newReceive = false;
     }
 
+
+    @FXML
+    public void tabListener(){
+        tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+            @Override
+            public void changed(ObservableValue<? extends Tab> observableValue, Tab oldTab, Tab newTab) {
+                newTab.setContent(oldTab.getContent());
+            }
+        });
+    }
 
     @FXML
     public void writeMessageEnter(KeyEvent event){
