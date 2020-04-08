@@ -3,18 +3,22 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ResourceBundle;
 
-public class ChatController {
+public class ChatController implements Initializable {
     @FXML
     private TextField text;
     @FXML
@@ -25,6 +29,8 @@ public class ChatController {
     private ScrollPane scrollPane;
     @FXML
     private TabPane tabPane;
+    @FXML
+    private AnchorPane anchorTab;
 
     private Map<String, Tab> openTabs = new HashMap<>();
     private static Client controllerClient;
@@ -34,6 +40,7 @@ public class ChatController {
 
     public ChatController(){
 
+
     }
 
     public static void logout(){
@@ -41,6 +48,7 @@ public class ChatController {
         Platform.exit();
         System.exit(0);
     }
+
     public void setClient (Client client){
         controllerClient = client;
     }
@@ -50,52 +58,49 @@ public class ChatController {
             tabPane.getSelectionModel().select(openTabs.get(tabName));
         }else {
             Tab tab = new Tab(tabName);
+            anchorTab = FXMLLoader.load(getClass().getResource("Tabs.fxml"));
+            tabVBox = (VBox) anchorTab.getChildren().get(0);
             tab.setClosable(true);
-            tab.setContent(FXMLLoader.load(GUIChat.class.getResource("Tabs.fxml")));
+            tab.setContent(anchorTab);
+
             Platform.runLater(() -> {
                 tabPane.getTabs().add(tab);
                 openTabs.put(tabName, tab);
                 tab.setOnClosed(e -> openTabs.remove(tabName));
+
                 selectionTab = tabPane.getSelectionModel();
                 selectionTab.select(tab);
-                activeTab = selectionTab.getSelectedItem();
-                tabVBox.getChildren().add(new Text("test test test"));
+                //activeTab = selectionTab.getSelectedItem();
+                //TODO: check createLabel
+                //tabVBox.getChildren().add(createLabel("This is a test"));
+
 
             });
         }
     }
+    //TODO: could find a better solution
+    public Label createLabel(String message){
+        Label msg = new Label("[You]: " + message);
+        msg.setWrapText(true);
+        return msg;
+    }
 
-
-
-    
     public void sendMessage(){
         //activeTab.setContent(rightVBox);
         Text sent = new Text("[You]: " + text.getText());
-       // Label msg = new Label(text.getText() + " <");
-        //msg.setWrapText(true);
-        rightVBox.getChildren().add(sent);
+        Label msg = new Label("[You]: " + text.getText());
+        msg.setWrapText(true);
+        tabVBox.getChildren().add(msg);
         controllerClient.setForMessage(text.getText());
         text.clear();
     }
 
     public void recieveMessage(){
-        //tabPane.setSelectionModel((SingleSelectionModel<Tab>) selectionTab);
-        Text t = new Text(controllerClient.received);
-        //Label msgReceived = new Label("> " + t.getText());
-        //msgReceived.setWrapText(true);
-        rightVBox.getChildren().add(t);
+
+        Label msgRecieved = new Label(controllerClient.received);
+        msgRecieved.setWrapText(true);
+        rightVBox.getChildren().add(msgRecieved);
         controllerClient.newReceive = false;
-    }
-
-
-    @FXML
-    public void tabListener(){
-        tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
-            @Override
-            public void changed(ObservableValue<? extends Tab> observableValue, Tab oldTab, Tab newTab) {
-                newTab.setContent(oldTab.getContent());
-            }
-        });
     }
 
     @FXML
@@ -111,6 +116,7 @@ public class ChatController {
 
         }
     }
+
     @FXML
     public void writeMessage() {
         if(text.getText().startsWith("\\clear")){
@@ -121,8 +127,20 @@ public class ChatController {
         }
     }
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+/*
+        try {
+            anchorTab = FXMLLoader.load(getClass().getResource("Tabs.fxml"));
+            tabVBox = (VBox) anchorTab.getChildren().get(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-    public void initialize() {
+
+ */
+
+
         Thread recMessage = new Thread(() -> {
             Runnable updater = () -> {
                 if (controllerClient.newReceive) {

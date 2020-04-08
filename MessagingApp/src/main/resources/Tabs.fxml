@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="689.0" stylesheets="@GUIChat.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ChatController">
+<AnchorPane fx:id="anchorTab" prefHeight="400.0" prefWidth="689.0" stylesheets="@GUIChat.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="TabController">
     <VBox fx:id="tabVBox" alignment="BOTTOM_LEFT" fillWidth="false" prefHeight="415.0" prefWidth="700.0" style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3; -fx-border-style: dashed;">
     </VBox>
 
