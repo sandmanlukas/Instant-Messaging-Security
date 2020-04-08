@@ -43,7 +43,7 @@ public class ChatController {
         tab.setContent(FXMLLoader.load(GUIChat.class.getResource("Tabs.fxml")));
         //tab.setText(tabName);
         //TabPane tabPane = getTabPane();
-        Platform.runLater(() -> {
+       Platform.runLater(() -> {
             tabPane.getTabs().add(tab);
             selectionTab = tabPane.getSelectionModel();
             selectionTab.select(tab);
@@ -51,23 +51,10 @@ public class ChatController {
 
     }
 
-
-
-    /*
-    public ChatController(String username) throws IOException {
-        controllerClient = new Client(username);
-        controllerClient.run();
-        controllerClient.clientController = chatController;
-    }
-
-
-     */
-
     public void sendMessage(){
         Text sent = new Text("[You]: " + text.getText());
        // Label msg = new Label(text.getText() + " <");
         //msg.setWrapText(true);
-
         rightVBox.getChildren().add(sent);
         controllerClient.setForMessage(text.getText());
         text.clear();

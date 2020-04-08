@@ -69,7 +69,6 @@ public class MainController {
         String userInput;
         String passInput;
 
-        //TODO: REMOVE LATE TESTING ONLY
         userInput = username.getText();
         passInput = password.getText();
 

@@ -51,7 +51,6 @@ public class PasswordConnection {
             e.printStackTrace();
         }
     }
-    //TODO: Fix so this happens client side.
     public boolean correctPassword(String userName, String password) {
         try (PreparedStatement ps = conn.prepareStatement (
                 "SELECT hash FROM passwordView WHERE userName=?")) {
@@ -60,7 +59,6 @@ public class PasswordConnection {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 String pswHash = rs.getString("hash");
-                //TODO: return pswHash and verify it client side.
                 return Argon2Encryption.verifyArgon(pswHash, password);
             } else {
                 return false;

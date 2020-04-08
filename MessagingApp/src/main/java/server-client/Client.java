@@ -117,17 +117,23 @@ public class Client {
                                 if (st.hasMoreElements()) {
                                     groupName = st.nextToken();
                                     if (groupName != null) {
+                                        //set flag
                                         if (client.groupExists(groupName)){
                                             Client.this.received = "[System]: Group " + "\"" + groupName+ "\"" + " already exists.";
-                                            this.newReceive = true;
                                         }else{
                                             //Använder en av två metoder för att skapa en grupp, för att säkerställa att
                                             //endast användaren som skapa gruppen kan bjuda in användare
                                             client.addOwnGroup(groupName);
                                             client.addGroupMember(groupName, client.getUsername());
                                             Client.this.received = "[System]: Group " + "\"" + groupName + "\"" + " was created!"; //Write message to object
-                                            this.newReceive = true; //set flag
+                                            //Tries to open a new tab when creating a group.
+                                            try {
+                                                clientController.openTab(groupName);
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
                                         }
+                                        this.newReceive = true;
 
                                     }
                                 }
@@ -196,6 +202,7 @@ public class Client {
                                 break;
                             default:
                                 Client.this.received = "[Server]: Unknown input. Try typing \\h for help."; //Write message to object
+
                                 newReceive = true; //set flag
                                 break;
                         }
@@ -203,7 +210,7 @@ public class Client {
                     }else{
                         Client.this.received = "[Server]: Unknown input. Try typing \\h for help."; //Write message to object
                         newReceive = true; //set flag
-                        //this.newSend = false;
+                        this.newSend = false;
                     }
                 }
             }
@@ -247,12 +254,11 @@ public class Client {
                                         }
                                     }
                                 });
-                                Client.this.received = "[Server]: " + msg.getSnd() + " was added to group, \"" + currentGroupName + "\"";
-                                Client.this.toSend = "User " + client.getUsername() + " added you to group, \"" + currentGroupName + "\"";
-                                client.sendMessage(msg.getSnd(), toSend, objectOutput); //TODO: Look over this. Returns unknown input to group owner.
+                                Client.this.received = "[Server]: " + msg.getSnd() + " was added to the group, \"" + currentGroupName + "\"";
+                                Client.this.toSend = "User " + client.getUsername() + " added you to the group, \"" + currentGroupName + "\"";
+                                client.sendMessage(msg.getSnd(), toSend, objectOutput);
 
                                 //set flag
-                                //this.newSend = true;
                                 this.newReceive = true;
 
                             }
@@ -368,8 +374,6 @@ public class Client {
 
 
                             m = new Message(client.getUsername(), msg.getSnd(), "firstStep", result);
-                            //TODO: fix this, need to find a way to pass the systemMessage variable to another instance of client.
-                            //TODO: right now, the recieving client adds system as it's session partner instead of user.
 
                             if (Client.systemMessage){
                                 m.setSystem(true);
@@ -407,18 +411,19 @@ public class Client {
 
                             //crates a session for the sender and adds it to our client
                             session = Initialization.establishContact(theirsEphemeralPublic, theirsRatchetPublic, theirsPreKeys, client.getUsername(), msg.getSnd(), client.getPreKeys());
-                            //TODO: adds system as the session holder since it last recieved a system message
                             client.addSession(session);
 
 
                             //decrypts the first received message and print it in the console
-                            System.out.println("one time private: " + Arrays.toString(session.getOurBundle().getPrivateKeys().getPrivateOneTimePreKey(0)));
+                            //System.out.println("one time private: " + Arrays.toString(session.getOurBundle().getPrivateKeys().getPrivateOneTimePreKey(0)));
 
                             String fMsg = AES_encryption.decrypt(firstMsgReceived[0], session.firstMsgKey, new IvParameterSpec(firstMsgReceived[1]), session);
 
                             if (msg.getSystem()){
                                 Client.this.received = "[Server]: " + fMsg; //Write message to object
                                 msg.setSystem(false);
+                                clientController.openTab(currentGroupName);
+
                             }else{
                                 clientController.openTab(msg.getSnd());
                                 Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
@@ -443,6 +448,7 @@ public class Client {
                             if (msg.getSystem()){
                                 Client.this.received = "[Server]: " + message; //Write message to object
                                 msg.setSystem(false);
+                                clientController.openTab(currentGroupName);
                             }else{
                                 clientController.openTab(msg.getSnd());
                                 Client.this.received = "[" + msg.getSnd() + "]: " + message; //Write message to object
@@ -468,6 +474,8 @@ public class Client {
                             if (msg.getSystem()){
                                 Client.this.received = "[Server]: " + fMsg; //Write message to object
                                 msg.setSystem(false);
+                                clientController.openTab(fMsg);
+
                             }else{
                                 clientController.openTab(msg.getSnd());
                                 Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
