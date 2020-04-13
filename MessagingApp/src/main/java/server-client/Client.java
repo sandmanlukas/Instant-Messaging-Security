@@ -105,11 +105,14 @@ public class Client {
                                     if(msg.length() >= msgLength) {
                                         msgToSend = msg.substring(msgLength);
                                         client.sendMessage(recipient, msgToSend, objectOutput);
+
                                         try {
-                                            clientController.openTab(recipient,msgToSend);
+                                            clientController.openTab(client.getUsername(), recipient,msgToSend);
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
+
+
                                     }
                                 }
                                 break;
@@ -128,7 +131,7 @@ public class Client {
                                             Client.this.received = "[System]: Group " + "\"" + groupName + "\"" + " was created!"; //Write message to object
                                             //Tries to open a new tab when creating a group.
                                             try {
-                                                clientController.openTab(groupName,this.received);
+                                                clientController.openGroupTab(client.getUsername(), groupName,this.received);
                                             } catch (IOException e) {
                                                 e.printStackTrace();
                                             }
@@ -244,9 +247,9 @@ public class Client {
                                 //skickar uppgifter om vilka användare som är med i gruppen "under the hood" till
                                 //samtliga användare i gruppen, för att de som redan är med i gruppen ska se vem
                                 //som är tillagd samt att den tillagda ska se vilka som är med
-                                client.getGroupMembers(currentGroupName).forEach((u) -> {
-                                    if (!client.getUsername().equals(u)) {
-                                        Message message = new Message(currentGroupName, u, "userInvite", members);
+                                client.getGroupMembers(currentGroupName).forEach((user) -> {
+                                    if (!client.getUsername().equals(user)) {
+                                        Message message = new Message(currentGroupName, user, "userInvite", members);
                                         try {
                                             objectOutput.writeObject(message);
                                         } catch (IOException e) {
@@ -283,11 +286,16 @@ public class Client {
                                 client.addOtherGroup(groupName);
                                 for (String user : users) {
                                     client.addGroupMember(groupName, user);
+                                    //TODO: adds one tab for each member of the group currently
+
+                                    clientController.openGroupTab(user, groupName, null);
                                 }
                             //om användaren redan var med i gruppen, och en användare har lagts till
                             } else {
                                 for (String user : users) {
                                     if (!client.getGroupMembers(groupName).contains(user)) {
+                                        //TODO: necessary?
+                                        //clientController.openGroupTab(msg.sender, groupName, null);
                                         client.addGroupMember(groupName, user);
                                     }
                                 }
@@ -421,11 +429,12 @@ public class Client {
 
                             if (msg.getSystem()){
                                 Client.this.received = "[Server]: " + fMsg; //Write message to object
+                               // clientController.openGroupTab(msg.sender,currentGroupName, fMsg);
                                 msg.setSystem(false);
-                                clientController.openTab(currentGroupName, fMsg);
+
 
                             }else{
-                                clientController.openTab(msg.getSnd(),fMsg);
+                                clientController.openTab(msg.sender, msg.getSnd(),fMsg);
                                 Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
                             }
 
@@ -448,9 +457,9 @@ public class Client {
                             if (msg.getSystem()){
                                 Client.this.received = "[Server]: " + message; //Write message to object
                                 msg.setSystem(false);
-                                clientController.openTab(currentGroupName, message);
+                                clientController.openTab(msg.sender, currentGroupName, message);
                             }else{
-                                clientController.openTab(msg.getSnd(), message);
+                                clientController.openTab(msg.sender, msg.getSnd(), message);
                                 Client.this.received = "[" + msg.getSnd() + "]: " + message; //Write message to object
                             }
 
@@ -474,10 +483,10 @@ public class Client {
                             if (msg.getSystem()){
                                 Client.this.received = "[Server]: " + fMsg; //Write message to object
                                 msg.setSystem(false);
-                                clientController.openTab(msg.getSnd(),fMsg);
+                                clientController.openTab(msg.sender,msg.getSnd(),fMsg);
 
                             }else{
-                                clientController.openTab(msg.getSnd(),fMsg);
+                                clientController.openTab(msg.sender, msg.getSnd(),fMsg);
                                 Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
                             }
 

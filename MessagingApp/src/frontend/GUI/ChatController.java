@@ -26,6 +26,10 @@ public class ChatController implements Initializable {
     @FXML
     private VBox tabVBox;
     @FXML
+    private VBox groupTabVBox;
+    @FXML
+    private VBox memberVBox;
+    @FXML
     private ScrollPane scrollPane;
     @FXML
     private TabPane tabPane;
@@ -33,6 +37,7 @@ public class ChatController implements Initializable {
     private AnchorPane anchorTab;
 
     private Map<String, Tab> openTabs = new HashMap<>();
+    private Map<String, Tab> groupTabs = new HashMap<>();
     private static Client controllerClient;
     private SelectionModel<Tab> selectionTab;
     public Tab activeTab;
@@ -56,9 +61,52 @@ public class ChatController implements Initializable {
     //TODO: checks so that a message is valid before opening a new tab
     //TODO: maybe add to that \m isn't necessary when in a tab
     //TODO: what should happen in main tab?
-    public void openTab(String tabName, String message) throws IOException {
+    public void openGroupTab(String sender, String groupName, String message) throws IOException {
+        if (groupTabs.containsKey(groupName)){
+            tabPane.getSelectionModel().select(groupTabs.get(groupName));
+
+            Platform.runLater(() -> {
+                groupTabVBox.getChildren().add(createLabel(message,sender));
+                Label member = new Label(sender);
+                memberVBox.getChildren().add(member);
+
+
+            });
+
+        }else {
+            Tab groupTab = new Tab(groupName);
+            anchorTab = FXMLLoader.load(getClass().getResource("GroupTabs.fxml"));
+            groupTabVBox = (VBox) anchorTab.getChildren().get(0);
+            memberVBox = (VBox) anchorTab.getChildren().get(1);
+            Label newMember = new Label(sender);
+            memberVBox.getChildren().add(newMember);
+            groupTab.setClosable(true);
+            groupTab.setContent(anchorTab);
+
+            Platform.runLater(() -> {
+                tabPane.getTabs().add(groupTab);
+                groupTabs.put(groupName, groupTab);
+                //TODO: check so that when a user closes the tab the tab isn't not removed from the hashmap if group.
+                //TODO: remove userlabel when tab is closed
+                groupTab.setOnClosed(e -> openTabs.remove(groupName));
+                selectionTab = tabPane.getSelectionModel();
+                selectionTab.select(groupTab);
+                //TODO: check this, currently only works the first time
+
+                //groupTabVBox.getChildren().add(createLabel(message,sender));
+
+            });
+        }
+    }
+
+    public void openTab(String sender, String tabName, String message) throws IOException {
         if (openTabs.containsKey(tabName)){
             tabPane.getSelectionModel().select(openTabs.get(tabName));
+
+            Platform.runLater(() -> {
+                tabVBox.getChildren().add(createLabel(message,sender));
+            });
+
         }else {
             Tab tab = new Tab(tabName);
             anchorTab = FXMLLoader.load(getClass().getResource("Tabs.fxml"));
@@ -69,25 +117,28 @@ public class ChatController implements Initializable {
             Platform.runLater(() -> {
                 tabPane.getTabs().add(tab);
                 openTabs.put(tabName, tab);
+                //TODO: check so that when a user closes the tab the tab isn't not removed from the hashmap if group.
                 tab.setOnClosed(e -> openTabs.remove(tabName));
-
                 selectionTab = tabPane.getSelectionModel();
                 selectionTab.select(tab);
-                //activeTab = selectionTab.getSelectedItem();
                 //TODO: check this, currently only works the first time
-                if(!controllerClient.newReceive){
-                    tabVBox.getChildren().add(createLabel(message));
-                }
 
-
+                 tabVBox.getChildren().add(createLabel(message,sender));
 
             });
         }
     }
     //TODO: could find a better solution
-    public Label createLabel(String message){
-        Label msg = new Label("[You]: " + message);
+    private Label createLabel(String message, String sender){
+        Label msg = new Label("[" +sender + "]: " + message);
         msg.setWrapText(true);
+        if (sender.equals(controllerClient.username)){
+            msg.setText("[You]: " + message);
+            return msg;
+        }else if (!controllerClient.currentGroupName.equals(null)){
+            msg.setText("[" + sender +"]: " + message);
+            return msg;
+        }
         return msg;
     }
 
@@ -101,11 +152,11 @@ public class ChatController implements Initializable {
         text.clear();
     }
 
+    //TODO: still adds stuff in main.
     public void recieveMessage(){
-
         Label msgRecieved = new Label(controllerClient.received);
         msgRecieved.setWrapText(true);
-        tabVBox.getChildren().add(msgRecieved);
+        rightVBox.getChildren().add(msgRecieved);
         controllerClient.newReceive = false;
     }
 
@@ -135,22 +186,13 @@ public class ChatController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-/*
-        try {
-            anchorTab = FXMLLoader.load(getClass().getResource("Tabs.fxml"));
-            tabVBox = (VBox) anchorTab.getChildren().get(0);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
- */
-
+        /*
 
         Thread recMessage = new Thread(() -> {
             Runnable updater = () -> {
                 if (controllerClient.newReceive) {
-                    recieveMessage();
+                    //recieveMessage();
+                   // openTab(controllerClient.username,controllerClient.,controllerClient.received);
                 }
             };
             while (true) {
@@ -164,5 +206,8 @@ public class ChatController implements Initializable {
         });
         recMessage.setDaemon(true);
         recMessage.start();
+    }
+
+ */
     }
 }
