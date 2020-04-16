@@ -4,12 +4,20 @@ public class Message implements java.io.Serializable{
 	public final String type;
 	public final Object message;
 	private boolean system;
+	private String groupName;
 
 	public Message (String sender, String recipient, String type, Object message){
 		this.sender=sender;
 		this.recipient=recipient;
 		this.type=type;
 		this.message=message;
+	}
+
+	public String getGroupName(){
+		return this.groupName;
+	}
+	public void setGroupName(String groupName){
+		this.groupName = groupName;
 	}
 
 	public String getSnd(){

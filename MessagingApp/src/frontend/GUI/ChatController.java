@@ -66,7 +66,9 @@ public class ChatController implements Initializable {
             tabPane.getSelectionModel().select(groupTabs.get(groupName));
 
             Platform.runLater(() -> {
-                groupTabVBox.getChildren().add(createLabel(message,sender));
+                if (message != null){
+                    groupTabVBox.getChildren().add(createLabel(message,sender));
+                }
                 Label member = new Label(sender);
                 memberVBox.getChildren().add(member);
 
@@ -75,6 +77,7 @@ public class ChatController implements Initializable {
 
         }else {
             Tab groupTab = new Tab(groupName);
+            groupTabs.put(groupName, groupTab);
             anchorTab = FXMLLoader.load(getClass().getResource("GroupTabs.fxml"));
             groupTabVBox = (VBox) anchorTab.getChildren().get(0);
             memberVBox = (VBox) anchorTab.getChildren().get(1);
@@ -85,7 +88,6 @@ public class ChatController implements Initializable {
 
             Platform.runLater(() -> {
                 tabPane.getTabs().add(groupTab);
-                groupTabs.put(groupName, groupTab);
                 //TODO: check so that when a user closes the tab the tab isn't not removed from the hashmap if group.
                 //TODO: remove userlabel when tab is closed
                 groupTab.setOnClosed(e -> openTabs.remove(groupName));
@@ -109,6 +111,7 @@ public class ChatController implements Initializable {
 
         }else {
             Tab tab = new Tab(tabName);
+            openTabs.put(tabName, tab);
             anchorTab = FXMLLoader.load(getClass().getResource("Tabs.fxml"));
             tabVBox = (VBox) anchorTab.getChildren().get(0);
             tab.setClosable(true);
@@ -116,7 +119,6 @@ public class ChatController implements Initializable {
 
             Platform.runLater(() -> {
                 tabPane.getTabs().add(tab);
-                openTabs.put(tabName, tab);
                 //TODO: check so that when a user closes the tab the tab isn't not removed from the hashmap if group.
                 tab.setOnClosed(e -> openTabs.remove(tabName));
                 selectionTab = tabPane.getSelectionModel();
@@ -135,7 +137,7 @@ public class ChatController implements Initializable {
         if (sender.equals(controllerClient.username)){
             msg.setText("[You]: " + message);
             return msg;
-        }else if (!controllerClient.currentGroupName.equals(null)){
+        }else if (controllerClient.currentGroupName != null){
             msg.setText("[" + sender +"]: " + message);
             return msg;
         }
@@ -186,6 +188,7 @@ public class ChatController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        //TODO: add a receiveMessage() method that adds a label to the current tab with newRecieve
         /*
 
         Thread recMessage = new Thread(() -> {

@@ -15,8 +15,9 @@ public class testClient {
     private String username;
     private final preKeyBundle preKeys;
     private final HashMap<String, Session> sessionMap;
+    private String currentGroup;
     private boolean system = false;
-    String initMsg;
+    private String initMsg;
     private final HashMap<String, chatGroup> groupMap;
 
     public testClient(String username, preKeyBundle preKeys) {
@@ -24,6 +25,12 @@ public class testClient {
         this.preKeys = preKeys;
         sessionMap = new HashMap<>();
         groupMap = new HashMap<>();
+    }
+    public String getCurrentGroup(){
+        return this.currentGroup;
+    }
+    public void setCurrentGroup(String currentGroup){
+        this.currentGroup = currentGroup;
     }
 
     public String getInitMsg() {
@@ -36,13 +43,6 @@ public class testClient {
     public void setUsername(String username){
         this.username = username;
 
-    }
-    public boolean getSystem(){
-        return system;
-    }
-
-    public void setSystem(boolean system){
-        this.system = system;
     }
 
     public preKeyBundle getPreKeys() {
@@ -99,6 +99,7 @@ public class testClient {
 
     public void sendGroupMessage(String groupName, String msg, ObjectOutputStream objectOutput) {
         ArrayList<String> members = getGroupMembers(groupName);
+        setCurrentGroup(groupName);
         members.forEach((m) -> {
             if(!m.equals(getUsername())) {
                 sendMessage(m, "[" + groupName + "] " + msg, objectOutput);
@@ -161,6 +162,8 @@ public class testClient {
                 Message m = new Message(getUsername(), recipient, "noResponseEncryptMsg", firstMsgResult);
                 if (Client.systemMessage){
                     m.setSystem(true);
+                    //TODO: somewhat of a hack
+                    m.setGroupName(getCurrentGroup());
                     Client.systemMessage = false;
                 }
 
@@ -187,6 +190,12 @@ public class testClient {
 
                 //sends the message to the recipient
                 Message m = new Message(getUsername(), recipient, "encryptMsg", toBeSent);
+                if (Client.systemMessage){
+                    m.setSystem(true);
+                    //TODO: somewhat of a hack
+                    m.setGroupName(getCurrentGroup());
+                    Client.systemMessage = false;
+                }
                 try {
                     // write on the output stream
                     objectOutput.writeObject(m);
