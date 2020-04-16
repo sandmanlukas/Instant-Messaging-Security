@@ -158,8 +158,10 @@ public class Client {
                                                     if (client.groupCreator(groupName)) {
                                                         currentGroupName = groupName;
                                                         m = new Message(username, "Server", "userOnlineCheck", user);
+
                                                         try {
                                                             objectOutput.writeObject(m);
+                                                            clientController.openGroupTab(user,groupName,null);
                                                             newReceive = true;
                                                             //newSend = false;
                                                         } catch (IOException e) {
@@ -185,6 +187,7 @@ public class Client {
                                         msgToSend = msg.substring(command.length() + group.length() + 2);
                                         //kollar så att gruppen finns
                                         if(client.groupExists(group)) {
+                                            systemMessage = true;
                                             client.sendGroupMessage(group, msgToSend, objectOutput);
                                         } else {
                                             Client.this.received = "You are not in a group with that name"; //Write message to object
@@ -284,18 +287,17 @@ public class Client {
                             //om användare precis blivit tillagd i gruppen
                             if (client.getGroupMembers(groupName) == null) {
                                 client.addOtherGroup(groupName);
+
                                 for (String user : users) {
                                     client.addGroupMember(groupName, user);
                                     //TODO: adds one tab for each member of the group currently
-
                                     clientController.openGroupTab(user, groupName, null);
+
                                 }
                             //om användaren redan var med i gruppen, och en användare har lagts till
                             } else {
                                 for (String user : users) {
                                     if (!client.getGroupMembers(groupName).contains(user)) {
-                                        //TODO: necessary?
-                                        //clientController.openGroupTab(msg.sender, groupName, null);
                                         client.addGroupMember(groupName, user);
                                     }
                                 }
@@ -427,9 +429,10 @@ public class Client {
 
                             String fMsg = AES_encryption.decrypt(firstMsgReceived[0], session.firstMsgKey, new IvParameterSpec(firstMsgReceived[1]), session);
 
+
                             if (msg.getSystem()){
                                 Client.this.received = "[Server]: " + fMsg; //Write message to object
-                               // clientController.openGroupTab(msg.sender,currentGroupName, fMsg);
+                                //clientController.openGroupTab(msg.sender,msg.getGroupName(), fMsg);
                                 msg.setSystem(false);
 
 
@@ -438,6 +441,9 @@ public class Client {
                                 Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
                             }
 
+
+
+                            //checkSystemMessage(msg, fMsg);
 
                             this.newReceive = true; //set flag
 
@@ -454,14 +460,7 @@ public class Client {
                             String message = client.receiveMessage(theirPublicRatchetKey, encryptedMsg, iv, msg.sender);
                             System.out.println("[" + msg.getSnd() + "]: " + message);
                             //TODO: maybe add system message here as well
-                            if (msg.getSystem()){
-                                Client.this.received = "[Server]: " + message; //Write message to object
-                                msg.setSystem(false);
-                                clientController.openTab(msg.sender, currentGroupName, message);
-                            }else{
-                                clientController.openTab(msg.sender, msg.getSnd(), message);
-                                Client.this.received = "[" + msg.getSnd() + "]: " + message; //Write message to object
-                            }
+                            checkSystemMessage(msg, message);
 
 
                             this.newReceive = true; //set flag
@@ -478,17 +477,8 @@ public class Client {
                             //decrypt received message
                             firstMsgReceived = (byte[][]) msg.getMsg();
                             fMsg = AES_encryption.decrypt(firstMsgReceived[0], session.firstMsgKey, new IvParameterSpec(firstMsgReceived[1]), session);
-                            System.out.println("[" + msg.getSnd() + "] " + fMsg);
 
-                            if (msg.getSystem()){
-                                Client.this.received = "[Server]: " + fMsg; //Write message to object
-                                msg.setSystem(false);
-                                clientController.openTab(msg.sender,msg.getSnd(),fMsg);
-
-                            }else{
-                                clientController.openTab(msg.sender, msg.getSnd(),fMsg);
-                                Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
-                            }
+                            checkSystemMessage(msg, fMsg);
 
 
                             this.newReceive = true; //set flag
@@ -506,6 +496,18 @@ public class Client {
         sendMessage.start();
         readMessage.start();
     }
+
+    private void checkSystemMessage(Message msg, String message) throws IOException {
+        if (msg.getSystem()){
+            Client.this.received = "[Server]: " + message; //Write message to object
+            msg.setSystem(false);
+            clientController.openGroupTab(msg.sender, msg.getGroupName(), message);
+        }else{
+            clientController.openTab(msg.sender, msg.getSnd(), message);
+            Client.this.received = "[" + msg.getSnd() + "]: " + message; //Write message to object
+        }
+    }
+
     public void setForMessage(String message){
         this.newSend=true;
         this.toSend=message;
