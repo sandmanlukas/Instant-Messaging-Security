@@ -39,10 +39,13 @@ public class ChatController implements Initializable {
 
     private Map<String, Tab> openTabs = new HashMap<>();
     private Map<String, Tab> groupTabs = new HashMap<>();
+    private Map<String, Label> groupMembers = new HashMap<>();
     private static Client controllerClient;
+    private testClient testClient;
     private SelectionModel<Tab> selectionTab;
     public Tab activeTab;
     private SelectionModel<Tab> groupSelectionTab;
+    private Label member;
 
     public ChatController(){
 
@@ -59,20 +62,36 @@ public class ChatController implements Initializable {
         controllerClient = client;
     }
 
+    public void setTestClient (testClient testClient){this.testClient = testClient;}
+
+
+
     //TODO: checks so that a message is valid before opening a new tab
     //TODO: maybe add to that \m isn't necessary when in a tab
     //TODO: what should happen in main tab?
     public void openGroupTab(String sender, String groupName, String message) throws IOException {
         if (groupTabs.containsKey(groupName)){
-            tabPane.getSelectionModel().select(groupTabs.get(groupName));
 
+            tabPane.getSelectionModel().select(groupTabs.get(groupName));
+            activeTab = tabPane.getSelectionModel().getSelectedItem();
             Platform.runLater(() -> {
                 if (message != null){
                     groupTabVBox.getChildren().add(createLabel(message,sender));
                 }
+                //TODO: currently, when the creator invites a person to a group they aren't yet added to the group until they have recieved the userInvite and that is after the tab on the creators side
+                //TODO: is created. so the person isn't in the group yet therefore no label is added.
+                //TODO: fix so that when a tab is closed that person is removed for all of the other members aswell.
+                if (testClient.getGroupMember(groupName,sender)){
+                    member = new Label(sender);
+                    //groupMembers.put(sender, member);
+                    memberVBox.getChildren().add(member);
+                }
                 //TODO: fix so that it doesn't create a new label if that user is already in group
-                Label member = new Label(sender);
-                memberVBox.getChildren().add(member);
+
+                activeTab.setOnClosed(e ->  {
+                    openTabs.remove(groupName);
+                    testClient.removeGroupMember(groupName,controllerClient.username);
+                } );
 
 
             });
@@ -84,15 +103,22 @@ public class ChatController implements Initializable {
             groupTabVBox = (VBox) anchorTab.getChildren().get(0);
             memberVBox = (VBox) anchorTab.getChildren().get(1);
             Label newMember = new Label(sender);
+            //groupMembers.put(sender, newMember);
             memberVBox.getChildren().add(newMember);
             groupTab.setClosable(true);
             groupTab.setContent(anchorTab);
+
+            groupTab.setOnClosed(e ->  {
+                openTabs.remove(groupName);
+                testClient.removeGroupMember(groupName,controllerClient.username);
+            } );
+
 
             Platform.runLater(() -> {
                 tabPane.getTabs().add(groupTab);
                 //TODO: check so that when a user closes the tab the tab isn't not removed from the hashmap if group.
                 //TODO: remove userlabel when tab is closed
-                groupTab.setOnClosed(e -> openTabs.remove(groupName));
+
                 selectionTab = tabPane.getSelectionModel();
                 selectionTab.select(groupTab);
                 //TODO: check this, currently only works the first time
@@ -131,6 +157,10 @@ public class ChatController implements Initializable {
 
             });
         }
+    }
+
+    private void removeUser(String user){
+        memberVBox.getChildren();
     }
     //TODO: could find a better solution
     private Label createLabel(String message, String sender){

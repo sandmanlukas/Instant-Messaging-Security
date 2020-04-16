@@ -17,7 +17,7 @@
     <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" pannable="true" prefHeight="450.0" prefWidth="695.0">
         <AnchorPane fx:id="chatPane" minHeight="0.0" minWidth="0.0" prefHeight="500.0" prefWidth="700.0">
          <children>
-               <TabPane fx:id="tabPane" prefHeight="450.0" prefWidth="700.0">
+               <TabPane fx:id="tabPane" prefHeight="415.0" prefWidth="700.0">
                   <Tab closable="false" text="Main">
                        <VBox fx:id="rightVBox" alignment="BOTTOM_LEFT" fillWidth="false" prefHeight="415.0" prefWidth="700.0" style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3; -fx-border-style: dashed;">
                         <!--<HBox fx:id="senderHBox" alignment="BOTTOM_RIGHT" disable="true" prefHeight="400.0"
