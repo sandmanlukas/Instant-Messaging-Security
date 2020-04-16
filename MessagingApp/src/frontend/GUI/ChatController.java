@@ -35,6 +35,7 @@ public class ChatController implements Initializable {
     private TabPane tabPane;
     @FXML
     private AnchorPane anchorTab;
+    private VBox activeVBox;
 
     private Map<String, Tab> openTabs = new HashMap<>();
     private Map<String, Tab> groupTabs = new HashMap<>();
@@ -146,11 +147,12 @@ public class ChatController implements Initializable {
     }
 
     public void sendMessage(){
-        //activeTab.setContent(rightVBox);
+       // activeTab = tabPane.getSelectionModel().getSelectedItem();
+       // activeVBox = (VBox) anchorTab.getChildren().get(0);
         //Text sent = new Text("[You]: " + text.getText());
         //Label msg = new Label("[You]: " + text.getText());
-        //msg.setWrapText(true);
-        //tabVBox.getChildren().add(msg);
+       // msg.setWrapText(true);
+       // activeVBox.getChildren().add(msg);
         controllerClient.setForMessage(text.getText());
         text.clear();
     }

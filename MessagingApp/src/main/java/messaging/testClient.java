@@ -102,7 +102,7 @@ public class testClient {
         setCurrentGroup(groupName);
         members.forEach((m) -> {
             if(!m.equals(getUsername())) {
-                sendMessage(m, "[" + groupName + "] " + msg, objectOutput);
+                sendMessage(m, msg, objectOutput);
             }
         });
     }

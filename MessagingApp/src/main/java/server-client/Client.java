@@ -189,6 +189,11 @@ public class Client {
                                         if(client.groupExists(group)) {
                                             systemMessage = true;
                                             client.sendGroupMessage(group, msgToSend, objectOutput);
+                                            try {
+                                                clientController.openGroupTab(username, group, msgToSend);
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
                                         } else {
                                             Client.this.received = "You are not in a group with that name"; //Write message to object
                                             newReceive = true; //set flag
