@@ -83,6 +83,10 @@ public class testClient {
 
     public void removeGroupMember(String groupName, String memberName) {
         groupMap.get(groupName).removeMember(memberName);
+        if (groupMap.get(groupName).getMembers().isEmpty()){
+            groupMap.remove(groupName);
+
+        }
     }
 
     public ArrayList<String> getGroupMembers(String groupName) {

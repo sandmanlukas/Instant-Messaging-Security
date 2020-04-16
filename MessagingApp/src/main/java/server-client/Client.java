@@ -53,6 +53,7 @@ public class Client {
         preKeyBundle preKeys = curveClass.generatePreKeyBundle();
 
         client = new testClient(this.username, preKeys);
+        clientController.setTestClient(client);
 
         // obtaining input and out streams
         ObjectOutputStream objectOutput = new ObjectOutputStream(s.getOutputStream());
@@ -295,7 +296,6 @@ public class Client {
 
                                 for (String user : users) {
                                     client.addGroupMember(groupName, user);
-                                    //TODO: adds one tab for each member of the group currently
                                     clientController.openGroupTab(user, groupName, null);
 
                                 }
@@ -304,6 +304,7 @@ public class Client {
                                 for (String user : users) {
                                     if (!client.getGroupMembers(groupName).contains(user)) {
                                         client.addGroupMember(groupName, user);
+                                        clientController.openGroupTab(user, groupName, null);
                                     }
                                 }
                             }
