@@ -69,6 +69,7 @@ public class ChatController implements Initializable {
                 if (message != null){
                     groupTabVBox.getChildren().add(createLabel(message,sender));
                 }
+                //TODO: fix so that it doesn't create a new label if that user is already in group
                 Label member = new Label(sender);
                 memberVBox.getChildren().add(member);
 
@@ -189,12 +190,12 @@ public class ChatController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //TODO: add a receiveMessage() method that adds a label to the current tab with newRecieve
-        /*
+
 
         Thread recMessage = new Thread(() -> {
             Runnable updater = () -> {
                 if (controllerClient.newReceive) {
-                    //recieveMessage();
+                    recieveMessage();
                    // openTab(controllerClient.username,controllerClient.,controllerClient.received);
                 }
             };
@@ -211,6 +212,6 @@ public class ChatController implements Initializable {
         recMessage.start();
     }
 
- */
+
     }
-}
+
