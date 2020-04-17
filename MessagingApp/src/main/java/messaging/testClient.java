@@ -16,7 +16,6 @@ public class testClient {
     private final preKeyBundle preKeys;
     private final HashMap<String, Session> sessionMap;
     private String currentGroup;
-    private boolean system = false;
     private String initMsg;
     private final HashMap<String, chatGroup> groupMap;
 
@@ -40,9 +39,9 @@ public class testClient {
     public String getUsername() {
         return username;
     }
+
     public void setUsername(String username){
         this.username = username;
-
     }
 
     public preKeyBundle getPreKeys() {
@@ -54,7 +53,7 @@ public class testClient {
     }
 
     public boolean groupExists(String groupName) {
-        return (groupMap.get(groupName) != null);
+        return (groupMap.containsKey(groupName));
     }
 
     public void addSession(Session session) {
@@ -79,6 +78,10 @@ public class testClient {
 
     public void addGroupMember(String groupName, String memberName) {
         groupMap.get(groupName).addMember(memberName);
+    }
+
+    public void removeGroup (String groupName){
+        groupMap.remove(groupName);
     }
 
     public void removeGroupMember(String groupName, String memberName) {

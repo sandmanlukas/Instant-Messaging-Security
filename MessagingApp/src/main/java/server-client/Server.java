@@ -72,7 +72,6 @@ public class Server {
 
 // ClientHandler class
 class ClientHandler implements Runnable {
-    Scanner scn = new Scanner(System.in);
     //PortalConnection conn = new PortalConnection();
     final PasswordConnection conn = new PasswordConnection();
     private String name;

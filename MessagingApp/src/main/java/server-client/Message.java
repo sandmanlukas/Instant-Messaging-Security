@@ -23,9 +23,11 @@ public class Message implements java.io.Serializable{
 	public String getSnd(){
 		return this.sender;
 	}
+
 	public String getRec(){
 		return this.recipient;
 	}
+
 	public void setSender(String sender){
 		this.sender = sender;
 	}

@@ -16,18 +16,18 @@
     </stylesheets>
     <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" pannable="true" prefHeight="450.0" prefWidth="695.0">
         <AnchorPane fx:id="chatPane" minHeight="0.0" minWidth="0.0" prefHeight="500.0" prefWidth="700.0">
-         <children>
-               <TabPane fx:id="tabPane" prefHeight="415.0" prefWidth="700.0">
-                  <Tab closable="false" text="Main">
-                       <VBox fx:id="rightVBox" alignment="BOTTOM_LEFT" fillWidth="false" prefHeight="415.0" prefWidth="700.0" style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3; -fx-border-style: dashed;">
-                        <!--<HBox fx:id="senderHBox" alignment="BOTTOM_RIGHT" disable="true" prefHeight="400.0"
-                              prefWidth="492.0"
-                              style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3;"
-                              visible="false"/>-->
-                    </VBox>
-                  </Tab>
-               </TabPane>
-         </children>
+            <TabPane fx:id="tabPane" prefHeight="415.0" prefWidth="700.0">
+                <Tab closable="false" text="Main">
+                    <VBox fx:id="rightVBox" alignment="BOTTOM_LEFT" fillWidth="false" prefHeight="415.0"
+                          prefWidth="700.0"
+                          style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3; -fx-border-style: dashed;">
+                     <!--<HBox fx:id="senderHBox" alignment="BOTTOM_RIGHT" disable="true" prefHeight="400.0"
+                           prefWidth="492.0"
+                           style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3;"
+                           visible="false"/>-->
+                 </VBox>
+                </Tab>
+            </TabPane>
         </AnchorPane>
     </ScrollPane>
     <TextField fx:id="text" layoutX="7.0" layoutY="457.0" onKeyPressed="#writeMessageEnter" prefHeight="35.0" prefWidth="433.0" promptText="Type a message here!" />

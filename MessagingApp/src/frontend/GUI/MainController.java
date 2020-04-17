@@ -2,14 +2,12 @@
 
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Stage;
 
 
 import java.sql.SQLException;
@@ -17,7 +15,6 @@ import java.sql.SQLException;
 
 public class MainController {
     private final PasswordConnection c = new PasswordConnection();
-    private UsernameValidator usernameValidator;
     @FXML
     private PasswordField password;
     @FXML
@@ -72,7 +69,7 @@ public class MainController {
         userInput = username.getText();
         passInput = password.getText();
 
-        usernameValidator = new UsernameValidator();
+        UsernameValidator usernameValidator = new UsernameValidator();
         if (!usernameValidator.validate(userInput)){
             illegalUsername();
             username.setText("");
@@ -114,7 +111,7 @@ public class MainController {
         startClient();
     }
 
-    private void startClient() throws java.io.IOException, SQLException, ClassNotFoundException {
+    private void startClient() throws java.io.IOException {
         if (tryLogin()){
             //FXMLLoader loader = new FXMLLoader(getClass().getResource("GUIChat.fxml"));
             //AnchorPane pane = loader.load();

@@ -10,12 +10,12 @@
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/frontend/GUI" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/Controller" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/frontend/validation" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/encryption" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/init" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/keys" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/messaging" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/java/server-client" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/frontend/validation" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/src/main/java/server-client/groupChat" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
