@@ -8,7 +8,6 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class Client {
@@ -23,6 +22,7 @@ public class Client {
     public static boolean systemMessage = false;
     public String currentGroupName;
     public ChatController clientController;
+    public ObjectOutputStream objectOutput;
 
     public Client(String username){
         this.username=username;
@@ -32,6 +32,7 @@ public class Client {
         this.newReceive =false;
         System.out.println("A client was created!");
     }
+
 
 
 
@@ -56,7 +57,7 @@ public class Client {
         clientController.setTestClient(client);
 
         // obtaining input and out streams
-        ObjectOutputStream objectOutput = new ObjectOutputStream(s.getOutputStream());
+        objectOutput = new ObjectOutputStream(s.getOutputStream());
         ObjectInputStream objectInput = new ObjectInputStream(s.getInputStream());
 
         // sendMessage thread
@@ -239,6 +240,12 @@ public class Client {
                     switch (msg.getType()) {
                         case "logoutAttempt":
                             client.logoutResponse(msg.getSnd());
+                            break;
+                        case "removeUser":
+                            String groupToRemoveFrom = (String) msg.message;
+
+                            client.removeGroupMember(groupToRemoveFrom,msg.sender);
+                            this.newReceive = true;
                             break;
                         case "userOnlineCheckGroup":
                             //gensvar som antyder att användaren som ska läggas till i gruppen är online
@@ -503,13 +510,13 @@ public class Client {
         readMessage.start();
     }
 
-    private void checkSystemMessage(Message msg, String message) throws IOException {
+    private void checkSystemMessage(Message msg, String message) {
         if (msg.getSystem()){
             Client.this.received = "[Server]: " + message; //Write message to object
             msg.setSystem(false);
-            clientController.openGroupTab(msg.sender, msg.getGroupName(), message);
+            //clientController.openGroupTab(msg.sender, msg.getGroupName(), message);
         }else{
-            clientController.openTab(msg.sender, msg.getSnd(), message);
+            //clientController.openTab(msg.sender, msg.getSnd(), message);
             Client.this.received = "[" + msg.getSnd() + "]: " + message; //Write message to object
         }
     }
@@ -518,6 +525,7 @@ public class Client {
         this.newSend=true;
         this.toSend=message;
     }
+
 
 
 }

@@ -1,6 +1,5 @@
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -9,12 +8,12 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
+
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -35,16 +34,13 @@ public class ChatController implements Initializable {
     private TabPane tabPane;
     @FXML
     private AnchorPane anchorTab;
-    private VBox activeVBox;
 
-    private Map<String, Tab> openTabs = new HashMap<>();
-    private Map<String, Tab> groupTabs = new HashMap<>();
-    private Map<String, Label> groupMembers = new HashMap<>();
+    private final Map<String, Tab> openTabs = new HashMap<>();
+    private final Map<String, Tab> groupTabs = new HashMap<>();
     private static Client controllerClient;
     private testClient testClient;
     private SelectionModel<Tab> selectionTab;
     public Tab activeTab;
-    private SelectionModel<Tab> groupSelectionTab;
     private Label member;
 
     public ChatController(){
@@ -74,24 +70,20 @@ public class ChatController implements Initializable {
 
             tabPane.getSelectionModel().select(groupTabs.get(groupName));
             activeTab = tabPane.getSelectionModel().getSelectedItem();
+
+
+            activeTab.setOnClosed(e -> closeTab(groupName));
             Platform.runLater(() -> {
                 if (message != null){
                     groupTabVBox.getChildren().add(createLabel(message,sender));
+                    testClient.setCurrentGroup(groupName);
                 }
                 //TODO: currently, when the creator invites a person to a group they aren't yet added to the group until they have recieved the userInvite and that is after the tab on the creators side
                 //TODO: is created. so the person isn't in the group yet therefore no label is added.
-                //TODO: fix so that when a tab is closed that person is removed for all of the other members aswell.
                 if (testClient.getGroupMember(groupName,sender)){
                     member = new Label(sender);
-                    //groupMembers.put(sender, member);
                     memberVBox.getChildren().add(member);
                 }
-                //TODO: fix so that it doesn't create a new label if that user is already in group
-
-                activeTab.setOnClosed(e ->  {
-                    openTabs.remove(groupName);
-                    testClient.removeGroupMember(groupName,controllerClient.username);
-                } );
 
 
             });
@@ -103,39 +95,49 @@ public class ChatController implements Initializable {
             groupTabVBox = (VBox) anchorTab.getChildren().get(0);
             memberVBox = (VBox) anchorTab.getChildren().get(1);
             Label newMember = new Label(sender);
-            //groupMembers.put(sender, newMember);
             memberVBox.getChildren().add(newMember);
             groupTab.setClosable(true);
             groupTab.setContent(anchorTab);
 
-            groupTab.setOnClosed(e ->  {
-                openTabs.remove(groupName);
-                testClient.removeGroupMember(groupName,controllerClient.username);
-            } );
+            groupTab.setOnClosed(e -> closeTab(groupName));
 
 
             Platform.runLater(() -> {
                 tabPane.getTabs().add(groupTab);
-                //TODO: check so that when a user closes the tab the tab isn't not removed from the hashmap if group.
-                //TODO: remove userlabel when tab is closed
-
+                //TODO: remove user label when tab is closed
                 selectionTab = tabPane.getSelectionModel();
                 selectionTab.select(groupTab);
-                //TODO: check this, currently only works the first time
+                testClient.setCurrentGroup(groupName);
 
-                //groupTabVBox.getChildren().add(createLabel(message,sender));
+
 
             });
         }
+    }
+
+    private void closeTab(String groupName) {
+            groupTabs.remove(groupName);
+            for (Iterator<String> groupMembers = testClient.getGroupMembers(groupName).iterator(); groupMembers.hasNext();) {
+                String groupMember = groupMembers.next();
+                if (!groupMember.equals(controllerClient.username)) {
+                    Message msg = new Message(controllerClient.username, groupMember, "removeUser", groupName);
+                    try {
+                        controllerClient.objectOutput.writeObject(msg);
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+
+                }
+            }
+            testClient.removeGroup(groupName);
+            //testClient.removeGroupMember(groupName,controllerClient.username);
     }
 
     public void openTab(String sender, String tabName, String message) throws IOException {
         if (openTabs.containsKey(tabName)){
             tabPane.getSelectionModel().select(openTabs.get(tabName));
 
-            Platform.runLater(() -> {
-                tabVBox.getChildren().add(createLabel(message,sender));
-            });
+            Platform.runLater(() -> tabVBox.getChildren().add(createLabel(message,sender)));
 
         }else {
             Tab tab = new Tab(tabName);
@@ -159,9 +161,10 @@ public class ChatController implements Initializable {
         }
     }
 
-    private void removeUser(String user){
-        memberVBox.getChildren();
+    public void removeLabel(String userToRemove){
+        ObservableList<Node> children = memberVBox.getChildren();
     }
+
     //TODO: could find a better solution
     private Label createLabel(String message, String sender){
         Label msg = new Label("[" +sender + "]: " + message);

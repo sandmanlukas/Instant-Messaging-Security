@@ -3,8 +3,7 @@ import java.util.regex.Pattern;
 public class UsernameValidator {
     private static final String USERNAME_PATTERN = "^[a-zA-Z0-9_-]{3,15}$";
 
-    private Pattern pattern;
-    private Matcher matcher;
+    private final Pattern pattern;
 
     public UsernameValidator(){
         pattern = Pattern.compile(USERNAME_PATTERN);
@@ -16,7 +15,7 @@ public class UsernameValidator {
      */
     public boolean validate(final String username){
 
-        matcher = pattern.matcher(username);
+        Matcher matcher = pattern.matcher(username);
         return matcher.matches();
 
     }
