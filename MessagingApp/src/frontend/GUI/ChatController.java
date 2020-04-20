@@ -110,7 +110,6 @@ public class ChatController implements Initializable {
 
             Platform.runLater(() -> {
                 tabPane.getTabs().add(groupTab);
-                //TODO: remove user label when tab is closed
                 selectionTab = tabPane.getSelectionModel();
                 selectionTab.select(groupTab);
                 testClient.setCurrentGroup(groupName);
@@ -123,7 +122,6 @@ public class ChatController implements Initializable {
 
     private void closeTab(String groupName) {
             groupTabs.remove(groupName);
-            //TODO: check this
             userLabels.remove(groupName);
             for (Iterator<String> groupMembers = testClient.getGroupMembers(groupName).iterator(); groupMembers.hasNext();) {
                 String groupMember = groupMembers.next();
@@ -156,7 +154,6 @@ public class ChatController implements Initializable {
 
             Platform.runLater(() -> {
                 tabPane.getTabs().add(tab);
-                //TODO: check so that when a user closes the tab the tab isn't not removed from the hashmap if group.
                 tab.setOnClosed(e -> openTabs.remove(tabName));
                 selectionTab = tabPane.getSelectionModel();
                 selectionTab.select(tab);
@@ -181,10 +178,6 @@ public class ChatController implements Initializable {
         return null;
     }
 
-
-
-
-    //TODO: could find a better solution
     private Label createLabel(String message, String sender){
         Label msg = new Label("[" +sender + "]: " + message);
         msg.setWrapText(true);

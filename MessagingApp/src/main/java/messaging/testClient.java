@@ -170,7 +170,6 @@ public class testClient {
                 Message m = new Message(getUsername(), recipient, "noResponseEncryptMsg", firstMsgResult);
                 if (Client.systemMessage){
                     m.setSystem(true);
-                    //TODO: somewhat of a hack
                     m.setGroupName(getCurrentGroup());
                     Client.systemMessage = false;
                 }
@@ -200,7 +199,6 @@ public class testClient {
                 Message m = new Message(getUsername(), recipient, "encryptMsg", toBeSent);
                 if (Client.systemMessage){
                     m.setSystem(true);
-                    //TODO: somewhat of a hack
                     m.setGroupName(getCurrentGroup());
                     Client.systemMessage = false;
                 }

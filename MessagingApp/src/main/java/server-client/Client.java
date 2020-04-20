@@ -84,13 +84,6 @@ public class Client {
                 if(this.newSend) {
                     String msg = this.toSend;
                     StringTokenizer st = new StringTokenizer(msg, " ");
-/*
-                    if (!st.hasMoreElements()){
-                        Client.this.received = "Unknown input \nTry typing \\h for help."; //Write message to object
-                        newReceive = true; //set flag
-                        break;
-                    }
-*/
 
                     if(st.hasMoreElements()) {
                         String command = st.nextToken();
@@ -102,6 +95,7 @@ public class Client {
                             case "\\m":
                                 if (st.hasMoreElements()) {
                                     String recipient = st.nextToken();
+
                                     //mest för att säkerställa att substring-metoden inte ger error
                                     final int msgLength = command.length() + recipient.length() + 2;
                                     if(msg.length() >= msgLength) {
@@ -220,12 +214,11 @@ public class Client {
                                 newReceive = true; //set flag
                                 break;
                         }
-                        this.newSend=false;
                     }else{
                         Client.this.received = "[Server]: Unknown input. Try typing \\h for help."; //Write message to object
                         newReceive = true; //set flag
-                        this.newSend = false;
                     }
+                    this.newSend=false;
                 }
             }
         });
@@ -244,7 +237,6 @@ public class Client {
                             break;
                         case "removeUser":
                             String groupToRemoveFrom = (String) msg.message;
-
                             clientController.removeLabel(msg.sender, groupToRemoveFrom);
                             client.removeGroupMember(groupToRemoveFrom,msg.sender);
                             this.newReceive = true;
