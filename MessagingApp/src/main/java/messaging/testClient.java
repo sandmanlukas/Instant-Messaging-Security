@@ -107,9 +107,10 @@ public class testClient {
     public void sendGroupMessage(String groupName, String msg, ObjectOutputStream objectOutput) {
         ArrayList<String> members = getGroupMembers(groupName);
         setCurrentGroup(groupName);
-        members.forEach((m) -> {
-            if(!m.equals(getUsername())) {
-                sendMessage(m, msg, objectOutput);
+        members.forEach((member) -> {
+            if(!member.equals(getUsername())) {
+                Client.systemMessage = true;
+                sendMessage(member, msg, objectOutput);
             }
         });
     }
@@ -133,11 +134,11 @@ public class testClient {
 
 
     public void sendMessage(String recipient, String msg, ObjectOutputStream objectOutput) {
-        Session s = getSession(recipient);
+        Session session = getSession(recipient);
         initMsg = msg;
 
         //Checks if their is a previously initialized session with the recipient
-        if (s == null) {
+        if (session == null) {
             //Sends a message to the server requesting the preKeyBundlePublic for the recipient
             Message m = new Message(getUsername(), recipient, "publicBundleRequest", "");
 
@@ -152,12 +153,12 @@ public class testClient {
 
         else {
 
-            if (s.getRatchetKeyTheirPublic() == null) {
+            if (session.getRatchetKeyTheirPublic() == null) {
 
                 //encrypts the message using the current keys for the session
-                Initialization.noResponseKeyUpdate(s);
-                byte[] initMsgKey = s.firstMsgKey;
-                Pair<byte[], IvParameterSpec> firstMsg = AES_encryption.encrypt(getInitMsg(), initMsgKey, s);
+                Initialization.noResponseKeyUpdate(session);
+                byte[] initMsgKey = session.firstMsgKey;
+                Pair<byte[], IvParameterSpec> firstMsg = AES_encryption.encrypt(getInitMsg(), initMsgKey, session);
                 byte[][] firstMsgResult = new byte[2][];
                 assert firstMsg != null;
                 firstMsgResult[0] = firstMsg.first();
@@ -184,7 +185,7 @@ public class testClient {
             }
             else {
                 //encrypts the message using the current keys for the session
-                MutableTriple<byte[], byte[], IvParameterSpec> result = Messages.sendMsg(msg, s);
+                MutableTriple<byte[], byte[], IvParameterSpec> result = Messages.sendMsg(msg, session);
 
                 //make the encrypted message serializable by putting it into a 2D byte array
                 byte[] ourPublicRatchetKey = result.left;

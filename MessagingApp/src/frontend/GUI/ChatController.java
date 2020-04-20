@@ -12,10 +12,7 @@ import javafx.scene.layout.VBox;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class ChatController implements Initializable {
     @FXML
@@ -37,6 +34,7 @@ public class ChatController implements Initializable {
 
     private final Map<String, Tab> openTabs = new HashMap<>();
     private final Map<String, Tab> groupTabs = new HashMap<>();
+    private final Map<String, List<Label>> userLabels = new HashMap<>();
     private static Client controllerClient;
     private testClient testClient;
     private SelectionModel<Tab> selectionTab;
@@ -78,15 +76,17 @@ public class ChatController implements Initializable {
                     groupTabVBox.getChildren().add(createLabel(message,sender));
                     testClient.setCurrentGroup(groupName);
                 }
-                //TODO: currently, when the creator invites a person to a group they aren't yet added to the group until they have recieved the userInvite and that is after the tab on the creators side
-                //TODO: is created. so the person isn't in the group yet therefore no label is added.
-                if (testClient.getGroupMember(groupName,sender)){
+
+                if (!userLabels.get(groupName).contains(getLabel(sender + "Label"))){
                     member = new Label(sender);
+                    //Sets the id of the label.
+                    member.setId(sender + "Label");
+                    userLabels.get(groupName).add(member);
+
                     memberVBox.getChildren().add(member);
                 }
-
-
             });
+
 
         }else {
             Tab groupTab = new Tab(groupName);
@@ -95,6 +95,12 @@ public class ChatController implements Initializable {
             groupTabVBox = (VBox) anchorTab.getChildren().get(0);
             memberVBox = (VBox) anchorTab.getChildren().get(1);
             Label newMember = new Label(sender);
+            // Sets the id of the label to easily access it later.
+            newMember.setId(sender + "Label");
+            //Creates an array to handle group members and later use to check so no person is added as a label more than once
+            ArrayList<Label> listOfGroupMembers = new ArrayList<>();
+            listOfGroupMembers.add(newMember);
+            userLabels.put(groupName,listOfGroupMembers);
             memberVBox.getChildren().add(newMember);
             groupTab.setClosable(true);
             groupTab.setContent(anchorTab);
@@ -117,6 +123,8 @@ public class ChatController implements Initializable {
 
     private void closeTab(String groupName) {
             groupTabs.remove(groupName);
+            //TODO: check this
+            userLabels.remove(groupName);
             for (Iterator<String> groupMembers = testClient.getGroupMembers(groupName).iterator(); groupMembers.hasNext();) {
                 String groupMember = groupMembers.next();
                 if (!groupMember.equals(controllerClient.username)) {
@@ -130,7 +138,6 @@ public class ChatController implements Initializable {
                 }
             }
             testClient.removeGroup(groupName);
-            //testClient.removeGroupMember(groupName,controllerClient.username);
     }
 
     public void openTab(String sender, String tabName, String message) throws IOException {
@@ -153,17 +160,29 @@ public class ChatController implements Initializable {
                 tab.setOnClosed(e -> openTabs.remove(tabName));
                 selectionTab = tabPane.getSelectionModel();
                 selectionTab.select(tab);
-                //TODO: check this, currently only works the first time
-
                  tabVBox.getChildren().add(createLabel(message,sender));
 
             });
         }
     }
 
-    public void removeLabel(String userToRemove){
-        ObservableList<Node> children = memberVBox.getChildren();
+    public void removeLabel(String userToRemove, String groupName){
+        Label labelToRemove = getLabel(userToRemove + "Label");
+        userLabels.get(groupName).remove(labelToRemove);
+        Platform.runLater(() -> memberVBox.getChildren().remove(labelToRemove));
     }
+
+    private Label getLabel (String id){
+        for (Node node : memberVBox.getChildren()) {
+            if (node.getId().equals(id) && node.getId() != null) {
+                return (Label) node;
+            }
+        }
+        return null;
+    }
+
+
+
 
     //TODO: could find a better solution
     private Label createLabel(String message, String sender){
@@ -180,12 +199,6 @@ public class ChatController implements Initializable {
     }
 
     public void sendMessage(){
-       // activeTab = tabPane.getSelectionModel().getSelectedItem();
-       // activeVBox = (VBox) anchorTab.getChildren().get(0);
-        //Text sent = new Text("[You]: " + text.getText());
-        //Label msg = new Label("[You]: " + text.getText());
-       // msg.setWrapText(true);
-       // activeVBox.getChildren().add(msg);
         controllerClient.setForMessage(text.getText());
         text.clear();
     }

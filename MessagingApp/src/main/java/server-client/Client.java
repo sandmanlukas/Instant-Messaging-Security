@@ -189,13 +189,14 @@ public class Client {
                                         msgToSend = msg.substring(command.length() + group.length() + 2);
                                         //kollar så att gruppen finns
                                         if(client.groupExists(group)) {
-                                            systemMessage = true;
+                                            //systemMessage = true;
                                             client.sendGroupMessage(group, msgToSend, objectOutput);
                                             try {
                                                 clientController.openGroupTab(username, group, msgToSend);
                                             } catch (IOException e) {
                                                 e.printStackTrace();
                                             }
+
                                         } else {
                                             Client.this.received = "You are not in a group with that name"; //Write message to object
                                             newReceive = true; //set flag
@@ -244,6 +245,7 @@ public class Client {
                         case "removeUser":
                             String groupToRemoveFrom = (String) msg.message;
 
+                            clientController.removeLabel(msg.sender, groupToRemoveFrom);
                             client.removeGroupMember(groupToRemoveFrom,msg.sender);
                             this.newReceive = true;
                             break;
@@ -447,8 +449,6 @@ public class Client {
                                 Client.this.received = "[Server]: " + fMsg; //Write message to object
                                 //clientController.openGroupTab(msg.sender,msg.getGroupName(), fMsg);
                                 msg.setSystem(false);
-
-
                             }else{
                                 clientController.openTab(msg.sender, msg.getSnd(),fMsg);
                                 Client.this.received = "[" + msg.getSnd() + "]: " + fMsg; //Write message to object
@@ -510,13 +510,15 @@ public class Client {
         readMessage.start();
     }
 
-    private void checkSystemMessage(Message msg, String message) {
+    private void checkSystemMessage(Message msg, String message) throws IOException {
         if (msg.getSystem()){
-            Client.this.received = "[Server]: " + message; //Write message to object
+            //Client.this.received = "[Server]: " + message; //Write message to object
+
+            //TODO: this may break stuff
+            clientController.openGroupTab(msg.sender, msg.getGroupName(), message);
             msg.setSystem(false);
-            //clientController.openGroupTab(msg.sender, msg.getGroupName(), message);
         }else{
-            //clientController.openTab(msg.sender, msg.getSnd(), message);
+            clientController.openTab(msg.sender, msg.getSnd(), message);
             Client.this.received = "[" + msg.getSnd() + "]: " + message; //Write message to object
         }
     }
