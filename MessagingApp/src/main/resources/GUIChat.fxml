@@ -18,11 +18,7 @@
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="500.0" prefWidth="695.0">
             <TabPane fx:id="tabPane" prefHeight="450.0" prefWidth="678.0">
                 <Tab closable="false" text="Main">
-                    <VBox fx:id="rightVBox" alignment="BOTTOM_LEFT" fillWidth="false" prefHeight="425.0" prefWidth="678.0" style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3; -fx-border-style: dashed;">
-                     <!--<HBox fx:id="senderHBox" alignment="BOTTOM_RIGHT" disable="true" prefHeight="400.0"
-                           prefWidth="492.0"
-                           style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3;"
-                           visible="false"/>-->
+                    <VBox fx:id="rightVBox" alignment="BOTTOM_LEFT" fillWidth="false" prefHeight="425.0" prefWidth="678.0" style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3; -fx-border-style: solid;">
                  </VBox>
                 </Tab>
             </TabPane>

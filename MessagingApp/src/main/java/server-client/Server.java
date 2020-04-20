@@ -218,6 +218,7 @@ class ClientHandler implements Runnable {
                                             keys[3 + i] = preKeys.getPublicOneTimePreKey(i);
                                         }
 
+
                                         Message m = new Message(msg.getRec(), mc.name, "publicBundleRequestRec", keys);
                                         mc.dos.writeObject(m);
                                         break;
@@ -239,7 +240,8 @@ class ClientHandler implements Runnable {
                                 }
                             }
                             break;
-                        case "online":
+                        case "firstStep":
+                            System.out.println("This is what the server sees: " + msg.message);
                             break;
                         default:
                             //if(userError(msg.getSnd(), msg.getRec(), msg.getType())) {
