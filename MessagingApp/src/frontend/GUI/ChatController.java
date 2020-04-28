@@ -26,8 +26,6 @@ public class ChatController implements Initializable {
     @FXML
     private VBox memberVBox;
     @FXML
-    private ScrollPane scrollPane;
-    @FXML
     private TabPane tabPane;
     @FXML
     private AnchorPane anchorTab;

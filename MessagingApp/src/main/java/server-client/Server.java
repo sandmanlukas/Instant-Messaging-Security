@@ -240,9 +240,12 @@ class ClientHandler implements Runnable {
                                 }
                             }
                             break;
-                        case "firstStep":
+                            /*
+                            case "firstStep":
                             System.out.println("This is what the server sees: " + msg.message);
                             break;
+
+                             */
                         default:
                             //if(userError(msg.getSnd(), msg.getRec(), msg.getType())) {
                                 for (ClientHandler mc2 : Server.ar) {
