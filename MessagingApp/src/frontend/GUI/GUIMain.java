@@ -15,6 +15,7 @@ public class GUIMain extends Application {
         launch(args);
     }
 
+    //Loads the main window of the application.
     @Override
     public void start(Stage primaryStage) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GUIMain.fxml"));

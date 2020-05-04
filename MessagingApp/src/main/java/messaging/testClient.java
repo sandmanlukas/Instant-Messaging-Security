@@ -10,8 +10,6 @@ import java.util.HashMap;
 
 public class testClient {
 
-    //Curve curveClass = new Curve();
-
     private String username;
     private final preKeyBundle preKeys;
     private final HashMap<String, Session> sessionMap;
@@ -47,6 +45,7 @@ public class testClient {
     public preKeyBundle getPreKeys() {
         return preKeys;
     }
+
 
     public boolean groupCreator(String groupName) {
         return groupMap.get(groupName).getCreator();
@@ -84,6 +83,7 @@ public class testClient {
         groupMap.remove(groupName);
     }
 
+    // method to remove a specific group member
     public void removeGroupMember(String groupName, String memberName) {
         groupMap.get(groupName).removeMember(memberName);
         if (groupMap.get(groupName).getMembers().isEmpty()){
@@ -92,6 +92,7 @@ public class testClient {
         }
     }
 
+    // returns a list of group members from a given group
     public ArrayList<String> getGroupMembers(String groupName) {
         if (!groupExists(groupName)) {
             return null;
@@ -100,10 +101,12 @@ public class testClient {
         }
     }
 
+    // returns a boolean if a certain user is in a group
     public Boolean getGroupMember(String groupName, String memberName) {
         return groupMap.get(groupName).getMember(memberName);
     }
 
+    // sends a message to all members of a group, except the sender
     public void sendGroupMessage(String groupName, String msg, ObjectOutputStream objectOutput) {
         ArrayList<String> members = getGroupMembers(groupName);
         setCurrentGroup(groupName);
@@ -115,6 +118,7 @@ public class testClient {
         });
     }
 
+    // sends a message to log a user out
     public void logoutUser(ObjectOutputStream objectOutput) {
         sessionMap.forEach((k,v) -> {
             Message m = new Message(username, k, "logoutAttempt", "");
@@ -127,12 +131,14 @@ public class testClient {
 
     }
 
+    // remove session from a user and removes them from all groups
     public void logoutResponse(String user) {
         removeSession(user);
         groupMap.forEach((k,v) -> removeGroupMember(k, user));
     }
 
 
+    // sends a message to a given recipient
     public void sendMessage(String recipient, String msg, ObjectOutputStream objectOutput) {
         Session session = getSession(recipient);
         initMsg = msg;
@@ -213,6 +219,7 @@ public class testClient {
         }
     }
 
+    //method that returns the decrypted message
     public String receiveMessage(byte[] ratchetTheirs, byte[]encryptMsg, IvParameterSpec iv, String theirs) {
         Session s = getSession(theirs);
         return Messages.receiveMsg(ratchetTheirs, encryptMsg, iv, s);

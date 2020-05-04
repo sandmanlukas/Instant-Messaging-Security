@@ -14,6 +14,7 @@ import java.sql.SQLException;
 
 
 public class MainController {
+    //Connection to the database, where the hashed passwords are stored.
     private final PasswordConnection c = new PasswordConnection();
     @FXML
     private PasswordField password;
@@ -26,27 +27,29 @@ public class MainController {
     public MainController() throws SQLException, ClassNotFoundException {
     }
 
+    //Method to check if a password is correct
     public boolean login(String username, String password) {
 
+        //Checks if a user exists in the database.
         if (c.userExists(username)){
-            if(c.correctPassword(username, password)) return true;
-            else {
-                System.out.println("That username is taken. Try another one.");
-                return false;
-            }
+            //If the password of the user matches the one stored in the database, return true. Else return false.
+            return c.correctPassword(username, password);
         }
+        // If any of the textfields are empty, return false.
         else if (username.isEmpty() || password.isEmpty()){
             return false;
         }
+        //If the user doesn't exist in the database, create a new user and return true.
         else if (!c.userExists(username)){
             c.newUser(username, password);
-            System.out.println("User doesn't exists, creates a new user and logs him in.");
             return true;
         }
 
+        //Otherwise, return false.
         return false;
     }
 
+    //Method to show an alert if a login is failed.
     public void failLogin() {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Wrong Password or Username");
@@ -54,7 +57,7 @@ public class MainController {
         alert.setContentText("You entered the wrong password or Username. Try again.");
         alert.showAndWait();
     }
-
+    //Method to show an alert if a username is illegal.
     public void illegalUsername(){
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Illegal Username");
@@ -62,13 +65,18 @@ public class MainController {
         alert.setContentText("You entered an illegal username. Allowed symbols are a-z, A-Z, 0-9, _ and -. \nThe password has to be at least 3 characters long and at max 15 characters. ");
         alert.showAndWait();
     }
+
+    //Method that is called when a user tries to log in.
     public boolean tryLogin() {
         String userInput;
         String passInput;
 
+        // Gets the text from the username- and passwordfields.
         userInput = username.getText();
         passInput = password.getText();
 
+        //Checks if the username is valid according to the given rules.
+        //If not return false and show an alert.
         UsernameValidator usernameValidator = new UsernameValidator();
         if (!usernameValidator.validate(userInput)){
             illegalUsername();
@@ -77,28 +85,19 @@ public class MainController {
         }
 
 
-        //userInput = "lukas";
-        //passInput = "test123";
-
-        //sends login input to Controller
-
-
+        //Checks if the entered username and password are correct.
+        // Shows an alert otherwise.
         if (login(userInput, passInput)) {
-          //  try {
-                //new GUIChat(userInput);
-                //new ChatController(userInput);
                 return true;
-           // } catch (IOException e) {
-             //   e.printStackTrace();
-          //  }
-        } else {
+        }
+        else {
             failLogin();
-            System.out.println("Login failed, try again.");
             return false;
         }
-      //  return false;
+
     }
 
+    //Calls startClient() when enter is pressed.
     @FXML
     public void enterLogin (KeyEvent event) throws Exception {
         if(event.getCode() == KeyCode.ENTER){
@@ -106,29 +105,16 @@ public class MainController {
         }
     }
 
+    //Calls startClient() when the login button is pressed.
     @FXML
     public void mouseLogin() throws Exception {
         startClient();
     }
 
+    //If tryLogin() succeeds a chat window is created and opened.
     private void startClient() throws java.io.IOException {
         if (tryLogin()){
-            //FXMLLoader loader = new FXMLLoader(getClass().getResource("GUIChat.fxml"));
-            //AnchorPane pane = loader.load();
-            //rootPane.getChildren().setAll(pane);
-            //Client controllerClient = new Client(username.getText());
-            //TODO: to access setOnCloseRequest, must be a better way
             new GUIChat(username.getText(), rootPane);
-
-            //ChatController chatController = loader.getController();
-            //controllerClient.clientController = chatController;
-            //chatController.setClient(controllerClient);
-            //chatController.initialize();
-
-            //controllerClient.run();
-            //new ChatController(username.getText(), primaryStage);
-
-            //new GUIChat(username.getText());
 
         }
     }

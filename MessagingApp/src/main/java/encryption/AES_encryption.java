@@ -46,6 +46,7 @@ public class AES_encryption {
      */
     public static String decrypt(byte[] encrypt, byte[] secret, IvParameterSpec iv, Session session) {
         try {
+            //tries to verify the mac key first.
             MAC.verifyMac(session.getMacKey(), session);
 
             //decrypts the message using the message key and the received random byte array
@@ -53,6 +54,7 @@ public class AES_encryption {
             Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.DECRYPT_MODE, skeyspec, iv);
             byte[] original = cipher.doFinal(encrypt);
+            // return the decrypted string
             return new String(original);
 
         } catch (Exception ex) {

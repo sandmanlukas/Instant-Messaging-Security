@@ -3,6 +3,7 @@ import java.util.Properties;
 
 public class PasswordConnection {
 
+    // connection  to the database that stores the hashed passwords
     static final String DATABASE = "jdbc:postgresql://localhost/kandidatpsw";
     static final String USERNAME = "postgres";
     static final String PASSWORD = "postgres";
@@ -21,7 +22,9 @@ public class PasswordConnection {
         conn = DriverManager.getConnection(db, props);
     }
 
+    //method to determine if a user exists in the database
     public boolean userExists (String username){
+        // uses prepared statements to protect against sql injections
         try (PreparedStatement ps = conn.prepareStatement(
                 "SELECT EXISTS(SELECT username FROM passwordview WHERE username=?)")) {
             ps.setString(1,username);
@@ -33,11 +36,11 @@ public class PasswordConnection {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        System.out.println("Failure! in userExists");
 
         return false;
     }
 
+    // adds a new user to the database, and hashes the entered password using Argon
     public void newUser(String userName, String password) {
         try (PreparedStatement ps = conn.prepareStatement (
                 "INSERT INTO passwordView VALUES (?,?)")) {
@@ -50,6 +53,8 @@ public class PasswordConnection {
             e.printStackTrace();
         }
     }
+    //method to confirm a password is correct
+    // uses Argon to verify the hash in the database with the given password
     public boolean correctPassword(String userName, String password) {
         try (PreparedStatement ps = conn.prepareStatement (
                 "SELECT hash FROM passwordView WHERE userName=?")) {

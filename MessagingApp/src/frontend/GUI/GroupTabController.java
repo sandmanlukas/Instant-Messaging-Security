@@ -10,6 +10,7 @@ public class GroupTabController implements Initializable{
     public AnchorPane anchorTab;
     public VBox memberVBox;
 
+    //initializes the controller to load all the nodes
     @Override
         public void initialize(URL url, ResourceBundle resourceBundle) {
 

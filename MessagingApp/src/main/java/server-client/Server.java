@@ -16,7 +16,7 @@ public class Server {
 
     public static void main(String[] args) throws IOException
     { 
-        // server is listening on port 1234 
+        // server is listening on port 8008
         ServerSocket ss = new ServerSocket(8008);
           
         Socket s;
@@ -72,7 +72,7 @@ public class Server {
 
 // ClientHandler class
 class ClientHandler implements Runnable {
-    //PortalConnection conn = new PortalConnection();
+    //connection to the database
     final PasswordConnection conn = new PasswordConnection();
     private String name;
     final ObjectOutputStream dos;
@@ -88,16 +88,18 @@ class ClientHandler implements Runnable {
         this.s = s;
         this.isloggedin = true;
     }
-    //Kollar om användaren är registrerad/användaren är online
+
+    // checks to see if the user is registered or online
     public boolean userError(String sender, String receiver, String msgType) throws IOException {
         Message m;
         boolean temp = false;
         for (ClientHandler mc : Server.ar) {
             if (mc.name.equals(receiver)) {
                 temp = true;
-                break; //TODO: is this necessary?
+                break;
             }
         }
+        // sends message to the server depending on what error is given
         if ((msgType.equals("userOnlineCheck") || msgType.equals("publicBundleRequest")) && !temp) {
             for (ClientHandler mc : Server.ar) {
                 if (mc.name.equals(sender)) {
@@ -149,7 +151,7 @@ class ClientHandler implements Runnable {
                             break;
 
                         case "newUser":
-                            //oklart om den här används överhuvudtaget
+                            //don't think this is used anymore
                             for (ClientHandler mc : Server.ar) {
                                 if (mc.name.equals(msg.getSnd())) {
                                     String hash = Arrays.toString((byte[]) msg.getMsg());
@@ -161,7 +163,7 @@ class ClientHandler implements Runnable {
                         case "userOnlineCheck":
                             for (ClientHandler mc : Server.ar) {
                                 if (mc.name.equals(msg.getSnd())) {
-                                    //kollar om användaren är online, och skickar en boolean till användaren
+                                    // checks if a user is online, sends a boolean to the user
                                     boolean temp = userError(msg.getSnd(), (String) msg.getMsg(), msg.getType());
                                     Message m = new Message((String) msg.getMsg(), msg.getSnd(), "userOnlineCheckGroup", temp);
                                     mc.dos.writeObject(m);
@@ -174,9 +176,7 @@ class ClientHandler implements Runnable {
                             for (ClientHandler mc : Server.ar) {
                                 if (mc.name.equals(msg.getSnd())) {
                                     String hash =  Arrays.toString((byte[]) msg.getMsg());
-                                    //boolean result = conn.correctPassword(msg.getSnd(), hash);
-                                   // Message m = new Message("Server", mc.name, "loginAttempt", result);
-                                   // mc.dos.writeObject(m);
+
                                     break;
                                 }
                             }
@@ -219,6 +219,7 @@ class ClientHandler implements Runnable {
                                         }
 
 
+                                        // sends a public bundle request message to the client of the recipient
                                         Message m = new Message(msg.getRec(), mc.name, "publicBundleRequestRec", keys);
                                         mc.dos.writeObject(m);
                                         break;
@@ -247,7 +248,6 @@ class ClientHandler implements Runnable {
 
                              */
                         default:
-                            //if(userError(msg.getSnd(), msg.getRec(), msg.getType())) {
                                 for (ClientHandler mc2 : Server.ar) {
                                     //forwards the message to the correct online user
                                     if (mc2.name.equals(msg.getRec()) && mc2.isloggedin) {
@@ -255,7 +255,7 @@ class ClientHandler implements Runnable {
                                         break;
                                     }
                                 }
-                           // }
+
                             break;
                     }
 

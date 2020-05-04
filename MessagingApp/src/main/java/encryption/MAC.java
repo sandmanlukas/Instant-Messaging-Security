@@ -19,6 +19,7 @@ public class MAC {
                               byte [] message, Session session)
     {
         try {
+            // uses a hmac sha-256 function
             Mac mac = Mac.getInstance("HmacSHA256");
             SecretKeySpec keySpec = new SecretKeySpec(secret, "HMAC256");
             mac.init(keySpec);

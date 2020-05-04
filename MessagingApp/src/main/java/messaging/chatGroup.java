@@ -2,6 +2,8 @@ import java.util.ArrayList;
 
 public class chatGroup {
 
+    //Class to handle groups and its members.
+
     private final ArrayList<String> members;
     private final boolean creator;
 
