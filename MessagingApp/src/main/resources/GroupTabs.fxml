@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="anchorTab" prefHeight="400.0" prefWidth="680.0" stylesheets="@GUIChat.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="GroupTabController">
+    <VBox fx:id="groupTabVBox" alignment="BOTTOM_LEFT" fillWidth="false" prefHeight="415.0" prefWidth="550.0" style="-fx-border-insets: 5; -fx-border-width: 3; -fx-border-style: solid;" AnchorPane.topAnchor="0.0">
+    </VBox>
+   <VBox fx:id="memberVBox" layoutX="548.0" prefHeight="415.0" prefWidth="130.0" style="-fx-border-color: black; -fx-border-insets: 5; -fx-border-width: 3; -fx-border-style: solid;" AnchorPane.rightAnchor="2.0">
+      <Label fx:id="membersLabel" prefHeight="28.0" prefWidth="96.0" text="Members:" underline="true">
+         <font>
+            <Font name="HelveticaNeueLTPro-Roman" size="20.0" />
+         </font>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+      </Label>
+      <padding>
+         <Insets left="5.0" />
+      </padding>
+   </VBox>
+
+</AnchorPane>
